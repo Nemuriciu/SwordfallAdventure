@@ -1,0 +1,262 @@
+{
+  "creatures": {
+    "Forest": [
+      {
+        "id": "t4Vcfd",
+        "name": "Wild Boar",
+        "img": "creature_icon_wild_boar"
+      },
+      {
+        "id": "KqJfQk",
+        "name": "Dire Wolf",
+        "img": "creature_icon_dire_wolf"
+      },
+      {
+        "id": "24JgeV",
+        "name": "Colossal Treant",
+        "img": "creature_icon_colossal_treant"
+      },
+      {
+        "id": "ooqoWL",
+        "name": "Gnashing Tiger",
+        "img": "creature_icon_gnashing_tiger"
+      },
+      {
+        "id": "DWwTss",
+        "name": "Swift Eagle",
+        "img": "creature_icon_swift_eagle"
+      },
+      {
+        "id": "7ndfLA",
+        "name": "Salamander",
+        "img": "creature_icon_salamander"
+      },
+      {
+        "id": "ZuRduf",
+        "name": "Cursed Stag",
+        "img": "creature_icon_cursed_stag"
+      },
+      {
+        "id": "I1XX5Mz",
+        "name": "Grizzly Bear",
+        "img": "creature_icon_grizzly_bear"
+      },
+      {
+        "id": "dQIi1jB",
+        "name": "Crazed Fox",
+        "img": "creature_icon_crazed_fox"
+      },
+      {
+        "id": "P02bOXW",
+        "name": "Werewolf",
+        "img": "creature_icon_werewolf"
+      },
+      {
+        "id": "SaGspR3",
+        "name": "Corrupted Owl",
+        "img": "creature_icon_corrupted_owl"
+      },
+      {
+        "id": "EsEL0Cu",
+        "name": "Terror Bloom",
+        "img": "creature_icon_terror_bloom"
+      },
+      {
+        "id": "MmI0bP9",
+        "name": "Forest Giant",
+        "img": "creature_icon_forest_giant"
+      },
+      {
+        "id": "VNcrFM7",
+        "name": "Greenwood Drake",
+        "img": "creature_icon_greenwood_drake"
+      },
+      {
+        "id": "pVoJb7m",
+        "name": "Alpha Prowler",
+        "img": "creature_icon_alpha_prowler"
+      }
+    ],
+    "Swampland": [
+      {
+        "id": "XvLY0K",
+        "name": "Pit Viper",
+        "img": "creature_icon_pit_viper"
+      },
+      {
+        "id": "OSC99b",
+        "name": "Black Recluse",
+        "img": "creature_icon_black_recluse"
+      },
+
+      {
+        "id": "U41BKp",
+        "name": "Swamp Gator",
+        "img": "creature_icon_swamp_gator"
+      },
+      {
+        "id": "CYwWlO5",
+        "name": "Rabid Bat",
+        "img": "creature_icon_rabid_bat"
+      },
+      {
+        "id": "lqcn6Zx",
+        "name": "Poisonous Toad",
+        "img": "creature_icon_poisonous_toad"
+      },
+      {
+        "id": "DJtdl2z",
+        "name": "Lurking Fangtooth",
+        "img": "creature_icon_lurking_fangtooth"
+      },
+      {
+        "id": "OH0pxRR",
+        "name": "Diseased Rat",
+        "img": "creature_icon_diseased_rat"
+      },
+      {
+        "id": "ZLieJDt",
+        "name": "Crawler",
+        "img": "creature_icon_crawler"
+      },
+      {
+        "id": "kcOPD26",
+        "name": "Venom Stinger",
+        "img": "creature_icon_venom_stinger"
+      },
+      {
+        "id": "xIvTUZ8",
+        "name": "Lizardman",
+        "img": "creature_icon_lizardman"
+      },
+      {
+        "id": "AdkyRT4",
+        "name": "Basilisk",
+        "img": "creature_icon_basilisk"
+      },
+      {
+        "id": "ZXzUXla",
+        "name": "Sludge Zombie",
+        "img": "creature_icon_sludge_zombie"
+      },
+      {
+        "id": "gpchRcW",
+        "name": "Oozeling",
+        "img": "creature_icon_oozeling"
+      },
+      {
+        "id": "vgCH1kW",
+        "name": "Fen Pincher",
+        "img": "creature_icon_fen_pincher"
+      },
+      {
+        "id": "sB1sh1p",
+        "name": "Bog Lord",
+        "img": "creature_icon_bog_lord"
+      }
+    ]
+  },
+
+  "stats": [
+    {
+      "level": 1,
+      "health": 50,
+      "physicalRes": 10,
+      "magicalRes": 10,
+      "physicalAtk": 7,
+      "magicalAtk": 7,
+      "critical": 0.05,
+      "dodge": 0.05
+    },
+    {
+      "level": 2,
+      "health": 244,
+      "physicalRes": 40,
+      "magicalRes": 40,
+      "physicalAtk": 50,
+      "magicalAtk": 50,
+      "critical": 0.05,
+      "dodge": 0.05
+    },
+    {
+      "level": 3,
+      "health": 634,
+      "physicalAtk": 104,
+      "magicalAtk": 104,
+      "physicalRes": 86,
+      "magicalRes": 86,
+      "critical": 0.05,
+      "dodge": 0.05
+    },
+    {
+      "level": 4,
+      "health": 250,
+      "physicalAtk": 30,
+      "magicalAtk": 30,
+      "physicalRes": 30,
+      "magicalRes": 30,
+      "critical": 0.05,
+      "dodge": 0.05
+    },
+    {
+      "level": 5,
+      "health": 250,
+      "physicalAtk": 30,
+      "magicalAtk": 30,
+      "physicalRes": 30,
+      "magicalRes": 30,
+      "critical": 0.05,
+      "dodge": 0.05
+    },
+    {
+      "level": 6,
+      "health": 250,
+      "physicalAtk": 30,
+      "magicalAtk": 30,
+      "physicalRes": 30,
+      "magicalRes": 30,
+      "critical": 0.05,
+      "dodge": 0.05
+    },
+    {
+      "level": 7,
+      "health": 250,
+      "physicalAtk": 30,
+      "magicalAtk": 30,
+      "physicalRes": 30,
+      "magicalRes": 30,
+      "critical": 0.05,
+      "dodge": 0.05
+    },
+    {
+      "level": 8,
+      "health": 250,
+      "physicalAtk": 30,
+      "magicalAtk": 30,
+      "physicalRes": 30,
+      "magicalRes": 30,
+      "critical": 0.05,
+      "dodge": 0.05
+    },
+    {
+      "level": 9,
+      "health": 250,
+      "physicalAtk": 30,
+      "magicalAtk": 30,
+      "physicalRes": 30,
+      "magicalRes": 30,
+      "critical": 0.05,
+      "dodge": 0.05
+    },
+    {
+      "level": 10,
+      "health": 250,
+      "physicalAtk": 30,
+      "magicalAtk": 30,
+      "physicalRes": 30,
+      "magicalRes": 30,
+      "critical": 0.05,
+      "dodge": 0.05
+    }
+  ]
+}

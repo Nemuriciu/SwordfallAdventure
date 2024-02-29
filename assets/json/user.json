@@ -1,0 +1,15 @@
+{
+  "userInfo": {
+    "level": 1,
+    "stamina":  50,
+    "exp": 750,
+    "shards": 100,
+    "gems": 50,
+    "skillPoints": 0
+  },
+  "userAttributes": {
+    "atk": 10,
+    "def": 10,
+    "health": 100
+  }
+}
