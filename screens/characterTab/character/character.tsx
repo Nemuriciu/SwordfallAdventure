@@ -1,5 +1,4 @@
 import {
-    Button,
     Image,
     ImageBackground,
     ScrollView,
@@ -10,7 +9,7 @@ import {
 import React from 'react';
 import {TitleSeparator} from '../../../components/titleSeparator';
 import {Equipment} from './equipment';
-import {Attributes} from './attributes';
+import {Attributes} from './attributes.tsx';
 import {getImage} from '../../../assets/images/_index';
 
 export function Character() {
@@ -42,7 +41,6 @@ export function Character() {
                     <Equipment />
                     <TitleSeparator title={'Attributes'} />
                     <Attributes />
-                    <Button title={'Item'} />
                 </ScrollView>
             </ImageBackground>
         </ImageBackground>
@@ -60,7 +58,7 @@ const styles = StyleSheet.create({
     },
     innerContainer: {
         flex: 1,
-        marginTop: 40,
+        marginTop: 4,
         marginBottom: 4,
         marginStart: 2,
         marginEnd: 2,

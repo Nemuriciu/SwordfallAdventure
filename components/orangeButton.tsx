@@ -1,34 +1,32 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {useState} from 'react';
-import {TouchableOpacity, ViewStyle, Text, ImageBackground} from 'react-native';
+import {TouchableOpacity, Text, ImageBackground, ViewStyle} from 'react-native';
 import {getImage} from '../assets/images/_index';
 
-interface OrangeButton {
+interface props {
     title: string;
     onPress: () => void;
+    disabled?: boolean;
     style?: ViewStyle;
 }
 
-const defaultImage = getImage('button_orange');
-const pressedImage = getImage('button_orange_pressed');
-
-export const OrangeButton: React.FC<OrangeButton> = ({
-    title,
-    onPress,
-    style,
-}) => {
+export function OrangeButton({title, onPress, disabled, style}: props) {
     const [isPressed, setIsPressed] = useState(false);
-    const [disabled, setDisabled] = useState(false);
+    //const [disabled, setDisabled] = useState(false);
+    const defaultImage = getImage('button_orange');
+    const pressedImage = getImage('button_orange_pressed');
 
     const handlePress = () => {
         if (!disabled) {
-            setDisabled(true);
+            //setDisabled(true);
+            //disabled = true;
             if (onPress) {
                 onPress();
             }
-            setTimeout(() => {
-                setDisabled(false);
-            }, 500);
+            /*setTimeout(() => {
+                //setDisabled(false);
+                disabled = false;
+            }, 300);*/
         }
     };
 
@@ -68,4 +66,4 @@ export const OrangeButton: React.FC<OrangeButton> = ({
             </ImageBackground>
         </TouchableOpacity>
     );
-};
+}

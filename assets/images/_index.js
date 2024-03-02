@@ -33,8 +33,11 @@ export const images = {
         nav_icon_settings: require('./navigation/nav_icon_settings.png'),
     },
     shared: {
+        background_details: require('./shared/background_details.png'),
         background_inner: require('./shared/background_inner.png'),
         background_outer: require('./shared/background_outer.png'),
+        button_close: require('./shared/button_close.png'),
+        button_close_pressed: require('./shared/button_close_pressed.png'),
         button_orange: require('./shared/button_orange.png'),
         button_orange_pressed: require('./shared/button_orange_pressed.png'),
         icon_diamonds: require('./shared/icon_diamonds.png'),

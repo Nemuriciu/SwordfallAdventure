@@ -23,6 +23,7 @@
     "category": "chest",
     "rarity": "epic"
   },
+
   "1004": {
     "name": "Vial of Giants",
     "img": "item_potion_vial_of_giants",
@@ -1387,6 +1388,7 @@
     "img": "item_equip_treads_of_frozen_damnation",
     "category": "equipment"
   },
+
   "1199": {
     "name": "Silver Key",
     "img": "item_key_silver_key",
@@ -1411,6 +1413,7 @@
     "category": "key",
     "rarity": "epic"
   },
+
   "1203": {
     "name": "Silver Ore",
     "img": "item_res_silver_ore",
@@ -1439,6 +1442,7 @@
     "type": "ore",
     "rarity": "epic"
   },
+
   "1207": {
     "name": "Goldenglow",
     "img": "item_res_goldenglow",
@@ -1551,6 +1555,7 @@
     "type": "herb",
     "rarity": "epic"
   },
+
   "1223": {
     "name": "Oak Wood",
     "img": "item_res_oak_wood",
@@ -1579,6 +1584,7 @@
     "type": "wood",
     "rarity": "epic"
   },
+
   "1227": {
     "name": "Soft Fur",
     "img": "item_res_soft_fur",
@@ -1607,6 +1613,7 @@
     "type": "fur",
     "rarity": "epic"
   },
+
   "1231": {
     "name": "Veiled Cloth",
     "img": "item_res_veiled_cloth",

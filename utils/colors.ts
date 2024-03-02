@@ -1,18 +1,12 @@
 export const colors = {
+    /* Primary Colors */
     brown_primary: '#BE763C',
-    black: '#FF000000',
-    white: '#FFFFFFFF',
-    transparent: '#00000000',
-    light_gray: '#FFBBBBBB',
-    dark_gray: '#FF777777',
-    rarity_gray: '#B9B9B9',
-    rarity_gray_secondary: '#2e292f',
-    rarity_green: '#64DD17',
-    rarity_green_secondary: '#1b3405',
-    rarity_blue: '#0091EA',
-    rarity_blue_secondary: '#052236',
-    rarity_purple: '#AA00FF',
-    rarity_purple_secondary: '#34073c',
+    /* Rarity Colors */
+    common: '#B9B9B9',
+    uncommon: '#64DD17',
+    rare: '#0091EA',
+    epic: '#AA00FF',
+    /* Attribute Colors */
     health_color: '#FF5252',
     physicalAtk_color: '#FFA500',
     magicalAtk_color: '#50CBFF',
@@ -24,9 +18,11 @@ export const colors = {
     dex_color: '#689F38',
     int_color: '#0288D1',
     cha_color: '#FBC02D',
+    /* Buffs/Debuffs Color */
     bleeding_color: '#FFAEA5',
     burning_color: '#B5A200',
     poison_color: '#8BC34A',
+    /* Other */
     experience_color: '#FFAB40',
     player_color: '#00C853',
     enemy_color: '#D50000',

@@ -1,52 +1,51 @@
-import {Item} from '../types/item';
+import {isItem, Item} from '../types/item';
 
-function isEmptySlot(obj: Item) {
-    return Object.keys(obj).length === 0;
-}
-export function isFull(list: Item[]) {
+export function isFull(list: (Item | {})[]): boolean {
     for (let item of list) {
-        if (isEmptySlot(item)) {
+        if (!isItem(item)) {
             return false;
         }
     }
     return true;
 }
 
-export function itemExists(item: Item, list: Item[]) {
+/*export function itemExists(item: Item, list: Item[]) {
     return list.some(obj => obj && obj.name === item.name); //TODO: check id and more
-}
+}*/
 
 //TODO: addItems()
-export function addItem(item: Item, list: Item[]) {
+export function addItem(item: Item, list: (Item | {})[]): (Item | {})[] {
     const listCopy = Array.from(list);
-    const index = listCopy.findIndex(obj => !obj);
+    const index = listCopy.findIndex(itemSlot => !isItem(itemSlot));
 
     if (index !== -1) {
         listCopy[index] = item;
-        return listCopy;
-    } else {
-        return null;
-    }
-}
-
-export function removeItemAt(
-    index: number,
-    list: (Item | null)[],
-    quantity: number,
-) {
-    const listCopy = Array.from(list);
-    const item = listCopy[index];
-    if (!item) {
-        return null;
-    }
-
-    if (item.quantity > quantity) {
-        item.quantity -= quantity;
-    } else {
-        listCopy[index] = null;
     }
 
     return listCopy;
 }
 
-//export function removeItem(item: Item, list: Item[]) {}
+export function removeLastItem(
+    list: (Item | {})[],
+    quantity: number,
+): (Item | {})[] {
+    const listCopy: (Item | {})[] = Array.from(list);
+
+    for (let i = listCopy.length - 1; i >= 0; i--) {
+        const item: Item | {} = listCopy[i];
+        if (isItem(item)) {
+            if (item.quantity > quantity) {
+                item.quantity -= quantity;
+            } else {
+                listCopy[i] = {};
+            }
+            break;
+        }
+    }
+
+    return listCopy;
+}
+
+export function clearInventory(list: (Item | {})[]): (Item | {})[] {
+    return new Array(list.length).fill({});
+}

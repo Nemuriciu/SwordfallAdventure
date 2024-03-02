@@ -23,7 +23,7 @@ export const strings = {
     flee: 'Flee',
     attack: 'Attack',
     equipped_item: 'Equipped Item',
-    enhance: 'Enhance',
+    upgrade: 'Upgrade',
     unequip: 'Unequip',
     plus: '+',
     equip: 'Equip',
