@@ -1,8 +1,71 @@
-import {Image, StyleSheet, Text, View} from 'react-native';
-import React from 'react';
+import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import React, {useEffect, useRef, useState} from 'react';
 import {getImage} from '../../../assets/images/_index';
+import {useDispatch, useSelector} from 'react-redux';
+import {RootState} from '../../../redux/store.tsx';
+import {isItem} from '../../../types/item.ts';
+import {
+    getResistancePercent,
+    getStats,
+} from '../../../parsers/attributeParser.tsx';
+import {updateAttributes} from '../../../redux/slices/attributesSlice.tsx';
+import {colors} from '../../../utils/colors.ts';
+import {strings} from '../../../utils/strings.ts';
 
 export function Attributes() {
+    const equipment = useSelector((state: RootState) => state.equipment);
+    const attributes = useSelector((state: RootState) => state.attributes);
+    const [phyResPercent, setPhyResPercent] = useState(true);
+    const [magResPercent, setMagResPercent] = useState(true);
+    const dispatch = useDispatch();
+    const didMount = useRef(1);
+
+    useEffect(() => {
+        if (!didMount.current) {
+            attributesUpdate();
+        } else {
+            didMount.current -= 1;
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [equipment]);
+
+    function attributesUpdate() {
+        let playerAttributes = {
+            health: 0,
+            physicalAtk: 0,
+            magicalAtk: 0,
+            physicalRes: 0,
+            magicalRes: 0,
+            bonusHealth: 0,
+            bonusPhysicalAtk: 0,
+            bonusMagicalAtk: 0,
+            bonusPhysicalRes: 0,
+            bonusMagicalRes: 0,
+        };
+
+        /* List with all Equipped Items */
+        const items = Object.entries(equipment)
+            .filter(([, value]) => isItem(value))
+            .map(item => item[1]);
+
+        /* Add Stats for each item to attributes */
+        for (let i = 0; i < items.length; i++) {
+            const itemStats = getStats(items[i]);
+
+            playerAttributes.health += itemStats.health + itemStats.bonusHealth;
+            playerAttributes.physicalAtk +=
+                itemStats.physicalAtk + itemStats.bonusPhysicalAtk;
+            playerAttributes.magicalAtk +=
+                itemStats.magicalAtk + itemStats.bonusMagicalAtk;
+            playerAttributes.physicalRes +=
+                itemStats.physicalRes + itemStats.bonusPhysicalRes;
+            playerAttributes.magicalRes +=
+                itemStats.magicalRes + itemStats.bonusMagicalRes;
+        }
+
+        dispatch(updateAttributes(playerAttributes));
+    }
+
     return (
         <View style={styles.container}>
             <View style={styles.row_1}>
@@ -11,7 +74,7 @@ export function Attributes() {
                     Health
                 </Text>
                 <Text style={styles.healthValue} numberOfLines={1}>
-                    100
+                    {attributes.health ? attributes.health : ''}
                 </Text>
                 <View style={styles.icon} />
                 <Text style={styles.healthLabel} />
@@ -23,21 +86,38 @@ export function Attributes() {
                     source={getImage('icon_physical_attack')}
                 />
                 <Text style={styles.phyAtkLabel} numberOfLines={1}>
-                    Physical ATK
+                    {strings.physical_atk}
                 </Text>
                 <Text style={styles.phyAtkValue} numberOfLines={1}>
-                    1999
+                    {attributes.physicalAtk ? attributes.physicalAtk : ''}
                 </Text>
                 <Image
                     style={styles.icon}
                     source={getImage('icon_physical_resist')}
                 />
-                <Text style={styles.phyResLabel} numberOfLines={1}>
-                    Physical RES
-                </Text>
-                <Text style={styles.phyResValue} numberOfLines={1}>
-                    19.5%
-                </Text>
+                <TouchableOpacity
+                    style={styles.resLabelContainer}
+                    onPress={() => setPhyResPercent(!phyResPercent)}
+                    activeOpacity={1}>
+                    <Text style={styles.phyResLabel} numberOfLines={1}>
+                        {strings.physical_res}
+                    </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.resValueContainer}
+                    onPress={() => setPhyResPercent(!phyResPercent)}
+                    activeOpacity={1}>
+                    <Text style={styles.phyResValue} numberOfLines={1}>
+                        {attributes.physicalRes
+                            ? phyResPercent
+                                ? getResistancePercent(
+                                      attributes.physicalRes,
+                                      1,
+                                  ).toFixed(1) + '%' //TODO: get level from redux
+                                : attributes.physicalRes
+                            : ''}
+                    </Text>
+                </TouchableOpacity>
             </View>
             <View style={styles.row_3}>
                 <Image
@@ -45,36 +125,53 @@ export function Attributes() {
                     source={getImage('icon_magical_attack')}
                 />
                 <Text style={styles.magAtkLabel} numberOfLines={1}>
-                    Magical ATK
+                    {strings.magical_atk}
                 </Text>
                 <Text style={styles.magAtkValue} numberOfLines={1}>
-                    100
+                    {attributes.magicalAtk ? attributes.magicalAtk : ''}
                 </Text>
                 <Image
                     style={styles.icon}
                     source={getImage('icon_magical_resist')}
                 />
-                <Text style={styles.magResLabel} numberOfLines={1}>
-                    Magical RES
-                </Text>
-                <Text style={styles.magResValue} numberOfLines={1}>
-                    100
-                </Text>
+                <TouchableOpacity
+                    style={styles.resLabelContainer}
+                    onPress={() => setMagResPercent(!magResPercent)}
+                    activeOpacity={1}>
+                    <Text style={styles.magResLabel} numberOfLines={1}>
+                        {strings.magical_res}
+                    </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.resValueContainer}
+                    onPress={() => setMagResPercent(!magResPercent)}
+                    activeOpacity={1}>
+                    <Text style={styles.magResValue} numberOfLines={1}>
+                        {attributes.magicalRes
+                            ? magResPercent
+                                ? getResistancePercent(
+                                      attributes.magicalRes,
+                                      1,
+                                  ).toFixed(1) + '%' //TODO: get level from redux
+                                : attributes.magicalRes
+                            : ''}
+                    </Text>
+                </TouchableOpacity>
             </View>
             <View style={styles.row_4}>
                 <Image style={styles.icon} source={getImage('icon_critical')} />
                 <Text style={styles.criticalLabel} numberOfLines={1}>
-                    Magical ATK
+                    {strings.critical}
                 </Text>
                 <Text style={styles.criticalValue} numberOfLines={1}>
-                    100
+                    5%
                 </Text>
                 <Image style={styles.icon} source={getImage('icon_dodge')} />
                 <Text style={styles.dodgeLabel} numberOfLines={1}>
-                    Magical RES
+                    {strings.dodge}
                 </Text>
                 <Text style={styles.dodgeValue} numberOfLines={1}>
-                    100
+                    5%
                 </Text>
             </View>
         </View>
@@ -90,7 +187,7 @@ const styles = StyleSheet.create({
     },
     icon: {
         aspectRatio: 1,
-        width: '7.5%',
+        width: '7%',
         height: undefined,
         alignSelf: 'center',
         marginStart: 20,
@@ -115,9 +212,16 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginTop: 8,
     },
+    resLabelContainer: {
+        width: '23%',
+    },
+    resValueContainer: {
+        flex: 1,
+    },
     healthLabel: {
         width: '22.5%',
-        color: 'red',
+        color: colors.health_color,
+        fontSize: 13,
         //fontFamily: 'Lato_400Regular',
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
@@ -125,7 +229,7 @@ const styles = StyleSheet.create({
     },
     healthValue: {
         flex: 1,
-        color: 'red',
+        color: colors.health_color,
         //fontFamily: 'Lato_400Regular',
         textAlign: 'right',
         textShadowColor: 'rgba(0, 0, 0, 1)',
@@ -134,7 +238,8 @@ const styles = StyleSheet.create({
     },
     phyAtkLabel: {
         width: '23%',
-        color: 'orange',
+        color: colors.physicalAtk_color,
+        fontSize: 13,
         //fontFamily: 'Lato_400Regular',
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
@@ -142,7 +247,7 @@ const styles = StyleSheet.create({
     },
     phyAtkValue: {
         flex: 1,
-        color: 'orange',
+        color: colors.physicalAtk_color,
         //fontFamily: 'Lato_400Regular',
         textAlign: 'right',
         textShadowColor: 'rgba(0, 0, 0, 1)',
@@ -150,16 +255,15 @@ const styles = StyleSheet.create({
         textShadowRadius: 1,
     },
     phyResLabel: {
-        width: '23%',
-        color: 'orange',
+        color: colors.physicalRes_color,
+        fontSize: 13,
         //fontFamily: 'Lato_400Regular',
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 1,
     },
     phyResValue: {
-        flex: 1,
-        color: 'orange',
+        color: colors.physicalRes_color,
         //fontFamily: 'Lato_400Regular',
         textAlign: 'right',
         textShadowColor: 'rgba(0, 0, 0, 1)',
@@ -168,7 +272,8 @@ const styles = StyleSheet.create({
     },
     magAtkLabel: {
         width: '23%',
-        color: 'cyan',
+        color: colors.magicalAtk_color,
+        fontSize: 13,
         //fontFamily: 'Lato_400Regular',
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
@@ -176,7 +281,7 @@ const styles = StyleSheet.create({
     },
     magAtkValue: {
         flex: 1,
-        color: 'cyan',
+        color: colors.magicalAtk_color,
         //fontFamily: 'Lato_400Regular',
         textAlign: 'right',
         textShadowColor: 'rgba(0, 0, 0, 1)',
@@ -184,16 +289,15 @@ const styles = StyleSheet.create({
         textShadowRadius: 1,
     },
     magResLabel: {
-        width: '23%',
-        color: 'cyan',
+        color: colors.magicalRes_color,
+        fontSize: 13,
         //fontFamily: 'Lato_400Regular',
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 1,
     },
     magResValue: {
-        flex: 1,
-        color: 'cyan',
+        color: colors.magicalRes_color,
         //fontFamily: 'Lato_400Regular',
         textAlign: 'right',
         textShadowColor: 'rgba(0, 0, 0, 1)',
@@ -202,7 +306,8 @@ const styles = StyleSheet.create({
     },
     criticalLabel: {
         width: '23%',
-        color: 'purple',
+        color: colors.critical_color,
+        fontSize: 13,
         //fontFamily: 'Lato_400Regular',
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
@@ -210,7 +315,7 @@ const styles = StyleSheet.create({
     },
     criticalValue: {
         flex: 1,
-        color: 'purple',
+        color: colors.critical_color,
         //fontFamily: 'Lato_400Regular',
         textAlign: 'right',
         textShadowColor: 'rgba(0, 0, 0, 1)',
@@ -219,7 +324,8 @@ const styles = StyleSheet.create({
     },
     dodgeLabel: {
         width: '23%',
-        color: 'green',
+        color: colors.dodge_color,
+        fontSize: 13,
         //fontFamily: 'Lato_400Regular',
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
@@ -227,7 +333,7 @@ const styles = StyleSheet.create({
     },
     dodgeValue: {
         flex: 1,
-        color: 'green',
+        color: colors.dodge_color,
         //fontFamily: 'Lato_400Regular',
         textAlign: 'right',
         textShadowColor: 'rgba(0, 0, 0, 1)',

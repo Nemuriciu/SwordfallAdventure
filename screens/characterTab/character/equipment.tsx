@@ -4,7 +4,7 @@ import {getImage} from '../../../assets/images/_index';
 import {marshall, unmarshall} from '@aws-sdk/util-dynamodb';
 import {dynamoDb} from '../../../database';
 import {USER_ID} from '../../../App';
-import {getItemImg} from '../../../utils/parsers/itemParser.tsx';
+import {getItemImg} from '../../../parsers/itemParser.tsx';
 import {isItem, Item} from '../../../types/item';
 import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '../../../redux/store.tsx';

@@ -11,7 +11,6 @@ import {TopStatus} from './screens/topStatus';
 import {getImage} from './assets/images/_index';
 import {Provider} from 'react-redux';
 import {store} from './redux/store';
-import {getChest} from './utils/parsers/itemParser';
 
 // eslint-disable-next-line no-unused-vars
 const USERNAME = 'vlad.megaboy@gmail.com';

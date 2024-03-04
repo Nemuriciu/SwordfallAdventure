@@ -17,11 +17,11 @@ import {
     getItemName,
     getItemRarity,
     getItemType,
-} from '../utils/parsers/itemParser.tsx';
+} from '../parsers/itemParser.tsx';
 import {getImage} from '../assets/images/_index';
 import {OrangeButton} from './orangeButton.tsx';
 import {colors} from '../utils/colors.ts';
-import {getStats, Stats} from '../utils/parsers/attributeParser.tsx';
+import {getStats, Stats} from '../parsers/attributeParser.tsx';
 import {CloseButton} from './closeButton.tsx';
 import {addItemAt, pushItem} from '../redux/slices/inventorySlice.tsx';
 import {

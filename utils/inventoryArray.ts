@@ -9,10 +9,6 @@ export function isFull(list: (Item | {})[]): boolean {
     return true;
 }
 
-/*export function itemExists(item: Item, list: Item[]) {
-    return list.some(obj => obj && obj.name === item.name); //TODO: check id and more
-}*/
-
 //TODO: addItems()
 export function addItem(item: Item, list: (Item | {})[]): (Item | {})[] {
     const listCopy = Array.from(list);

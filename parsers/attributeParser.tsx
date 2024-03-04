@@ -1,6 +1,6 @@
 // @ts-ignore
 import cloneDeep from 'lodash.clonedeep';
-import {Item} from '../../types/item.ts';
+import {Item} from '../types/item.ts';
 import {getItemRarity, getItemType} from './itemParser.tsx';
 
 export interface Stats {
@@ -29,7 +29,6 @@ export function getStats(item: Item): Stats {
         bonusPhysicalRes: 0,
         bonusMagicalRes: 0,
     };
-    //const itemCopy: Item = {...item, level: item.level + 1};
     const itemCopy = cloneDeep(item);
     itemCopy.level += 1;
     const type = getItemType(item.id);
@@ -102,6 +101,13 @@ export function getStats(item: Item): Stats {
     }
 
     return stats;
+}
+
+export function getResistancePercent(resVal: number, level: number): number {
+    /* Values defined in Sheet */
+    const resFormula: number = 240 * Math.pow(level, 19.0 / 10.0);
+
+    return (resVal / resFormula) * 100;
 }
 
 function getBaseStatValue(item: Item, statType: string): number {

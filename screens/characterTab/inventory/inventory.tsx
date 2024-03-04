@@ -8,10 +8,7 @@ import {
     TouchableOpacity,
 } from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
-import {
-    getItemImg,
-    getRandomEquip,
-} from '../../../utils/parsers/itemParser.tsx';
+import {getItemImg, getRandomEquip} from '../../../parsers/itemParser.tsx';
 import {getImage} from '../../../assets/images/_index';
 import {OrangeButton} from '../../../components/orangeButton';
 import {

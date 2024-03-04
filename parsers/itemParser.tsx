@@ -1,9 +1,9 @@
-import itemsJson from '../../assets/json/items.json';
-import equipJson from '../../assets/json/equipment.json';
-import chestsJson from '../../assets/json/chests.json';
-import resourcesJson from '../../assets/json/resources.json';
-import {Item} from '../../types/item.ts';
-import {colors} from '../colors.ts';
+import itemsJson from '../assets/json/items.json';
+import equipJson from '../assets/json/equipment.json';
+import chestsJson from '../assets/json/chests.json';
+import resourcesJson from '../assets/json/resources.json';
+import {Item} from '../types/item.ts';
+import {colors} from '../utils/colors.ts';
 
 export function getItemName(id: string): string {
     // @ts-ignore
