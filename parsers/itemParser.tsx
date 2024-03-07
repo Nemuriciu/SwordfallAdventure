@@ -77,6 +77,7 @@ export const getRandomEquip = (rarity: string, level: number): Item => {
 
     return item;
 };
+
 export const getChest = (
     rarity: string,
     level: number,
@@ -91,6 +92,7 @@ export const getChest = (
         upgrade: 0,
     };
 };
+
 export const getKey = (
     rarity: string,
     level: number,
@@ -105,6 +107,7 @@ export const getKey = (
         upgrade: 0,
     };
 };
+
 export const getHerb = (
     rarity: string,
     level: number,
@@ -122,6 +125,7 @@ export const getHerb = (
         upgrade: 0,
     };
 };
+
 export const getOre = (
     rarity: string,
     level: number,
@@ -137,6 +141,7 @@ export const getOre = (
         upgrade: 0,
     };
 };
+
 export const getWood = (
     rarity: string,
     level: number,
@@ -152,6 +157,7 @@ export const getWood = (
         upgrade: 0,
     };
 };
+
 export const getFur = (
     rarity: string,
     level: number,
@@ -183,6 +189,6 @@ export const getCloth = (
     };
 };
 
-const rand = (min: number, max: number): number => {
+export const rand = (min: number, max: number): number => {
     return Math.floor(Math.random() * (max - min + 1) + min);
 };

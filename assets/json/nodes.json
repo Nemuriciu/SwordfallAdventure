@@ -1,70 +1,69 @@
 {
-  "nodes":{
-    "ore": [
-      {
-        "id": "s2E5Gw2",
-        "name": "Silver Vein",
-        "img": "gathering_icon_silver_vein"
-      },
-      {
-        "id": "AjYK055",
-        "name": "Gold Vein",
-        "img": "gathering_icon_gold_vein"
-      },
-      {
-        "id": "0o7beVA",
-        "name": "Asmenium Vein",
-        "img": "gathering_icon_asmenium_vein"
-      },
-      {
-        "id": "H2vFzGF",
-        "name": "Dragonite Vein",
-        "img": "gathering_icon_dragonite_vein"
-      }
-    ],
-    "wood": [
-      {
-        "id": "rJXjBS7",
-        "name": "Oak Tree",
-        "img": "gathering_icon_oak_tree"
-      },
-      {
-        "id": "5sTScJJ",
-        "name": "Honeybeam Tree",
-        "img": "gathering_icon_honeybeam_tree"
-      },
-      {
-        "id": "bgJSDWE",
-        "name": "Dragonmark Tree",
-        "img": "gathering_icon_dragonmark_tree"
-      },
-      {
-        "id": "MtQg0KL",
-        "name": "Crimson Tree",
-        "img": "gathering_icon_crimson_tree"
-      }
-    ],
-    "herb": [
-      {
-        "id": "MP08s4P",
-        "name": "Growing Flower",
-        "img": "gathering_icon_growing_flower"
-      },
-      {
-        "id": "7VL3UNT",
-        "name": "Blooming Flower",
-        "img": "gathering_icon_blooming_flower"
-      },
-      {
-        "id": "b5j67eA",
-        "name": "Ripe Flower",
-        "img": "gathering_icon_ripe_flower"
-      },
-      {
-        "id": "Ia7fNzB",
-        "name": "Exquisite Flower",
-        "img": "gathering_icon_exquisite_flower"
-      }
-    ]
+  "5001": {
+    "name": "Silver Vein",
+    "img": "icon_silver_vein"
+  },
+  "5002": {
+    "name": "Gold Vein",
+    "img": "icon_gold_vein"
+  },
+  "5003": {
+    "name": "Asmenium Vein",
+    "img": "icon_asmenium_vein"
+  },
+  "5004": {
+    "name": "Dragonite Vein",
+    "img": "icon_dragonite_vein"
+  },
+  "5005": {
+    "name": "Oak Tree",
+    "img": "icon_oak_tree"
+  },
+  "5006": {
+    "name": "Honeybeam Tree",
+    "img": "icon_honeybeam_tree"
+  },
+  "5007": {
+    "name": "Dragonmark Tree",
+    "img": "icon_dragonmark_tree"
+  },
+  "5008": {
+    "name": "Crimson Tree",
+    "img": "icon_crimson_tree"
+  },
+  "5009": {
+    "name": "Growing Flower",
+    "img": "icon_growing_flower"
+  },
+  "5010": {
+    "name": "Blooming Flower",
+    "img": "icon_blooming_flower"
+  },
+  "5011": {
+    "name": "Ripe Flower",
+    "img": "icon_ripe_flower"
+  },
+  "5012": {
+    "name": "Exquisite Flower",
+    "img": "icon_exquisite_flower"
+  },
+
+  "ore": {
+    "common": "5001",
+    "uncommon": "5002",
+    "rare": "5003",
+    "epic": "5004"
+  },
+  "wood": {
+    "common": "5005",
+    "uncommon": "5006",
+    "rare": "5007",
+    "epic": "5008"
+  },
+  "herb": {
+    "common": "5009",
+    "uncommon": "5010",
+    "rare": "5011",
+    "epic": "5012"
   }
 }

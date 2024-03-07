@@ -28,6 +28,7 @@ export const strings = {
     plus: '+',
     equip: 'Equip',
     Break: 'Break',
+    discard: 'Discard',
     equipped: 'Equipped',
     hunting_zones: 'Hunting Zones',
     back: 'Back',

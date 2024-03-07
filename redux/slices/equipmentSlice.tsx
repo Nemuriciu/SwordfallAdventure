@@ -1,5 +1,6 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
-import {Item} from '../../types/item.ts';
+import {isItem, Item} from '../../types/item.ts';
+import {getItemType} from '../../parsers/itemParser.tsx';
 
 export interface EquipmentState {
     helmet: Item | {};
@@ -25,7 +26,7 @@ export const equipmentSlice = createSlice({
     name: 'equipment',
     initialState,
     reducers: {
-        updateEquip: (state, action: PayloadAction<EquipmentState>) => {
+        equipmentUpdate: (state, action: PayloadAction<EquipmentState>) => {
             state.helmet = action.payload.helmet;
             state.weapon = action.payload.weapon;
             state.chest = action.payload.chest;
@@ -55,11 +56,50 @@ export const equipmentSlice = createSlice({
         equipBoots: (state, action: PayloadAction<Item | {}>) => {
             state.boots = action.payload;
         },
+        equippedItemUpgrade: (state, action: PayloadAction<Item>) => {
+            switch (getItemType(action.payload.id)) {
+                case 'weapon':
+                    if (isItem(state.weapon)) {
+                        state.weapon.upgrade += 1;
+                    }
+                    break;
+                case 'helmet':
+                    if (isItem(state.helmet)) {
+                        state.helmet.upgrade += 1;
+                    }
+                    break;
+                case 'chest':
+                    if (isItem(state.chest)) {
+                        state.chest.upgrade += 1;
+                    }
+                    break;
+                case 'offhand':
+                    if (isItem(state.offhand)) {
+                        state.offhand.upgrade += 1;
+                    }
+                    break;
+                case 'gloves':
+                    if (isItem(state.gloves)) {
+                        state.gloves.upgrade += 1;
+                    }
+                    break;
+                case 'pants':
+                    if (isItem(state.pants)) {
+                        state.pants.upgrade += 1;
+                    }
+                    break;
+                case 'boots':
+                    if (isItem(state.boots)) {
+                        state.boots.upgrade += 1;
+                    }
+                    break;
+            }
+        },
     },
 });
 
 export const {
-    updateEquip,
+    equipmentUpdate,
     equipHelmet,
     equipWeapon,
     equipChest,
@@ -67,4 +107,5 @@ export const {
     equipGloves,
     equipPants,
     equipBoots,
+    equippedItemUpgrade,
 } = equipmentSlice.actions;

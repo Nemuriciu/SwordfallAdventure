@@ -1,6 +1,6 @@
 export const colors = {
     /* Primary Colors */
-    brown_primary: '#BE763C',
+    primary: '#d4ab63',
     /* Rarity Colors */
     common: '#B9B9B9',
     uncommon: '#64DD17',
@@ -24,6 +24,7 @@ export const colors = {
     poison_color: '#8BC34A',
     /* Other */
     experience_color: '#FFAB40',
+    stamina_color: '#44abff',
     player_color: '#00C853',
     enemy_color: '#D50000',
 };

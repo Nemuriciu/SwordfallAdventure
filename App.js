@@ -39,14 +39,17 @@ function App() {
                         screenOptions={{
                             headerShown: false,
                             tabBarStyle: {
-                                height: 60,
+                                height: 62,
                                 backgroundColor: '#221c19',
                                 borderTopWidth: 0,
                                 elevation: 0,
                             },
                             tabBarLabelStyle: {
-                                fontSize: 13,
-                                //fontFamily: 'Lato_400Regular',
+                                fontSize: 14,
+                                fontFamily: 'Myriad',
+                                textShadowColor: 'rgba(0, 0, 0, 1)',
+                                textShadowOffset: {width: 1, height: 1},
+                                textShadowRadius: 5,
                                 marginBottom: 8,
                             },
                         }}>

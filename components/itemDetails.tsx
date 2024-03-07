@@ -6,12 +6,17 @@ import {
     View,
     ImageBackground,
     Image,
+    Alert,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '../redux/store.tsx';
-import {hideItemDetails} from '../redux/slices/itemDetailsSlice.tsx';
-import {isItem} from '../types/item.ts';
 import {
+    itemDetailsHide,
+    upgradeSelectedItem,
+} from '../redux/slices/itemDetailsSlice.tsx';
+import {isItem, Item} from '../types/item.ts';
+import {
+    getItemCategory,
     getItemColor,
     getItemImg,
     getItemName,
@@ -23,7 +28,12 @@ import {OrangeButton} from './orangeButton.tsx';
 import {colors} from '../utils/colors.ts';
 import {getStats, Stats} from '../parsers/attributeParser.tsx';
 import {CloseButton} from './closeButton.tsx';
-import {addItemAt, pushItem} from '../redux/slices/inventorySlice.tsx';
+import {
+    inventoryAddItemAt,
+    inventoryAddItems,
+    inventoryRemoveItemAt,
+    inventoryUpgradeItem,
+} from '../redux/slices/inventorySlice.tsx';
 import {
     equipBoots,
     equipChest,
@@ -32,10 +42,12 @@ import {
     equipOffhand,
     equipPants,
     equipWeapon,
+    equippedItemUpgrade,
 } from '../redux/slices/equipmentSlice.tsx';
 import {strings} from '../utils/strings.ts';
-import {isFull} from '../utils/inventoryArray.ts';
+import {isFull} from '../utils/arrayUtils.ts';
 import Toast from 'react-native-simple-toast';
+import {updateShards} from '../redux/slices/userInfoSlice.tsx';
 
 const emptyStats = {
     health: 0,
@@ -49,8 +61,9 @@ const emptyStats = {
     bonusPhysicalRes: 0,
     bonusMagicalRes: 0,
 };
-//TODO: Equipped Item Details + Upgrade + Break
+
 export function ItemDetails() {
+    const userInfo = useSelector((state: RootState) => state.userInfo);
     const itemDetails = useSelector((state: RootState) => state.itemDetails);
     const inventory = useSelector((state: RootState) => state.inventory);
     const equipment = useSelector((state: RootState) => state.equipment);
@@ -63,6 +76,21 @@ export function ItemDetails() {
             setItemStats(getStats(itemDetails.item));
         }
     }, [itemDetails.item]);
+
+    function upgradeItem() {
+        if (isItem(itemDetails.item)) {
+            if (itemDetails.item.upgrade < 6) {
+                /* Upgrade item in Details */
+                dispatch(upgradeSelectedItem());
+
+                if (itemDetails.index !== -1) {
+                    dispatch(inventoryUpgradeItem(itemDetails.index));
+                } else {
+                    dispatch(equippedItemUpgrade(itemDetails.item));
+                }
+            }
+        }
+    }
 
     function equipItem() {
         if (!disabled) {
@@ -103,8 +131,8 @@ export function ItemDetails() {
                         break;
                 }
 
-                dispatch(addItemAt([itemRemoved, itemDetails.index]));
-                dispatch(hideItemDetails());
+                dispatch(inventoryAddItemAt([itemRemoved, itemDetails.index]));
+                dispatch(itemDetailsHide());
             }
 
             setTimeout(() => {
@@ -155,14 +183,46 @@ export function ItemDetails() {
                             break;
                     }
 
-                    dispatch(pushItem(itemRemoved));
-                    dispatch(hideItemDetails());
+                    dispatch(inventoryAddItems([itemRemoved as Item]));
+                    dispatch(itemDetailsHide());
                 }
             }
 
             setTimeout(() => {
                 setDisabled(false);
             }, 1000);
+        }
+    }
+    //TODO: removeItem quantity for quantity > 1
+    function breakItem() {
+        if (isItem(itemDetails.item)) {
+            const shardAmount = 100;
+            Alert.alert(
+                //'Break ' + getItemName(itemDetails.item.id)
+                '',
+                'Are you sure you want to break ' +
+                    getItemName(itemDetails.item.id) +
+                    ' ?\n\n' +
+                    ' You will receive ' +
+                    shardAmount +
+                    ' shards.',
+                [
+                    {
+                        text: 'Yes',
+                        onPress: () => {
+                            /* Hide Item Details */
+                            dispatch(itemDetailsHide());
+                            /* Remove item from Inventory */
+                            dispatch(inventoryRemoveItemAt(itemDetails.index));
+                            /* Get Shard value from Break */
+                            dispatch(updateShards(userInfo.shards + 100));
+                        },
+                    },
+                    {
+                        text: 'No',
+                    },
+                ],
+            );
         }
     }
 
@@ -348,35 +408,52 @@ export function ItemDetails() {
                                     )}
                                 </View>
                                 <View style={styles.buttonsContainer}>
-                                    <OrangeButton
-                                        title={strings.upgrade}
-                                        onPress={() => {}}
-                                        disabled={disabled}
-                                        style={styles.actionButton}
-                                    />
-                                    <OrangeButton
-                                        title={
-                                            itemDetails.index !== -1
-                                                ? strings.equip
-                                                : strings.unequip
-                                        }
-                                        onPress={
-                                            itemDetails.index !== -1
-                                                ? equipItem
-                                                : unequipItem
-                                        }
-                                        disabled={disabled}
-                                        style={styles.actionButton}
-                                    />
-                                    <OrangeButton
-                                        title={strings.Break}
-                                        onPress={() => {}}
-                                        disabled={disabled}
-                                        style={styles.actionButton}
-                                    />
+                                    {getItemCategory(itemDetails.item.id) ===
+                                        'equipment' && (
+                                        <OrangeButton
+                                            title={strings.upgrade}
+                                            onPress={upgradeItem}
+                                            disabled={
+                                                disabled ||
+                                                itemDetails.item.upgrade >= 6
+                                            }
+                                            style={styles.actionButton}
+                                        />
+                                    )}
+                                    {getItemCategory(itemDetails.item.id) !==
+                                        'resource' && (
+                                        <OrangeButton
+                                            title={
+                                                itemDetails.index !== -1
+                                                    ? strings.equip
+                                                    : strings.unequip
+                                            }
+                                            onPress={
+                                                itemDetails.index !== -1
+                                                    ? equipItem
+                                                    : unequipItem
+                                            }
+                                            disabled={disabled}
+                                            style={styles.actionButton}
+                                        />
+                                    )}
+                                    {itemDetails.index !== -1 && (
+                                        <OrangeButton
+                                            title={
+                                                getItemCategory(
+                                                    itemDetails.item.id,
+                                                ) === 'equipment'
+                                                    ? strings.Break
+                                                    : strings.discard
+                                            }
+                                            onPress={breakItem}
+                                            disabled={disabled}
+                                            style={styles.actionButton}
+                                        />
+                                    )}
                                 </View>
                                 <CloseButton
-                                    onPress={() => dispatch(hideItemDetails())}
+                                    onPress={() => dispatch(itemDetailsHide())}
                                     style={styles.closeButton}
                                 />
                             </View>
@@ -425,32 +502,35 @@ const styles = StyleSheet.create({
         right: '12.5%',
         color: 'white',
         fontSize: 18,
+        fontFamily: 'Myriad',
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
-        textShadowRadius: 2,
+        textShadowRadius: 5,
     },
     itemInfoContainer: {},
     name: {
         marginTop: 4,
-        fontWeight: 'bold',
-        fontSize: 16,
+        fontSize: 18,
+        fontFamily: 'Myriad',
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
-        textShadowRadius: 2,
+        textShadowRadius: 5,
     },
     type: {
         marginTop: 2,
         textTransform: 'capitalize',
+        fontFamily: 'Myriad_Regular',
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
-        textShadowRadius: 2,
+        textShadowRadius: 5,
     },
     level: {
         marginTop: 2,
         color: 'white',
+        fontFamily: 'Myriad_Regular',
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
-        textShadowRadius: 2,
+        textShadowRadius: 5,
     },
     separatorContainer: {
         marginTop: 12,
@@ -463,7 +543,7 @@ const styles = StyleSheet.create({
     },
     buttonsContainer: {
         flexDirection: 'row',
-        justifyContent: 'center',
+        justifyContent: 'space-evenly',
         marginBottom: 8,
     },
     attributesContainer: {
@@ -473,15 +553,15 @@ const styles = StyleSheet.create({
     },
     attribute: {
         marginTop: 2,
+        fontSize: 15,
+        fontFamily: 'Myriad',
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
-        textShadowRadius: 2,
+        textShadowRadius: 5,
     },
     actionButton: {
         aspectRatio: 2.5,
-        width: '25%',
-        marginStart: 6,
-        marginEnd: 6,
+        width: '27.5%',
         marginBottom: 36,
     },
     closeButton: {

@@ -11,21 +11,19 @@ import React, {useEffect, useRef, useState} from 'react';
 import {getItemImg, getRandomEquip} from '../../../parsers/itemParser.tsx';
 import {getImage} from '../../../assets/images/_index';
 import {OrangeButton} from '../../../components/orangeButton';
-import {
-    addItem,
-    clearInventory,
-    isFull,
-    removeLastItem,
-} from '../../../utils/inventoryArray';
+import {clearInventory} from '../../../utils/arrayUtils.ts';
 import {marshall, unmarshall} from '@aws-sdk/util-dynamodb';
 import {USER_ID} from '../../../App';
 import {dynamoDb} from '../../../database';
 import {isItem, Item} from '../../../types/item';
 import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '../../../redux/store.tsx';
-import {updateInventory} from '../../../redux/slices/inventorySlice.tsx';
+import {
+    inventoryAddItems,
+    inventoryUpdate,
+} from '../../../redux/slices/inventorySlice.tsx';
 import {ItemDetails} from '../../../components/itemDetails.tsx';
-import {showItemDetails} from '../../../redux/slices/itemDetailsSlice.tsx';
+import {itemDetailsShow} from '../../../redux/slices/itemDetailsSlice.tsx';
 
 const COLUMN_NR = 6;
 
@@ -63,16 +61,17 @@ export function Inventory() {
                 console.log(err);
             } else {
                 // @ts-ignore
-                dispatch(updateInventory(unmarshall(data.Item).inventory.list));
+                dispatch(inventoryUpdate(unmarshall(data.Item).inventory.list));
             }
         });
     }
+
     function updateInventoryDB() {
         const params = {
             TableName: 'users',
             Key: marshall({id: USER_ID}),
-            UpdateExpression: 'set inventory = :inventory',
-            ExpressionAttributeValues: marshall({':inventory': inventory}),
+            UpdateExpression: 'set inventory = :val',
+            ExpressionAttributeValues: marshall({':val': inventory}),
         };
         dynamoDb.updateItem(params, function (err) {
             if (err) {
@@ -82,22 +81,15 @@ export function Inventory() {
     }
 
     function addItemOnPress() {
-        const item = getRandomEquip('common', 1);
-        if (!isFull(inventory.list)) {
-            const newList = addItem(item, inventory.list);
-            dispatch(updateInventory(newList));
-        }
-    }
-    function removeItemOnPress() {
-        if (usedSlots > 0) {
-            const newList: (Item | {})[] = removeLastItem(inventory.list, 1);
-            dispatch(updateInventory(newList));
+        const items = [getRandomEquip('common', 1)];
+        if (inventory.list.length - usedSlots > items.length) {
+            dispatch(inventoryAddItems(items));
         }
     }
 
     function clearInventoryList() {
         if (usedSlots > 0) {
-            dispatch(updateInventory(clearInventory(inventory.list)));
+            dispatch(inventoryUpdate(clearInventory(inventory.list)));
         }
     }
 
@@ -105,7 +97,7 @@ export function Inventory() {
         if (!disabled) {
             setDisabled(true);
 
-            dispatch(showItemDetails([item, index]));
+            dispatch(itemDetailsShow([item, index]));
 
             setTimeout(() => {
                 setDisabled(false);
@@ -168,16 +160,21 @@ export function Inventory() {
                                             ? getImage(getItemImg(item.id))
                                             : getImage('icon_slot')
                                     }>
-                                    <View>
-                                        {/* eslint-disable-next-line react-native/no-inline-styles */}
-                                        <Text style={{color: 'white'}} />
-                                        {/* eslint-disable-next-line react-native/no-inline-styles */}
-                                        <Text style={{color: 'white'}} />
-                                    </View>
+                                    <Text style={styles.inventorySlotUpgrade}>
+                                        {isItem(item) && item.upgrade
+                                            ? '+' + item.upgrade
+                                            : ''}
+                                    </Text>
+                                    <Text style={styles.inventorySlotQuantity}>
+                                        {isItem(item) && item.quantity > 1
+                                            ? item.quantity
+                                            : ''}
+                                    </Text>
                                 </ImageBackground>
                             </TouchableOpacity>
                         )}
                         numColumns={COLUMN_NR}
+                        overScrollMode={'never'}
                     />
                 </View>
                 {/* DEBUG */}
@@ -186,7 +183,7 @@ export function Inventory() {
                     style={{
                         flexDirection: 'row',
                         justifyContent: 'center',
-                        marginBottom: 16,
+                        marginBottom: 36,
                     }}>
                     {/* ADD ITEM */}
                     <OrangeButton
@@ -194,19 +191,13 @@ export function Inventory() {
                         onPress={addItemOnPress}
                         style={styles.button}
                     />
-                    {/* REMOVE ITEM */}
+                    {/* CLEAR INVENTORY */}
                     <OrangeButton
-                        title={'Remove Item'}
-                        onPress={removeItemOnPress}
-                        style={styles.button}
+                        title={'CLEAR'}
+                        onPress={clearInventoryList}
+                        style={styles.clearButton}
                     />
                 </View>
-                {/* CLEAR INVENTORY */}
-                <OrangeButton
-                    title={'CLEAR'}
-                    onPress={clearInventoryList}
-                    style={styles.clearButton}
-                />
             </ImageBackground>
         </ImageBackground>
     );
@@ -249,6 +240,26 @@ const styles = StyleSheet.create({
         height: undefined,
         aspectRatio: 1,
     },
+    inventorySlotUpgrade: {
+        position: 'absolute',
+        top: 4,
+        right: 6,
+        color: 'white',
+        fontFamily: 'Myriad',
+        textShadowColor: 'rgba(0, 0, 0, 1)',
+        textShadowOffset: {width: 1, height: 1},
+        textShadowRadius: 5,
+    },
+    inventorySlotQuantity: {
+        position: 'absolute',
+        bottom: 5,
+        right: 6,
+        color: 'white',
+        fontFamily: 'Myriad',
+        textShadowColor: 'rgba(0, 0, 0, 1)',
+        textShadowOffset: {width: 1, height: 1},
+        textShadowRadius: 5,
+    },
     bagIcon: {
         aspectRatio: 1,
         width: '12.5%',
@@ -258,10 +269,11 @@ const styles = StyleSheet.create({
         marginTop: 4,
         marginStart: 2,
         marginRight: 'auto',
-        fontWeight: 'bold',
+        fontSize: 16,
+        fontFamily: 'Myriad_Bold',
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
-        textShadowRadius: 1,
+        textShadowRadius: 5,
     },
     sortButton: {
         aspectRatio: 3.5,
@@ -283,6 +295,5 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         marginStart: 8,
         marginEnd: 8,
-        marginBottom: 24,
     },
 });

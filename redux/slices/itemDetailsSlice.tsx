@@ -1,5 +1,5 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
-import {Item} from '../../types/item.ts';
+import {isItem, Item} from '../../types/item.ts';
 
 export interface ItemDetailsState {
     modalVisible: boolean;
@@ -17,7 +17,7 @@ export const itemDetailsSlice = createSlice({
     name: 'itemDetails',
     initialState,
     reducers: {
-        showItemDetails: (
+        itemDetailsShow: (
             state,
             action: PayloadAction<[Item | {}, number]>,
         ) => {
@@ -25,12 +25,18 @@ export const itemDetailsSlice = createSlice({
             state.item = action.payload[0];
             state.index = action.payload[1];
         },
-        hideItemDetails: state => {
+        itemDetailsHide: state => {
             state.modalVisible = false;
             state.item = {};
             state.index = -1;
         },
+        upgradeSelectedItem: state => {
+            if (isItem(state.item)) {
+                state.item.upgrade += 1;
+            }
+        },
     },
 });
 
-export const {showItemDetails, hideItemDetails} = itemDetailsSlice.actions;
+export const {itemDetailsShow, itemDetailsHide, upgradeSelectedItem} =
+    itemDetailsSlice.actions;

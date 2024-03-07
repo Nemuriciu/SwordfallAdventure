@@ -13,6 +13,7 @@ import {colors} from '../../../utils/colors.ts';
 import {strings} from '../../../utils/strings.ts';
 
 export function Attributes() {
+    const userInfo = useSelector((state: RootState) => state.userInfo);
     const equipment = useSelector((state: RootState) => state.equipment);
     const attributes = useSelector((state: RootState) => state.attributes);
     const [phyResPercent, setPhyResPercent] = useState(true);
@@ -112,8 +113,8 @@ export function Attributes() {
                             ? phyResPercent
                                 ? getResistancePercent(
                                       attributes.physicalRes,
-                                      1,
-                                  ).toFixed(1) + '%' //TODO: get level from redux
+                                      userInfo.level,
+                                  ).toFixed(userInfo.level) + '%'
                                 : attributes.physicalRes
                             : ''}
                     </Text>
@@ -151,8 +152,8 @@ export function Attributes() {
                             ? magResPercent
                                 ? getResistancePercent(
                                       attributes.magicalRes,
-                                      1,
-                                  ).toFixed(1) + '%' //TODO: get level from redux
+                                      userInfo.level,
+                                  ).toFixed(userInfo.level) + '%'
                                 : attributes.magicalRes
                             : ''}
                     </Text>
@@ -196,6 +197,7 @@ const styles = StyleSheet.create({
     row_1: {
         flexDirection: 'row',
         alignItems: 'center',
+        marginTop: 8,
     },
     row_2: {
         flexDirection: 'row',
@@ -221,123 +223,116 @@ const styles = StyleSheet.create({
     healthLabel: {
         width: '22.5%',
         color: colors.health_color,
-        fontSize: 13,
-        //fontFamily: 'Lato_400Regular',
+        fontFamily: 'Myriad',
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
-        textShadowRadius: 1,
+        textShadowRadius: 5,
     },
     healthValue: {
         flex: 1,
-        color: colors.health_color,
-        //fontFamily: 'Lato_400Regular',
         textAlign: 'right',
+        color: colors.health_color,
+        fontFamily: 'Myriad',
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
-        textShadowRadius: 1,
+        textShadowRadius: 5,
     },
     phyAtkLabel: {
         width: '23%',
         color: colors.physicalAtk_color,
-        fontSize: 13,
-        //fontFamily: 'Lato_400Regular',
+        fontFamily: 'Myriad',
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
-        textShadowRadius: 1,
+        textShadowRadius: 5,
     },
     phyAtkValue: {
         flex: 1,
-        color: colors.physicalAtk_color,
-        //fontFamily: 'Lato_400Regular',
         textAlign: 'right',
+        color: colors.physicalAtk_color,
+        fontFamily: 'Myriad',
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
-        textShadowRadius: 1,
+        textShadowRadius: 5,
     },
     phyResLabel: {
         color: colors.physicalRes_color,
-        fontSize: 13,
-        //fontFamily: 'Lato_400Regular',
+        fontFamily: 'Myriad',
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
-        textShadowRadius: 1,
+        textShadowRadius: 5,
     },
     phyResValue: {
-        color: colors.physicalRes_color,
-        //fontFamily: 'Lato_400Regular',
         textAlign: 'right',
+        color: colors.physicalRes_color,
+        fontFamily: 'Myriad',
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
-        textShadowRadius: 1,
+        textShadowRadius: 5,
     },
     magAtkLabel: {
         width: '23%',
         color: colors.magicalAtk_color,
-        fontSize: 13,
-        //fontFamily: 'Lato_400Regular',
+        fontFamily: 'Myriad',
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
-        textShadowRadius: 1,
+        textShadowRadius: 5,
     },
     magAtkValue: {
         flex: 1,
-        color: colors.magicalAtk_color,
-        //fontFamily: 'Lato_400Regular',
         textAlign: 'right',
+        color: colors.magicalAtk_color,
+        fontFamily: 'Myriad',
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
-        textShadowRadius: 1,
+        textShadowRadius: 5,
     },
     magResLabel: {
         color: colors.magicalRes_color,
-        fontSize: 13,
-        //fontFamily: 'Lato_400Regular',
+        fontFamily: 'Myriad',
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
-        textShadowRadius: 1,
+        textShadowRadius: 5,
     },
     magResValue: {
-        color: colors.magicalRes_color,
-        //fontFamily: 'Lato_400Regular',
         textAlign: 'right',
+        color: colors.magicalRes_color,
+        fontFamily: 'Myriad',
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
-        textShadowRadius: 1,
+        textShadowRadius: 5,
     },
     criticalLabel: {
         width: '23%',
         color: colors.critical_color,
-        fontSize: 13,
-        //fontFamily: 'Lato_400Regular',
+        fontFamily: 'Myriad',
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
-        textShadowRadius: 1,
+        textShadowRadius: 5,
     },
     criticalValue: {
         flex: 1,
-        color: colors.critical_color,
-        //fontFamily: 'Lato_400Regular',
         textAlign: 'right',
+        color: colors.critical_color,
+        fontFamily: 'Myriad',
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
-        textShadowRadius: 1,
+        textShadowRadius: 5,
     },
     dodgeLabel: {
         width: '23%',
         color: colors.dodge_color,
-        fontSize: 13,
-        //fontFamily: 'Lato_400Regular',
+        fontFamily: 'Myriad',
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
-        textShadowRadius: 1,
+        textShadowRadius: 5,
     },
     dodgeValue: {
         flex: 1,
-        color: colors.dodge_color,
-        //fontFamily: 'Lato_400Regular',
         textAlign: 'right',
+        color: colors.dodge_color,
+        fontFamily: 'Myriad',
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
-        textShadowRadius: 1,
+        textShadowRadius: 5,
     },
 });

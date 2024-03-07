@@ -15,6 +15,7 @@ export function OrangeButton({title, onPress, disabled, style}: props) {
     //const [disabled, setDisabled] = useState(false);
     const defaultImage = getImage('button_orange');
     const pressedImage = getImage('button_orange_pressed');
+    const disabledImage = getImage('button_orange_disabled');
 
     const handlePress = () => {
         if (!disabled) {
@@ -47,19 +48,25 @@ export function OrangeButton({title, onPress, disabled, style}: props) {
             disabled={disabled}
             style={style}>
             <ImageBackground
-                source={isPressed ? pressedImage : defaultImage}
+                source={
+                    disabled
+                        ? disabledImage
+                        : isPressed
+                        ? pressedImage
+                        : defaultImage
+                }
                 resizeMode={'stretch'}>
                 <Text
                     style={{
                         width: '100%',
                         height: '100%',
-                        color: 'white',
-                        //fontFamily: 'Lato_400Regular',
                         textAlign: 'center',
                         textAlignVertical: 'center',
+                        color: 'white',
+                        fontFamily: 'Myriad',
                         textShadowColor: 'rgba(0, 0, 0, 1)',
                         textShadowOffset: {width: 1, height: 1},
-                        textShadowRadius: 1,
+                        textShadowRadius: 5,
                     }}>
                     {title}
                 </Text>

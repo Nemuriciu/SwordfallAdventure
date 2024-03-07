@@ -8,8 +8,8 @@ import {getItemImg} from '../../../parsers/itemParser.tsx';
 import {isItem, Item} from '../../../types/item';
 import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '../../../redux/store.tsx';
-import {updateEquip} from '../../../redux/slices/equipmentSlice.tsx';
-import {showItemDetails} from '../../../redux/slices/itemDetailsSlice.tsx';
+import {equipmentUpdate} from '../../../redux/slices/equipmentSlice.tsx';
+import {itemDetailsShow} from '../../../redux/slices/itemDetailsSlice.tsx';
 
 export function Equipment() {
     const equipment = useSelector((state: RootState) => state.equipment);
@@ -41,7 +41,7 @@ export function Equipment() {
                 console.log(err);
             } else {
                 // @ts-ignore
-                dispatch(updateEquip(unmarshall(data.Item).equipment));
+                dispatch(equipmentUpdate(unmarshall(data.Item).equipment));
             }
         });
     }
@@ -63,7 +63,7 @@ export function Equipment() {
         if (!disabled) {
             setDisabled(true);
 
-            dispatch(showItemDetails([item, -1]));
+            dispatch(itemDetailsShow([item, -1]));
 
             setTimeout(() => {
                 setDisabled(false);
@@ -239,11 +239,12 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: '5%',
         right: '10%',
-        color: 'white',
         fontSize: 16,
+        color: 'white',
+        fontFamily: 'Myriad',
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
-        textShadowRadius: 2,
+        textShadowRadius: 5,
     },
     row_1: {
         flexDirection: 'row',

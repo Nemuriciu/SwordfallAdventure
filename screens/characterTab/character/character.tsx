@@ -11,6 +11,7 @@ import {TitleSeparator} from '../../../components/titleSeparator';
 import {Equipment} from './equipment';
 import {Attributes} from './attributes.tsx';
 import {getImage} from '../../../assets/images/_index';
+import {colors} from '../../../utils/colors.ts';
 
 export function Character() {
     return (
@@ -81,26 +82,29 @@ const styles = StyleSheet.create({
         overflow: 'hidden',
     },
     username: {
-        color: 'white',
-        //fontFamily: 'Lato_400Regular',
+        fontSize: 16,
+        color: colors.primary,
+        fontFamily: 'Myriad',
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
-        textShadowRadius: 1,
+        textShadowRadius: 5,
     },
     guild: {
         marginTop: 12,
         marginBottom: 12,
-        color: 'white',
-        //fontFamily: 'Lato_400Regular',
+        fontSize: 16,
+        color: colors.primary,
+        fontFamily: 'Myriad',
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
-        textShadowRadius: 1,
+        textShadowRadius: 5,
     },
     arena: {
-        color: 'white',
-        //fontFamily: 'Lato_400Regular',
+        fontSize: 16,
+        color: colors.primary,
+        fontFamily: 'Myriad',
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
-        textShadowRadius: 1,
+        textShadowRadius: 5,
     },
 });

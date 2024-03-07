@@ -1,4 +1,3 @@
-// @ts-ignore
 import cloneDeep from 'lodash.clonedeep';
 import {Item} from '../types/item.ts';
 import {getItemRarity, getItemType} from './itemParser.tsx';
