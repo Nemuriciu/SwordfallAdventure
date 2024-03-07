@@ -8,9 +8,13 @@ import {
     getResistancePercent,
     getStats,
 } from '../../../parsers/attributeParser.tsx';
-import {updateAttributes} from '../../../redux/slices/attributesSlice.tsx';
+import {
+    startingStats,
+    updateAttributes,
+} from '../../../redux/slices/attributesSlice.tsx';
 import {colors} from '../../../utils/colors.ts';
 import {strings} from '../../../utils/strings.ts';
+import cloneDeep from 'lodash.clonedeep';
 
 export function Attributes() {
     const userInfo = useSelector((state: RootState) => state.userInfo);
@@ -31,18 +35,7 @@ export function Attributes() {
     }, [equipment]);
 
     function attributesUpdate() {
-        let playerAttributes = {
-            health: 0,
-            physicalAtk: 0,
-            magicalAtk: 0,
-            physicalRes: 0,
-            magicalRes: 0,
-            bonusHealth: 0,
-            bonusPhysicalAtk: 0,
-            bonusMagicalAtk: 0,
-            bonusPhysicalRes: 0,
-            bonusMagicalRes: 0,
-        };
+        let playerAttributes = cloneDeep(startingStats);
 
         /* List with all Equipped Items */
         const items = Object.entries(equipment)
@@ -62,6 +55,9 @@ export function Attributes() {
                 itemStats.physicalRes + itemStats.bonusPhysicalRes;
             playerAttributes.magicalRes +=
                 itemStats.magicalRes + itemStats.bonusMagicalRes;
+            playerAttributes.critical +=
+                itemStats.critical + itemStats.bonusCritical;
+            playerAttributes.dodge += itemStats.dodge + itemStats.bonusDodge;
         }
 
         dispatch(updateAttributes(playerAttributes));
@@ -72,7 +68,7 @@ export function Attributes() {
             <View style={styles.row_1}>
                 <Image style={styles.icon} source={getImage('icon_health')} />
                 <Text style={styles.healthLabel} numberOfLines={1}>
-                    Health
+                    {strings.health}
                 </Text>
                 <Text style={styles.healthValue} numberOfLines={1}>
                     {attributes.health ? attributes.health : ''}
@@ -114,7 +110,7 @@ export function Attributes() {
                                 ? getResistancePercent(
                                       attributes.physicalRes,
                                       userInfo.level,
-                                  ).toFixed(userInfo.level) + '%'
+                                  ).toFixed(1) + '%'
                                 : attributes.physicalRes
                             : ''}
                     </Text>
@@ -153,7 +149,7 @@ export function Attributes() {
                                 ? getResistancePercent(
                                       attributes.magicalRes,
                                       userInfo.level,
-                                  ).toFixed(userInfo.level) + '%'
+                                  ).toFixed(1) + '%'
                                 : attributes.magicalRes
                             : ''}
                     </Text>
@@ -165,14 +161,18 @@ export function Attributes() {
                     {strings.critical}
                 </Text>
                 <Text style={styles.criticalValue} numberOfLines={1}>
-                    5%
+                    {attributes.critical
+                        ? (attributes.critical * 100).toFixed(1) + '%'
+                        : ''}
                 </Text>
                 <Image style={styles.icon} source={getImage('icon_dodge')} />
                 <Text style={styles.dodgeLabel} numberOfLines={1}>
                     {strings.dodge}
                 </Text>
                 <Text style={styles.dodgeValue} numberOfLines={1}>
-                    5%
+                    {attributes.dodge
+                        ? (attributes.dodge * 100).toFixed(1) + '%'
+                        : ''}
                 </Text>
             </View>
         </View>

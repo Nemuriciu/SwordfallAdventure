@@ -55,11 +55,15 @@ const emptyStats = {
     magicalAtk: 0,
     physicalRes: 0,
     magicalRes: 0,
+    critical: 0,
+    dodge: 0,
     bonusHealth: 0,
     bonusPhysicalAtk: 0,
     bonusMagicalAtk: 0,
     bonusPhysicalRes: 0,
     bonusMagicalRes: 0,
+    bonusCritical: 0,
+    bonusDodge: 0,
 };
 
 export function ItemDetails() {
@@ -321,7 +325,8 @@ export function ItemDetails() {
                                                     ? '+ ' +
                                                       (itemStats.health +
                                                           itemStats.bonusHealth) +
-                                                      ' Health'
+                                                      ' ' +
+                                                      strings.health
                                                     : ''
                                                 : ''}
                                         </Text>
@@ -341,7 +346,8 @@ export function ItemDetails() {
                                                     ? '+ ' +
                                                       (itemStats.physicalAtk +
                                                           itemStats.bonusPhysicalAtk) +
-                                                      ' Physical ATK'
+                                                      ' ' +
+                                                      strings.physical_atk
                                                     : ''
                                                 : ''}
                                         </Text>
@@ -361,7 +367,8 @@ export function ItemDetails() {
                                                     ? '+ ' +
                                                       (itemStats.magicalAtk +
                                                           itemStats.bonusMagicalAtk) +
-                                                      ' Magical ATK'
+                                                      ' ' +
+                                                      strings.magical_atk
                                                     : ''
                                                 : ''}
                                         </Text>
@@ -381,7 +388,8 @@ export function ItemDetails() {
                                                     ? '+ ' +
                                                       (itemStats.physicalRes +
                                                           itemStats.bonusPhysicalRes) +
-                                                      ' Physical RES'
+                                                      ' ' +
+                                                      strings.physical_res
                                                     : ''
                                                 : ''}
                                         </Text>
@@ -401,7 +409,8 @@ export function ItemDetails() {
                                                     ? '+ ' +
                                                       (itemStats.magicalRes +
                                                           itemStats.bonusMagicalRes) +
-                                                      ' Magical RES'
+                                                      ' ' +
+                                                      strings.magical_res
                                                     : ''
                                                 : ''}
                                         </Text>

@@ -24,11 +24,28 @@ export function CreatureCard({creature, index}: props) {
         <ImageBackground
             style={styles.container}
             source={getImage('background_node')}>
-            <Image
-                style={styles.image}
-                source={getImage(getCreatureImg(creature.id))}
-                resizeMode={'stretch'}
-            />
+            <View style={styles.avatarContainer}>
+                <Image
+                    style={styles.avatar}
+                    source={getImage(getCreatureImg(creature.id))}
+                    resizeMode={'stretch'}
+                />
+                <Image
+                    style={styles.avatarFrame}
+                    source={getImage('avatar_frame_' + creature.rarity)}
+                />
+                <View style={styles.levelContainer}>
+                    <ImageBackground
+                        source={getImage('icon_level')}
+                        resizeMode={'stretch'}>
+                        <View style={styles.levelTextContainer}>
+                            <Text style={styles.levelText}>
+                                {creature.level}
+                            </Text>
+                        </View>
+                    </ImageBackground>
+                </View>
+            </View>
             <View style={styles.innerContainer}>
                 <Text
                     style={[
@@ -46,7 +63,8 @@ export function CreatureCard({creature, index}: props) {
                             />
                             <Text style={styles.healthValue} numberOfLines={1}>
                                 {creature.stats.health
-                                    ? creature.stats.health
+                                    ? creature.stats.health +
+                                      creature.stats.bonusHealth
                                     : ''}
                             </Text>
                         </View>
@@ -57,7 +75,8 @@ export function CreatureCard({creature, index}: props) {
                             />
                             <Text style={styles.phyAtkValue} numberOfLines={1}>
                                 {creature.stats.physicalAtk
-                                    ? creature.stats.physicalAtk
+                                    ? creature.stats.physicalAtk +
+                                      creature.stats.bonusPhysicalAtk
                                     : ''}
                             </Text>
                             <Image
@@ -67,9 +86,10 @@ export function CreatureCard({creature, index}: props) {
                             <Text style={styles.phyResValue} numberOfLines={1}>
                                 {creature.stats.physicalRes
                                     ? getResistancePercent(
-                                          creature.stats.physicalRes,
+                                          creature.stats.physicalRes +
+                                              creature.stats.bonusPhysicalRes,
                                           creature.level,
-                                      ).toFixed(creature.level) + '%'
+                                      ).toFixed(1) + '%'
                                     : ''}
                             </Text>
                         </View>
@@ -80,7 +100,8 @@ export function CreatureCard({creature, index}: props) {
                             />
                             <Text style={styles.magAtkValue} numberOfLines={1}>
                                 {creature.stats.magicalAtk
-                                    ? creature.stats.magicalAtk
+                                    ? creature.stats.magicalAtk +
+                                      creature.stats.bonusMagicalAtk
                                     : ''}
                             </Text>
                             <Image
@@ -90,9 +111,10 @@ export function CreatureCard({creature, index}: props) {
                             <Text style={styles.magResValue} numberOfLines={1}>
                                 {creature.stats.magicalRes
                                     ? getResistancePercent(
-                                          creature.stats.magicalRes,
+                                          creature.stats.magicalRes +
+                                              creature.stats.bonusMagicalRes,
                                           creature.level,
-                                      ).toFixed(creature.level) + '%'
+                                      ).toFixed(1) + '%'
                                     : ''}
                             </Text>
                         </View>
@@ -123,21 +145,54 @@ const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
     },
-    image: {
+    avatarContainer: {
         aspectRatio: 1,
-        width: '22%',
+        width: '22.5%',
+        height: undefined,
         marginTop: 12,
         marginBottom: 12,
-        marginStart: 20,
+        marginStart: 16,
+    },
+    avatar: {
+        width: '100%',
+        height: '100%',
+    },
+    avatarFrame: {
+        position: 'absolute',
+        top: '-5%',
+        left: '-5%',
+        width: '107.5%',
+        height: '107.5%',
+    },
+    levelContainer: {
+        position: 'absolute',
+        left: '38%',
+        bottom: '-7.5%',
+        aspectRatio: 1,
+        width: '27%',
+    },
+    levelTextContainer: {
+        width: '100%',
+        height: '100%',
+    },
+    levelText: {
+        marginTop: 4,
+        color: 'white',
+        textAlign: 'center',
+        fontSize: 13,
+        fontFamily: 'Myriad_Bold',
+        textShadowColor: 'rgba(0, 0, 0, 1)',
+        textShadowOffset: {width: 1, height: 1},
+        textShadowRadius: 5,
     },
     innerContainer: {
         flex: 1,
-        marginTop: 12,
+        marginTop: 8,
         marginStart: 12,
         marginEnd: 12,
     },
     name: {
-        marginBottom: 6,
+        marginBottom: 4,
         fontSize: 16,
         fontFamily: 'Myriad',
         textShadowColor: 'rgba(0, 0, 0, 1)',
@@ -147,7 +202,6 @@ const styles = StyleSheet.create({
     bottomContainer: {
         flexDirection: 'row',
     },
-
     statsContainer: {
         flex: 1,
     },
@@ -168,7 +222,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         marginTop: 4,
     },
-
     healthValue: {
         color: colors.health_color,
         fontFamily: 'Myriad',
@@ -208,7 +261,6 @@ const styles = StyleSheet.create({
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
     },
-
     buttonContainer: {
         aspectRatio: 3.5,
         width: '35%',

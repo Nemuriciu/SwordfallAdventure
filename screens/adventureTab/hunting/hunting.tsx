@@ -6,7 +6,7 @@ import {
     Text,
     View,
 } from 'react-native';
-import React from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {getImage} from '../../../assets/images/_index';
 import {colors} from '../../../utils/colors.ts';
 import {CreatureCard} from '../../../components/creatureCard.tsx';
@@ -16,20 +16,83 @@ import {Creature} from '../../../types/creature.ts';
 import {getCreature} from '../../../parsers/creatureParser.tsx';
 import {huntingUpdate} from '../../../redux/slices/huntingSlice.tsx';
 import {OrangeButton} from '../../../components/orangeButton.tsx';
+import {marshall, unmarshall} from '@aws-sdk/util-dynamodb';
+import {USER_ID} from '../../../App';
+import {dynamoDb} from '../../../database';
+import {strings} from '../../../utils/strings.ts';
 
 export function Hunting() {
     const userInfo = useSelector((state: RootState) => state.userInfo);
     const hunting = useSelector((state: RootState) => state.hunting);
+    const [killCount, setKillCount] = useState(0);
     const dispatch = useDispatch();
+    const didMount = useRef(1);
 
-    function refreshCreatures() {
+    useEffect(() => {
+        fetchHuntingDB();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+    useEffect(() => {
+        if (!didMount.current) {
+            updateHuntingDB();
+        } else {
+            didMount.current -= 1;
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [hunting]);
+
+    function fetchHuntingDB() {
+        const params = {
+            TableName: 'users',
+            Key: marshall({id: USER_ID}),
+            ProjectionExpression: 'hunting',
+        };
+        dynamoDb.getItem(params, function (err, data) {
+            if (err) {
+                console.log(err);
+            } else {
+                // @ts-ignore
+                dispatch(huntingUpdate(unmarshall(data.Item).hunting));
+            }
+        });
+    }
+
+    function updateHuntingDB() {
+        const params = {
+            TableName: 'users',
+            Key: marshall({id: USER_ID}),
+            UpdateExpression: 'set hunting = :val',
+            ExpressionAttributeValues: marshall({':val': hunting}),
+        };
+        dynamoDb.updateItem(params, function (err) {
+            if (err) {
+                console.log(err);
+            }
+        });
+    }
+
+    function goDeeper() {
+        const depth = hunting.depth + 1;
         let creatureList: Creature[] = [];
 
-        for (let i = 0; i < 6; i++) {
-            creatureList.push(getCreature(userInfo.level, 1));
+        for (let i = 0; i < 4; i++) {
+            //TODO:
+            creatureList.push(getCreature(userInfo.level, depth));
         }
 
-        dispatch(huntingUpdate(creatureList));
+        dispatch(huntingUpdate({depth: depth, creatureList: creatureList}));
+    }
+
+    function resetDepth() {
+        const depth = 0;
+        let creatureList: Creature[] = [];
+
+        for (let i = 0; i < 4; i++) {
+            //TODO:
+            creatureList.push(getCreature(userInfo.level, depth));
+        }
+
+        dispatch(huntingUpdate({depth: depth, creatureList: creatureList}));
     }
 
     return (
@@ -38,7 +101,7 @@ export function Hunting() {
             source={getImage('background_outer')}
             resizeMode={'stretch'}>
             <View style={styles.topContainer}>
-                <Text style={styles.depthText}>Depth 0</Text>
+                <Text style={styles.depthText}>{'Depth ' + hunting.depth}</Text>
                 <Image
                     style={styles.infoIcon}
                     source={getImage('icon_info')}
@@ -59,11 +122,23 @@ export function Hunting() {
                     overScrollMode={'never'}
                 />
             </ImageBackground>
-            <OrangeButton
-                style={styles.button}
-                title={'Refresh'}
-                onPress={refreshCreatures}
-            />
+            <View style={styles.buttonContainer}>
+                <OrangeButton
+                    style={styles.button}
+                    title={strings.back}
+                    onPress={() => {}}
+                />
+                <OrangeButton
+                    style={styles.button}
+                    title={strings.go_deeper}
+                    onPress={goDeeper}
+                />
+                <OrangeButton
+                    style={styles.button}
+                    title={strings.reset}
+                    onPress={resetDepth}
+                />
+            </View>
         </ImageBackground>
     );
 }
@@ -107,10 +182,15 @@ const styles = StyleSheet.create({
         marginStart: 2,
         marginEnd: 2,
     },
-    button: {
-        aspectRatio: 3.5,
-        width: '25%',
+    buttonContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-evenly',
         marginStart: 8,
         marginEnd: 8,
+        marginBottom: 8,
+    },
+    button: {
+        aspectRatio: 3,
+        width: '30%',
     },
 });

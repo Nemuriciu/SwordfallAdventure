@@ -133,6 +133,10 @@ function createUserEntry(userID, username) {
                 timestamp: null,
                 nodes: [],
             },
+            hunting: {
+                depth: 0,
+                creatureList: [],
+            },
             inventory: {
                 list: new Array(36).fill({}),
             },

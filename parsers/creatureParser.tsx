@@ -1,8 +1,9 @@
 import creaturesJson from '../assets/json/creatures.json';
-//import statsJson from '../assets/json/stats.json';
+import statsJson from '../assets/json/stats.json';
 import {Creature} from '../types/creature.ts';
 import {Stats} from './attributeParser.tsx';
 import {rand} from './itemParser.tsx';
+import cloneDeep from 'lodash.clonedeep';
 
 export function getCreatureName(id: string): string {
     // @ts-ignore
@@ -17,19 +18,8 @@ export function getCreature(level: number, depth: number): Creature {
     const creatures = Object.keys(creaturesJson);
     const creatureId = creatures[rand(0, creatures.length - 1)];
 
-    //const stats = statsJson.creatures[level - 1];
-    const stats: Stats = {
-        health: 1000,
-        physicalAtk: 100,
-        magicalAtk: 100,
-        physicalRes: 100,
-        magicalRes: 100,
-        bonusHealth: 0,
-        bonusPhysicalAtk: 0,
-        bonusMagicalAtk: 0,
-        bonusPhysicalRes: 0,
-        bonusMagicalRes: 0,
-    };
+    // @ts-ignore
+    const stats: Stats = cloneDeep(statsJson.creatures[level.toString()]);
 
     let rarity = 'common';
     const r = Math.random();
@@ -64,95 +54,88 @@ export function getCreature(level: number, depth: number): Creature {
         rarity = 'uncommon';
     }
 
-    /*let {health, physicalAtk, magicalAtk, physicalRes, magicalRes} = stats;
+    stats.health = rand(
+        Math.round(stats.health * 0.9),
+        Math.round(stats.health * 1.1),
+    );
+    stats.physicalAtk = rand(
+        Math.round(stats.physicalAtk * 0.9),
+        Math.round(stats.physicalAtk * 1.1),
+    );
+    stats.magicalAtk = rand(
+        Math.round(stats.magicalAtk * 0.9),
+        Math.round(stats.magicalAtk * 1.1),
+    );
+    stats.physicalRes = rand(
+        Math.round(stats.physicalRes * 0.8),
+        Math.round(stats.physicalRes * 1.2),
+    );
+    stats.magicalRes = rand(
+        Math.round(stats.magicalRes * 0.8),
+        Math.round(stats.magicalRes * 1.2),
+    );
 
-    health = rand(Math.round(health * 0.9), Math.round(health * 1.1));
-    physicalAtk = rand(
-        Math.round(physicalAtk * 0.9),
-        Math.round(physicalAtk * 1.1),
-    );
-    magicalAtk = rand(
-        Math.round(magicalAtk * 0.9),
-        Math.round(magicalAtk * 1.1),
-    );
-    physicalRes = rand(
-        Math.round(physicalRes * 0.8),
-        Math.round(physicalRes * 1.2),
-    );
-    magicalRes = rand(
-        Math.round(magicalRes * 0.8),
-        Math.round(magicalRes * 1.2),
-    );
+    stats.bonusHealth =
+        depth <= 10
+            ? Math.round(stats.health * (0.15 * depth))
+            : Math.round(
+                  stats.health * (0.15 * 10) +
+                      stats.health * (0.2 * (depth - 10)),
+              );
+    stats.bonusPhysicalRes =
+        depth <= 10
+            ? Math.round(stats.physicalRes * (0.15 * depth))
+            : Math.round(
+                  stats.physicalRes * (0.15 * 10) +
+                      stats.physicalRes * (0.2 * (depth - 10)),
+              );
+    stats.bonusMagicalRes =
+        depth <= 10
+            ? Math.round(stats.magicalRes * (0.15 * depth))
+            : Math.round(
+                  stats.magicalRes * (0.15 * 10) +
+                      stats.magicalRes * (0.2 * (depth - 10)),
+              );
+    stats.bonusPhysicalAtk =
+        depth <= 10
+            ? Math.round(stats.physicalAtk * (0.1 * depth))
+            : Math.round(
+                  stats.physicalAtk * (0.1 * 10) +
+                      stats.physicalAtk * (0.15 * (depth - 10)),
+              );
+    stats.bonusMagicalAtk =
+        depth <= 10
+            ? Math.round(stats.magicalAtk * (0.1 * depth))
+            : Math.round(
+                  stats.magicalAtk * (0.1 * 10) +
+                      stats.magicalAtk * (0.15 * (depth - 10)),
+              );
 
-    let bonusHealth =
-        depth <= 10
-            ? Math.round(health * (0.15 * depth))
-            : Math.round(health * (0.15 * 10) + health * (0.2 * (depth - 10)));
-    let bonusPhysicalRes =
-        depth <= 10
-            ? Math.round(physicalRes * (0.15 * depth))
-            : Math.round(
-                  physicalRes * (0.15 * 10) +
-                      physicalRes * (0.2 * (depth - 10)),
-              );
-    let bonusMagicalRes =
-        depth <= 10
-            ? Math.round(magicalRes * (0.15 * depth))
-            : Math.round(
-                  magicalRes * (0.15 * 10) + magicalRes * (0.2 * (depth - 10)),
-              );
-    let bonusPhysicalAtk =
-        depth <= 10
-            ? Math.round(physicalAtk * (0.1 * depth))
-            : Math.round(
-                  physicalAtk * (0.1 * 10) +
-                      physicalAtk * (0.15 * (depth - 10)),
-              );
-    let bonusMagicalAtk =
-        depth <= 10
-            ? Math.round(magicalAtk * (0.1 * depth))
-            : Math.round(
-                  magicalAtk * (0.1 * 10) + magicalAtk * (0.15 * (depth - 10)),
-              );*/
-
-    /*switch (rarity) {
+    switch (rarity) {
         case 'uncommon':
-            bonusHealth += Math.ceil(health * 0.25);
-            bonusPhysicalAtk += Math.ceil(physicalAtk * 0.25);
-            bonusMagicalAtk += Math.ceil(magicalAtk * 0.25);
-            bonusPhysicalRes += Math.ceil(physicalRes * 0.25);
-            bonusMagicalRes += Math.ceil(magicalRes * 0.25);
+            stats.bonusHealth += Math.ceil(stats.health * 0.25);
+            stats.bonusPhysicalAtk += Math.ceil(stats.physicalAtk * 0.25);
+            stats.bonusMagicalAtk += Math.ceil(stats.magicalAtk * 0.25);
+            stats.bonusPhysicalRes += Math.ceil(stats.physicalRes * 0.25);
+            stats.bonusMagicalRes += Math.ceil(stats.magicalRes * 0.25);
             break;
         case 'rare':
-            bonusHealth += Math.ceil(health * 0.5);
-            bonusPhysicalAtk += Math.ceil(physicalAtk * 0.5);
-            bonusMagicalAtk += Math.ceil(magicalAtk * 0.5);
-            bonusPhysicalRes += Math.ceil(physicalRes * 0.5);
-            bonusMagicalRes += Math.ceil(magicalRes * 0.5);
+            stats.bonusHealth += Math.ceil(stats.health * 0.5);
+            stats.bonusPhysicalAtk += Math.ceil(stats.physicalAtk * 0.5);
+            stats.bonusMagicalAtk += Math.ceil(stats.magicalAtk * 0.5);
+            stats.bonusPhysicalRes += Math.ceil(stats.physicalRes * 0.5);
+            stats.bonusMagicalRes += Math.ceil(stats.magicalRes * 0.5);
             break;
         case 'epic':
-            bonusHealth += Math.ceil(health * 0.75);
-            bonusPhysicalAtk += Math.ceil(physicalAtk * 0.75);
-            bonusMagicalAtk += Math.ceil(magicalAtk * 0.75);
-            bonusPhysicalRes += Math.ceil(physicalRes * 0.75);
-            bonusMagicalRes += Math.ceil(magicalRes * 0.75);
+            stats.bonusHealth += Math.ceil(stats.health * 0.75);
+            stats.bonusPhysicalAtk += Math.ceil(stats.physicalAtk * 0.75);
+            stats.bonusMagicalAtk += Math.ceil(stats.magicalAtk * 0.75);
+            stats.bonusPhysicalRes += Math.ceil(stats.physicalRes * 0.75);
+            stats.bonusMagicalRes += Math.ceil(stats.magicalRes * 0.75);
             break;
         default:
             break;
-    }*/
-
-    /*const creatureStats: Stats = {
-        health,
-        bonusHealth,
-        physicalAtk,
-        bonusPhysicalAtk,
-        magicalAtk,
-        bonusMagicalAtk,
-        physicalRes,
-        bonusPhysicalRes,
-        magicalRes,
-        bonusMagicalRes,
-    );*/
+    }
 
     return {
         id: creatureId,

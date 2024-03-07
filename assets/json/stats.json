@@ -1,104 +1,54 @@
 {
-  "creatures": [
-    {
-      "level": 1,
+  "creatures": {
+    "1": {
       "health": 50,
       "physicalRes": 10,
       "magicalRes": 10,
       "physicalAtk": 7,
       "magicalAtk": 7,
       "critical": 0.05,
-      "dodge": 0.05
+      "dodge": 0.05,
+      "bonusHealth": 0,
+      "bonusPhysicalRes": 0,
+      "bonusMagicalRes": 0,
+      "bonusPhysicalAtk": 0,
+      "bonusMagicalAtk": 0,
+      "bonusCritical": 0,
+      "bonusDodge": 0
     },
-    {
-      "level": 2,
+    "2": {
       "health": 244,
       "physicalRes": 40,
       "magicalRes": 40,
       "physicalAtk": 50,
       "magicalAtk": 50,
       "critical": 0.05,
-      "dodge": 0.05
+      "dodge": 0.05,
+      "bonusHealth": 0,
+      "bonusPhysicalRes": 0,
+      "bonusMagicalRes": 0,
+      "bonusPhysicalAtk": 0,
+      "bonusMagicalAtk": 0,
+      "bonusCritical": 0,
+      "bonusDodge": 0
     },
-    {
-      "level": 3,
+    "3": {
       "health": 634,
       "physicalAtk": 104,
       "magicalAtk": 104,
       "physicalRes": 86,
       "magicalRes": 86,
       "critical": 0.05,
-      "dodge": 0.05
-    },
-    {
-      "level": 4,
-      "health": 250,
-      "physicalAtk": 30,
-      "magicalAtk": 30,
-      "physicalRes": 30,
-      "magicalRes": 30,
-      "critical": 0.05,
-      "dodge": 0.05
-    },
-    {
-      "level": 5,
-      "health": 250,
-      "physicalAtk": 30,
-      "magicalAtk": 30,
-      "physicalRes": 30,
-      "magicalRes": 30,
-      "critical": 0.05,
-      "dodge": 0.05
-    },
-    {
-      "level": 6,
-      "health": 250,
-      "physicalAtk": 30,
-      "magicalAtk": 30,
-      "physicalRes": 30,
-      "magicalRes": 30,
-      "critical": 0.05,
-      "dodge": 0.05
-    },
-    {
-      "level": 7,
-      "health": 250,
-      "physicalAtk": 30,
-      "magicalAtk": 30,
-      "physicalRes": 30,
-      "magicalRes": 30,
-      "critical": 0.05,
-      "dodge": 0.05
-    },
-    {
-      "level": 8,
-      "health": 250,
-      "physicalAtk": 30,
-      "magicalAtk": 30,
-      "physicalRes": 30,
-      "magicalRes": 30,
-      "critical": 0.05,
-      "dodge": 0.05
-    },
-    {
-      "level": 9,
-      "health": 250,
-      "physicalAtk": 30,
-      "magicalAtk": 30,
-      "physicalRes": 30,
-      "magicalRes": 30,
-      "critical": 0.05,
-      "dodge": 0.05
-    },
-    {
-      "level": 10,
-      "health": 250,
-      "physicalAtk": 30,
-      "magicalAtk": 30,
-      "physicalRes": 30,
-      "magicalRes": 30,
-      "critical": 0.05,
-      "dodge": 0.05
+      "dodge": 0.05,
+      "bonusHealth": 0,
+      "bonusPhysicalRes": 0,
+      "bonusMagicalRes": 0,
+      "bonusPhysicalAtk": 0,
+      "bonusMagicalAtk": 0,
+      "bonusCritical": 0,
+      "bonusDodge": 0
     }
-  ]
+  }
+
+
 }
