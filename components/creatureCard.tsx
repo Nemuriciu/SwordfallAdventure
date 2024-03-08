@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Image, Text, StyleSheet, View, ImageBackground} from 'react-native';
 import {getImage} from '../assets/images/_index';
 import {colors} from '../utils/colors.ts';
@@ -7,6 +7,8 @@ import {Creature} from '../types/creature.ts';
 import {getCreatureImg, getCreatureName} from '../parsers/creatureParser.tsx';
 import {getItemColor} from '../parsers/itemParser.tsx';
 import {getResistancePercent} from '../parsers/attributeParser.tsx';
+import {useDispatch} from 'react-redux';
+import {combatShow} from '../redux/slices/combatSlice.tsx';
 
 interface props {
     creature: Creature;
@@ -14,11 +16,22 @@ interface props {
 }
 
 export function CreatureCard({creature, index}: props) {
-    //const userInfo = useSelector((state: RootState) => state.userInfo);
-    //const hunting = useSelector((state: RootState) => state.hunting);
-    //const dispatch = useDispatch();
+    const [disabled, setDisabled] = useState(false);
+    const dispatch = useDispatch();
 
     useEffect(() => {}, []);
+
+    function attackCreature() {
+        if (!disabled) {
+            setDisabled(true);
+
+            dispatch(combatShow([creature, index]));
+
+            setTimeout(() => {
+                setDisabled(false);
+            }, 500);
+        }
+    }
 
     return (
         <ImageBackground
@@ -122,9 +135,7 @@ export function CreatureCard({creature, index}: props) {
                     <View style={styles.buttonContainer}>
                         <OrangeButton
                             title={'Attack'}
-                            onPress={() => {
-                                console.log(index);
-                            }}
+                            onPress={attackCreature}
                             style={styles.attackButton}
                         />
                         <View style={styles.staminaContainer}>

@@ -22,7 +22,6 @@ export const images = {
         separator: require('./character/separator.png'),
         user_avatar: require('./character/user_avatar.png'),
     },
-
     gathering: {
         background_node: require('./gathering/background_node.png'),
         icon_asmenium_vein: require('./gathering/icon_asmenium_vein.png'),
@@ -39,6 +38,11 @@ export const images = {
         icon_silver_vein: require('./gathering/icon_silver_vein.png'),
     },
     hunting: {
+        combat: {
+            background_actionbar: require('./hunting/combat/background_actionbar.png'),
+            background_combat_info: require('./hunting/combat/background_combat_info.png'),
+            background_log: require('./hunting/combat/background_log.png'),
+        },
         creatures: {
             creature_icon_alpha_prowler: require('./hunting/creatures/creature_icon_alpha_prowler.png'),
             creature_icon_basilisk: require('./hunting/creatures/creature_icon_basilisk.png'),
@@ -105,6 +109,11 @@ export const images = {
         progress_bar_health: require('./shared/progress_bar_health.png'),
         progress_bar_orange: require('./shared/progress_bar_orange.png'),
         progress_bar_stamina: require('./shared/progress_bar_stamina.png'),
+    },
+    skills: {
+        skills_icon_basic_magical: require('./skills/skills_icon_basic_magical.png'),
+        skills_icon_basic_physical: require('./skills/skills_icon_basic_physical.png'),
+        skills_icon_frame: require('./skills/skills_icon_frame.png'),
     },
     items: {
         item_chest_amethyst_chest: require('./items/item_chest_amethyst_chest.png'),

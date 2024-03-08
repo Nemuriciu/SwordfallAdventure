@@ -5,7 +5,7 @@ import {getImage} from '../assets/images/_index';
 interface props {
     progress: number;
     image: string;
-    style: ViewStyle;
+    style?: ViewStyle;
 }
 const ProgressBar = ({progress, image, style}: props) => {
     const [height, setHeight] = useState(0);

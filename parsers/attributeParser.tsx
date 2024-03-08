@@ -1,23 +1,7 @@
 import cloneDeep from 'lodash.clonedeep';
 import {Item} from '../types/item.ts';
 import {getItemRarity, getItemType} from './itemParser.tsx';
-
-export interface Stats {
-    health: number;
-    physicalAtk: number;
-    magicalAtk: number;
-    physicalRes: number;
-    magicalRes: number;
-    critical: number;
-    dodge: number;
-    bonusHealth: number;
-    bonusPhysicalAtk: number;
-    bonusMagicalAtk: number;
-    bonusPhysicalRes: number;
-    bonusMagicalRes: number;
-    bonusCritical: number;
-    bonusDodge: number;
-}
+import {Stats} from '../types/stats.ts';
 
 export function getStats(item: Item): Stats {
     let stats: Stats = {

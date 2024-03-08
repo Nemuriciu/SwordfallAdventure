@@ -20,11 +20,12 @@ import {marshall, unmarshall} from '@aws-sdk/util-dynamodb';
 import {USER_ID} from '../../../App';
 import {dynamoDb} from '../../../database';
 import {strings} from '../../../utils/strings.ts';
+import {Combat} from './combat.tsx';
 
 export function Hunting() {
     const userInfo = useSelector((state: RootState) => state.userInfo);
     const hunting = useSelector((state: RootState) => state.hunting);
-    const [killCount, setKillCount] = useState(0);
+    //const [killCount, setKillCount] = useState(0);
     const dispatch = useDispatch();
     const didMount = useRef(1);
 
@@ -100,6 +101,7 @@ export function Hunting() {
             style={styles.container}
             source={getImage('background_outer')}
             resizeMode={'stretch'}>
+            <Combat />
             <View style={styles.topContainer}>
                 <Text style={styles.depthText}>{'Depth ' + hunting.depth}</Text>
                 <Image

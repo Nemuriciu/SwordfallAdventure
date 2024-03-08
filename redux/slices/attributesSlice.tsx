@@ -1,22 +1,5 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
-import {Stats} from '../../parsers/attributeParser.tsx';
-
-export const startingStats: Stats = {
-    health: 0,
-    physicalAtk: 0,
-    magicalAtk: 0,
-    physicalRes: 0,
-    magicalRes: 0,
-    critical: 0.05,
-    dodge: 0.05,
-    bonusHealth: 0,
-    bonusPhysicalAtk: 0,
-    bonusMagicalAtk: 0,
-    bonusPhysicalRes: 0,
-    bonusMagicalRes: 0,
-    bonusCritical: 0,
-    bonusDodge: 0,
-};
+import {startingStats, Stats} from '../../types/stats.ts';
 
 export const attributesSlice = createSlice({
     name: 'attributes',

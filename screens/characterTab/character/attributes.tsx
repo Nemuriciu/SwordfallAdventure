@@ -8,13 +8,11 @@ import {
     getResistancePercent,
     getStats,
 } from '../../../parsers/attributeParser.tsx';
-import {
-    startingStats,
-    updateAttributes,
-} from '../../../redux/slices/attributesSlice.tsx';
+import {updateAttributes} from '../../../redux/slices/attributesSlice.tsx';
 import {colors} from '../../../utils/colors.ts';
 import {strings} from '../../../utils/strings.ts';
 import cloneDeep from 'lodash.clonedeep';
+import {startingStats} from '../../../types/stats.ts';
 
 export function Attributes() {
     const userInfo = useSelector((state: RootState) => state.userInfo);
