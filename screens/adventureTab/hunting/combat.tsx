@@ -1,42 +1,605 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
     Modal,
     StyleSheet,
     View,
     ImageBackground,
     Image,
-    Text,
     FlatList,
+    Text,
     Dimensions,
     TouchableOpacity,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '../../../redux/store.tsx';
 import {getImage} from '../../../assets/images/_index';
-import {getCreatureImg} from '../../../parsers/creatureParser.tsx';
+import {
+    generateCombatRewards,
+    getCreatureImg,
+    getCreatureName,
+} from '../../../parsers/creatureParser.tsx';
 import {getResistancePercent} from '../../../parsers/attributeParser.tsx';
 import {colors} from '../../../utils/colors.ts';
 import ProgressBar from '../../../components/progressBar.tsx';
 import {strings} from '../../../utils/strings.ts';
 import {LogText} from '../../../components/logText.tsx';
-import {combatHide} from '../../../redux/slices/combatSlice.tsx';
+import {
+    combatHide,
+    combatSetLog,
+    combatUpdate,
+} from '../../../redux/slices/combatSlice.tsx';
+import {rand} from '../../../parsers/itemParser.tsx';
+import {Creature} from '../../../types/creature.ts';
+import cloneDeep from 'lodash.clonedeep';
+import {rewardsModalInit} from '../../../redux/slices/rewardsModalSlice.tsx';
+import {OrangeButton} from '../../../components/orangeButton.tsx';
+import {huntingUpdate} from '../../../redux/slices/huntingSlice.tsx';
 
 export function Combat() {
     const userInfo = useSelector((state: RootState) => state.userInfo);
     const attributes = useSelector((state: RootState) => state.attributes);
-    //const hunting = useSelector((state: RootState) => state.hunting);
+    const hunting = useSelector((state: RootState) => state.hunting);
     const combat = useSelector((state: RootState) => state.combat);
-    //const [disabled, setDisabled] = useState(false);
+    const [combatComplete, setCombatComplete] = useState(false);
+    const [disabled, setDisabled] = useState(false);
     const dispatch = useDispatch();
+    const didMount = useRef(1);
 
-    useEffect(() => {}, []);
+    useEffect(() => {
+        if (!didMount.current) {
+            if (combat.creature) {
+                /* Continue Combat */
+                if (
+                    combat.statsPlayer.health > 0 &&
+                    combat.statsEnemy.health > 0
+                ) {
+                    if (!combat.playerTurn) {
+                        /* Enemy Attack */
+                        setTimeout(() => {
+                            simulateAttack(combat.playerTurn, null, 'Physical'); //TODO:
+                        }, 500);
+                    } else {
+                        setTimeout(() => {
+                            setDisabled(false);
+                        }, 500);
+                    }
+                    /* End Combat */
+                } else {
+                    const combatLog = cloneDeep(combat.combatLog);
+                    if (!combat.playerTurn) {
+                        /* Player Win */
+                        combatLog.push({
+                            username: userInfo.username,
+                            opponent: getCreatureName(
+                                (combat.creature as Creature).id,
+                            ),
+                            turn: combat.playerTurn,
+                            atkType: 'Win',
+                            damage: 0,
+                        });
+                        /* Show Defeated Log */
+                        setTimeout(() => {
+                            dispatch(combatSetLog(combatLog));
+                        }, 100);
+
+                        setTimeout(() => {
+                            dispatch(
+                                rewardsModalInit(
+                                    generateCombatRewards(
+                                        (combat.creature as Creature).rarity,
+                                        hunting.depth,
+                                        (combat.creature as Creature).level,
+                                    ),
+                                ),
+                            );
+                        }, 500);
+
+                        setTimeout(() => {
+                            setCombatComplete(true);
+                        }, 500);
+
+                        const creatureList = cloneDeep(hunting.creatureList);
+                        creatureList.splice(combat.index, 1);
+                        dispatch(
+                            huntingUpdate({
+                                depth: hunting.depth,
+                                creatureList: creatureList,
+                                killCount: hunting.killCount + 1,
+                            }),
+                        );
+                    } else {
+                        /* Enemy Win */
+                        combatLog.push({
+                            username: getCreatureName(
+                                (combat.creature as Creature).id,
+                            ),
+                            opponent: userInfo.username,
+                            turn: combat.playerTurn,
+                            atkType: 'Win',
+                            damage: 0,
+                        });
+                        /* Show Defeated Log */
+                        setTimeout(() => {
+                            dispatch(combatSetLog(combatLog));
+                        }, 100);
+
+                        setTimeout(() => {
+                            setCombatComplete(true);
+                        }, 250);
+                    }
+                }
+            }
+        } else {
+            didMount.current -= 1;
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [combat.playerTurn]);
+
+    function simulateAttack(turn: boolean, skill: null, atkType: string) {
+        const statsPlayer = cloneDeep(combat.statsPlayer);
+        const statsEnemy = cloneDeep(combat.statsEnemy);
+        const combatLog = cloneDeep(combat.combatLog);
+        const creature = combat.creature as Creature;
+        const r = Math.random();
+
+        /* Player Turn */
+        if (turn) {
+            setDisabled(turn);
+            /* Skill Attack */
+            if (skill != null) {
+                /* Spell */
+                /*if (skill.type === SkillType.Spell) {
+                        /!* Miss Spell *!/
+                        if (rand <= this.dodgeEnemy) {
+                            log = this.addColoredSpan(
+                                this.pName,
+                                ` cast ${skill.name} and missed.`,
+                                'Dodge',
+                                true,
+                            );
+                            this.combatLog.push(log);
+                        } else {
+                            let damage: number = this.getSpellDamage(
+                                skill,
+                                this.levelEnemy,
+                                true,
+                            );
+                            /!* Check if critical hit *!/
+                            if (Math.random() <= this.critPlayer) {
+                                damage = Math.round(damage * 1.5);
+                                log = this.addColoredSpan(
+                                    this.pName,
+                                    ` cast ${skill.name} dealing ${damage}`,
+                                    skill.element === 'Physical'
+                                        ? 'PhysicalCrit'
+                                        : 'MagicalCrit',
+                                    true,
+                                );
+                                this.combatLog.push(log);
+                            } else {
+                                log = this.addColoredSpan(
+                                    this.pName,
+                                    ` cast ${skill.name} dealing ${damage}`,
+                                    skill.element,
+                                    true,
+                                );
+                                this.combatLog.push(log);
+                            }
+
+                            this.currentHealthEnemy = Math.max(
+                                this.currentHealthEnemy - damage,
+                                0,
+                            );
+
+                            if (this.currentHealthEnemy > 0) {
+                                /!* Decrease Player Buffs *!/
+                                this.effectsPlayer = this.effectsPlayer.map(effect => {
+                                    if (effect.isBuff) {
+                                        if (effect.turns === 1)
+                                            this.removeEffect(
+                                                effect,
+                                                this.levelPlayer,
+                                                true,
+                                            );
+                                        effect.turns -= 1;
+                                    }
+                                    return effect;
+                                });
+                                /!* Decrease Enemy Debuffs *!/
+                                this.effectsEnemy = this.effectsEnemy.map(effect => {
+                                    if (!effect.isBuff && !effect.isDot) {
+                                        if (effect.turns === 1)
+                                            this.removeEffect(
+                                                effect,
+                                                this.levelEnemy,
+                                                true,
+                                            );
+                                        effect.turns -= 1;
+                                    }
+                                    return effect;
+                                });
+                                /!* Clear finished effects *!/
+                                this.effectsEnemy = this.effectsEnemy.filter(
+                                    effect => effect.turns > 0,
+                                );
+                                this.effectsPlayer = this.effectsPlayer.filter(
+                                    effect => effect.turns > 0,
+                                );
+                                /!* Apply Spell secondary effect *!/
+                                this.applySpellSecondary(skill, true);
+                            }
+                        }
+                    }*/
+            } else {
+                /* Basic Attack */
+                if (r <= statsEnemy.dodge) {
+                    combatLog.push({
+                        username: userInfo.username,
+                        opponent: getCreatureName(creature.id),
+                        turn: turn,
+                        atkType: 'Dodge',
+                        damage: 0,
+                    });
+                } else {
+                    let damage: number = getBasicDamage(
+                        atkType,
+                        creature.level,
+                        turn,
+                    );
+                    /* Check if critical hit */
+                    if (Math.random() <= statsPlayer.critical) {
+                        damage = Math.round(damage * 1.5);
+                        combatLog.push({
+                            username: userInfo.username,
+                            opponent: getCreatureName(creature.id),
+                            turn: turn,
+                            atkType: atkType + 'Crit',
+                            damage: damage,
+                        });
+                    } else {
+                        combatLog.push({
+                            username: userInfo.username,
+                            opponent: getCreatureName(creature.id),
+                            turn: turn,
+                            atkType: atkType,
+                            damage: damage,
+                        });
+                    }
+
+                    statsEnemy.health = Math.max(statsEnemy.health - damage, 0);
+                    /* Effects */
+                    if (statsEnemy.health > 0) {
+                        /* Decrease Player Buffs */
+                        /*this.effectsPlayer = this.effectsPlayer.map(effect => {
+                            if (effect.isBuff) {
+                                if (effect.turns === 1)
+                                    this.removeEffect(
+                                        effect,
+                                        this.levelPlayer,
+                                        true,
+                                    );
+                                effect.turns -= 1;
+                            }
+                            return effect;
+                        });*/
+                        /* Decrease Enemy Debuffs */
+                        /*this.effectsEnemy = this.effectsEnemy.map(effect => {
+                            if (!effect.isBuff && !effect.isDot) {
+                                if (effect.turns === 1)
+                                    this.removeEffect(
+                                        effect,
+                                        this.levelEnemy,
+                                        true,
+                                    );
+                                effect.turns -= 1;
+                            }
+                            return effect;
+                        });*/
+                        /* Clear finished effects */
+                        /*this.effectsEnemy = this.effectsEnemy.filter(
+                            effect => effect.turns > 0,
+                        );*/
+                        /*this.effectsPlayer = this.effectsPlayer.filter(
+                            effect => effect.turns > 0,
+                        );*/
+                    }
+                }
+            }
+            /* Apply DoT + Update Adapters */
+            /*if (this.currentHealthEnemy > 0) {
+                for (const effect of this.effectsPlayer) {
+                    /!* Apply DoTs *!/
+                    if (effect.isDot) {
+                        let damage: number = this.getDebuffDamage(
+                            effect,
+                            this.levelEnemy,
+                            true,
+                        );
+                        this.currentHealthPlayer = Math.max(
+                            this.currentHealthPlayer - damage,
+                            0,
+                        );
+
+                        combatLog = this.addColoredSpan(
+                            this.pName,
+                            ` took ${damage}`,
+                            effect.effectType.name(),
+                            false,
+                        );
+                        this.combatLog.push(combatLog);
+                        effect.turns -= 1;
+
+                        if (this.currentHealthPlayer <= 0)
+                            return new SimulationResult(
+                                100,
+                                100,
+                                this.currentHealthPlayer,
+                                this.currentHealthEnemy,
+                                this.combatLog,
+                            );
+                    }
+                }*/
+            /* Clear finished effects */
+            /*this.effectsPlayer = this.effectsPlayer.filter(
+                    effect => effect.turns > 0,
+                );*/
+            /* Update Effects List */
+            //this.effectsPlayerAdapter.notifyDataSetChanged();
+            //this.effectsEnemyAdapter.notifyDataSetChanged();
+        } else {
+            /* Skill Attack */
+            if (skill != null) {
+                /* Spell */
+                /*if (skill.type === SkillType.Spell) {
+                        /!* Miss Spell *!/
+                        if (rand <= this.dodgeEnemy) {
+                            log = this.addColoredSpan(
+                                this.pName,
+                                ` cast ${skill.name} and missed.`,
+                                'Dodge',
+                                true,
+                            );
+                            this.combatLog.push(log);
+                        } else {
+                            let damage: number = this.getSpellDamage(
+                                skill,
+                                this.levelEnemy,
+                                true,
+                            );
+                            /!* Check if critical hit *!/
+                            if (Math.random() <= this.critPlayer) {
+                                damage = Math.round(damage * 1.5);
+                                log = this.addColoredSpan(
+                                    this.pName,
+                                    ` cast ${skill.name} dealing ${damage}`,
+                                    skill.element === 'Physical'
+                                        ? 'PhysicalCrit'
+                                        : 'MagicalCrit',
+                                    true,
+                                );
+                                this.combatLog.push(log);
+                            } else {
+                                log = this.addColoredSpan(
+                                    this.pName,
+                                    ` cast ${skill.name} dealing ${damage}`,
+                                    skill.element,
+                                    true,
+                                );
+                                this.combatLog.push(log);
+                            }
+
+                            this.currentHealthEnemy = Math.max(
+                                this.currentHealthEnemy - damage,
+                                0,
+                            );
+
+                            if (this.currentHealthEnemy > 0) {
+                                /!* Decrease Player Buffs *!/
+                                this.effectsPlayer = this.effectsPlayer.map(effect => {
+                                    if (effect.isBuff) {
+                                        if (effect.turns === 1)
+                                            this.removeEffect(
+                                                effect,
+                                                this.levelPlayer,
+                                                true,
+                                            );
+                                        effect.turns -= 1;
+                                    }
+                                    return effect;
+                                });
+                                /!* Decrease Enemy Debuffs *!/
+                                this.effectsEnemy = this.effectsEnemy.map(effect => {
+                                    if (!effect.isBuff && !effect.isDot) {
+                                        if (effect.turns === 1)
+                                            this.removeEffect(
+                                                effect,
+                                                this.levelEnemy,
+                                                true,
+                                            );
+                                        effect.turns -= 1;
+                                    }
+                                    return effect;
+                                });
+                                /!* Clear finished effects *!/
+                                this.effectsEnemy = this.effectsEnemy.filter(
+                                    effect => effect.turns > 0,
+                                );
+                                this.effectsPlayer = this.effectsPlayer.filter(
+                                    effect => effect.turns > 0,
+                                );
+                                /!* Apply Spell secondary effect *!/
+                                this.applySpellSecondary(skill, true);
+                            }
+                        }
+                    }*/
+            } else {
+                /* Basic Attack */
+                if (r <= statsPlayer.dodge) {
+                    combatLog.push({
+                        username: getCreatureName(creature.id),
+                        opponent: userInfo.username,
+                        turn: turn,
+                        atkType: 'Dodge',
+                        damage: 0,
+                    });
+                } else {
+                    let damage: number = getBasicDamage(
+                        atkType,
+                        userInfo.level,
+                        turn,
+                    );
+                    /* Check if critical hit */
+                    if (Math.random() <= statsPlayer.critical) {
+                        damage = Math.round(damage * 1.5);
+                        combatLog.push({
+                            username: getCreatureName(creature.id),
+                            opponent: userInfo.username,
+                            turn: turn,
+                            atkType: atkType + 'Crit',
+                            damage: damage,
+                        });
+                    } else {
+                        combatLog.push({
+                            username: getCreatureName(creature.id),
+                            opponent: userInfo.username,
+                            turn: turn,
+                            atkType: atkType,
+                            damage: damage,
+                        });
+                    }
+
+                    statsPlayer.health = Math.max(
+                        statsPlayer.health - damage,
+                        0,
+                    );
+                    /* Effects */
+                    if (statsPlayer.health > 0) {
+                        /* Decrease Player Buffs */
+                        /*this.effectsPlayer = this.effectsPlayer.map(effect => {
+                            if (effect.isBuff) {
+                                if (effect.turns === 1)
+                                    this.removeEffect(
+                                        effect,
+                                        this.levelPlayer,
+                                        true,
+                                    );
+                                effect.turns -= 1;
+                            }
+                            return effect;
+                        });*/
+                        /* Decrease Enemy Debuffs */
+                        /*this.effectsEnemy = this.effectsEnemy.map(effect => {
+                            if (!effect.isBuff && !effect.isDot) {
+                                if (effect.turns === 1)
+                                    this.removeEffect(
+                                        effect,
+                                        this.levelEnemy,
+                                        true,
+                                    );
+                                effect.turns -= 1;
+                            }
+                            return effect;
+                        });*/
+                        /* Clear finished effects */
+                        /*this.effectsEnemy = this.effectsEnemy.filter(
+                            effect => effect.turns > 0,
+                        );*/
+                        /*this.effectsPlayer = this.effectsPlayer.filter(
+                            effect => effect.turns > 0,
+                        );*/
+                    }
+                }
+            }
+            /* Apply DoT + Update Adapters */
+            /*if (this.currentHealthEnemy > 0) {
+                for (const effect of this.effectsPlayer) {
+                    /!* Apply DoTs *!/
+                    if (effect.isDot) {
+                        let damage: number = this.getDebuffDamage(
+                            effect,
+                            this.levelEnemy,
+                            true,
+                        );
+                        this.currentHealthPlayer = Math.max(
+                            this.currentHealthPlayer - damage,
+                            0,
+                        );
+
+                        combatLog = this.addColoredSpan(
+                            this.pName,
+                            ` took ${damage}`,
+                            effect.effectType.name(),
+                            false,
+                        );
+                        this.combatLog.push(combatLog);
+                        effect.turns -= 1;
+
+                        if (this.currentHealthPlayer <= 0)
+                            return new SimulationResult(
+                                100,
+                                100,
+                                this.currentHealthPlayer,
+                                this.currentHealthEnemy,
+                                this.combatLog,
+                            );
+                    }
+                }*/
+            /* Clear finished effects */
+            /*this.effectsPlayer = this.effectsPlayer.filter(
+                    effect => effect.turns > 0,
+                );*/
+            /* Update Effects List */
+            //this.effectsPlayerAdapter.notifyDataSetChanged();
+            //this.effectsEnemyAdapter.notifyDataSetChanged();
+        }
+
+        dispatch(combatUpdate([statsPlayer, statsEnemy, [], [], combatLog]));
+    }
+
+    function getBasicDamage(
+        atkType: string,
+        level: number,
+        turn: boolean,
+    ): number {
+        let attack: number, resistance: number;
+        /* Set attack type */
+        if (turn) {
+            attack =
+                atkType === 'Physical'
+                    ? combat.statsPlayer.physicalAtk
+                    : combat.statsPlayer.magicalAtk;
+            resistance =
+                atkType === 'Physical'
+                    ? combat.statsEnemy.physicalRes
+                    : combat.statsEnemy.magicalRes;
+        } else {
+            attack =
+                atkType === 'Physical'
+                    ? combat.statsEnemy.physicalAtk
+                    : combat.statsEnemy.magicalAtk;
+            resistance =
+                atkType === 'Physical'
+                    ? combat.statsPlayer.physicalRes
+                    : combat.statsPlayer.magicalRes;
+        }
+
+        let damage: number = Math.round(
+            attack - attack * (getResistancePercent(resistance, level) / 100),
+        );
+
+        return rand(Math.round(damage * 0.97), Math.round(damage * 1.03));
+    }
 
     return (
         <Modal
             animationType="fade"
             transparent={true}
             visible={combat.modalVisible}
-            onRequestClose={() => dispatch(combatHide())}>
+            onRequestClose={() => {
+                dispatch(combatHide());
+                setDisabled(false);
+                setCombatComplete(false);
+            }}>
             {combat.creature && (
                 <View style={styles.container}>
                     {/* Creature Info */}
@@ -177,14 +740,22 @@ export function Combat() {
                                                 styles.healthProgressContainer
                                             }>
                                             <ProgressBar
-                                                progress={1}
+                                                progress={
+                                                    combat.statsEnemy.health /
+                                                    (combat.creature.stats
+                                                        .health +
+                                                        combat.creature.stats
+                                                            .bonusHealth)
+                                                }
                                                 image={'progress_bar_health'}
                                             />
                                             <Text style={styles.healthText}>
-                                                {combat.creature.stats.health +
+                                                {combat.statsEnemy.health +
                                                     ' / ' +
-                                                    combat.creature.stats
-                                                        .health}
+                                                    (combat.creature.stats
+                                                        .health +
+                                                        combat.creature.stats
+                                                            .bonusHealth)}
                                             </Text>
                                         </View>
                                     </View>
@@ -222,31 +793,20 @@ export function Combat() {
                         <View style={styles.logContainer}>
                             <FlatList
                                 style={styles.logList}
-                                data={[
-                                    'log1',
-                                    'log2',
-                                    'log3',
-                                    'log1',
-                                    'log2',
-                                    'log3',
-                                    'log1',
-                                    'log2',
-                                    'log3',
-                                    'log1',
-                                    'log2',
-                                    'log3',
-                                    'log1',
-                                    'log2',
-                                    'log3',
-                                    'log1',
-                                    'log2',
-                                    'log3',
-                                ]}
+                                data={combat.combatLog}
                                 keyExtractor={(_item, index) =>
                                     index.toString()
                                 }
-                                renderItem={({item}) => <LogText text={item} />}
+                                renderItem={({item}) => (
+                                    //@ts-ignore
+                                    <LogText log={item} />
+                                )}
                                 overScrollMode={'never'}
+                                inverted={true}
+                                /* eslint-disable-next-line react-native/no-inline-styles */
+                                contentContainerStyle={{
+                                    flexDirection: 'column-reverse',
+                                }}
                             />
                         </View>
                     </ImageBackground>
@@ -257,90 +817,125 @@ export function Combat() {
                             source={getImage('background_actionbar')}
                             resizeMode={'stretch'}>
                             <View style={styles.actionbarContainer}>
-                                <View style={styles.actionContainer}>
-                                    <Text style={styles.labelText}>
-                                        {strings.basic_attack}
-                                    </Text>
-                                    <View style={styles.actionIconContainer}>
-                                        <TouchableOpacity
-                                            style={styles.actionButton}>
-                                            <ImageBackground
-                                                style={styles.actionIcon}
-                                                source={getImage(
-                                                    'skills_icon_basic_physical',
-                                                )}
-                                                resizeMode={'stretch'}>
-                                                <Text
-                                                    style={styles.cooldownText}>
-                                                    1
-                                                </Text>
-                                            </ImageBackground>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity
-                                            style={styles.actionButton}>
-                                            <ImageBackground
-                                                style={styles.actionIcon}
-                                                source={getImage(
-                                                    'skills_icon_basic_magical',
-                                                )}
-                                                resizeMode={'stretch'}>
-                                                <Text
-                                                    style={styles.cooldownText}>
-                                                    1
-                                                </Text>
-                                            </ImageBackground>
-                                        </TouchableOpacity>
+                                {combatComplete && (
+                                    <OrangeButton
+                                        style={styles.leaveButton}
+                                        title={'Leave Combat'}
+                                        onPress={() => {
+                                            dispatch(combatHide());
+                                            setDisabled(false);
+                                            setCombatComplete(false);
+                                        }}
+                                    />
+                                )}
+                                {!combatComplete && (
+                                    <View style={styles.actionContainer}>
+                                        <Text style={styles.labelText}>
+                                            {strings.basic_attack}
+                                        </Text>
+                                        <View
+                                            style={styles.actionIconContainer}>
+                                            <TouchableOpacity
+                                                style={styles.actionButton}
+                                                disabled={disabled}
+                                                activeOpacity={0.1}
+                                                onPress={() =>
+                                                    simulateAttack(
+                                                        true,
+                                                        null,
+                                                        'Physical',
+                                                    )
+                                                }>
+                                                <ImageBackground
+                                                    style={styles.actionIcon}
+                                                    source={getImage(
+                                                        'skills_icon_basic_physical',
+                                                    )}
+                                                    resizeMode={'stretch'}
+                                                />
+                                            </TouchableOpacity>
+                                            <TouchableOpacity
+                                                style={styles.actionButton}
+                                                disabled={disabled}
+                                                onPress={() =>
+                                                    simulateAttack(
+                                                        true,
+                                                        null,
+                                                        'Magical',
+                                                    )
+                                                }>
+                                                <ImageBackground
+                                                    style={styles.actionIcon}
+                                                    source={getImage(
+                                                        'skills_icon_basic_magical',
+                                                    )}
+                                                    resizeMode={'stretch'}
+                                                />
+                                            </TouchableOpacity>
+                                        </View>
                                     </View>
-                                </View>
-                                <View style={styles.actionContainer}>
-                                    <Text style={styles.labelText}>
-                                        {strings.spells}
-                                    </Text>
-                                    <View style={styles.actionIconContainer}>
-                                        <TouchableOpacity
-                                            style={styles.actionButton}>
-                                            <ImageBackground
-                                                style={styles.actionIcon}
-                                                source={getImage(
-                                                    'skills_icon_frame',
-                                                )}
-                                                resizeMode={'stretch'}>
-                                                <Text
-                                                    style={styles.cooldownText}>
-                                                    1
-                                                </Text>
-                                            </ImageBackground>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity
-                                            style={styles.actionButton}>
-                                            <ImageBackground
-                                                style={styles.actionIcon}
-                                                source={getImage(
-                                                    'skills_icon_frame',
-                                                )}
-                                                resizeMode={'stretch'}>
-                                                <Text
-                                                    style={styles.cooldownText}>
-                                                    1
-                                                </Text>
-                                            </ImageBackground>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity
-                                            style={styles.actionButton}>
-                                            <ImageBackground
-                                                style={styles.actionIcon}
-                                                source={getImage(
-                                                    'skills_icon_frame',
-                                                )}
-                                                resizeMode={'stretch'}>
-                                                <Text
-                                                    style={styles.cooldownText}>
-                                                    1
-                                                </Text>
-                                            </ImageBackground>
-                                        </TouchableOpacity>
+                                )}
+                                {!combatComplete && (
+                                    <View style={styles.actionContainer}>
+                                        <Text style={styles.labelText}>
+                                            {strings.spells}
+                                        </Text>
+                                        <View
+                                            style={styles.actionIconContainer}>
+                                            <TouchableOpacity
+                                                style={styles.actionButton}
+                                                disabled={disabled}>
+                                                <ImageBackground
+                                                    style={styles.actionIcon}
+                                                    source={getImage(
+                                                        'skills_icon_frame',
+                                                    )}
+                                                    resizeMode={'stretch'}>
+                                                    <Text
+                                                        style={
+                                                            styles.cooldownText
+                                                        }>
+                                                        1
+                                                    </Text>
+                                                </ImageBackground>
+                                            </TouchableOpacity>
+                                            <TouchableOpacity
+                                                style={styles.actionButton}
+                                                disabled={disabled}>
+                                                <ImageBackground
+                                                    style={styles.actionIcon}
+                                                    source={getImage(
+                                                        'skills_icon_frame',
+                                                    )}
+                                                    resizeMode={'stretch'}>
+                                                    <Text
+                                                        style={
+                                                            styles.cooldownText
+                                                        }>
+                                                        1
+                                                    </Text>
+                                                </ImageBackground>
+                                            </TouchableOpacity>
+                                            <TouchableOpacity
+                                                style={styles.actionButton}
+                                                disabled={disabled}>
+                                                <ImageBackground
+                                                    style={styles.actionIcon}
+                                                    source={getImage(
+                                                        'skills_icon_frame',
+                                                    )}
+                                                    resizeMode={'stretch'}>
+                                                    <Text
+                                                        style={
+                                                            styles.cooldownText
+                                                        }>
+                                                        1
+                                                    </Text>
+                                                </ImageBackground>
+                                            </TouchableOpacity>
+                                        </View>
                                     </View>
-                                </View>
+                                )}
                             </View>
                         </ImageBackground>
                     </View>
@@ -448,11 +1043,14 @@ export function Combat() {
                                                 styles.healthProgressContainer
                                             }>
                                             <ProgressBar
-                                                progress={1}
+                                                progress={
+                                                    combat.statsPlayer.health /
+                                                    attributes.health
+                                                }
                                                 image={'progress_bar_health'}
                                             />
                                             <Text style={styles.healthText}>
-                                                {attributes.health +
+                                                {combat.statsPlayer.health +
                                                     ' / ' +
                                                     attributes.health}
                                             </Text>
@@ -512,6 +1110,7 @@ const styles = StyleSheet.create({
     },
     actionbarContainer: {
         flexDirection: 'row',
+        justifyContent: 'center',
         marginTop: 14,
         marginBottom: 16,
         marginStart: 8,
@@ -681,5 +1280,10 @@ const styles = StyleSheet.create({
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
+    },
+    leaveButton: {
+        aspectRatio: 3.5,
+        width: '40%',
+        margin: 12,
     },
 });

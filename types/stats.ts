@@ -16,11 +16,11 @@ export interface Stats {
 }
 
 export const startingStats: Stats = {
-    health: 0,
-    physicalAtk: 0,
-    magicalAtk: 0,
-    physicalRes: 0,
-    magicalRes: 0,
+    health: 60,
+    physicalAtk: 12,
+    magicalAtk: 12,
+    physicalRes: 5,
+    magicalRes: 5,
     critical: 0.05,
     dodge: 0.05,
     bonusHealth: 0,

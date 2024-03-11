@@ -195,36 +195,6 @@ function getHerbQuantity(node: Node): number {
     return quantity;
 }
 
-function getClothFurQuantity(rarity: string): number {
-    /* Values defined in Sheet */
-    const grayMin: number = 3,
-        greenMin: number = 2,
-        blueMin: number = 1,
-        purpleMin: number = 1;
-    const grayMax: number = 5,
-        greenMax: number = 4,
-        blueMax: number = 2,
-        purpleMax: number = 2;
-    let quantity: number = 0;
-
-    switch (rarity) {
-        case 'common':
-            quantity = rand(grayMin, grayMax);
-            break;
-        case 'uncommon':
-            quantity = rand(greenMin, greenMax);
-            break;
-        case 'rare':
-            quantity = rand(blueMin, blueMax);
-            break;
-        case 'epic':
-            quantity = rand(purpleMin, purpleMax);
-            break;
-    }
-
-    return quantity;
-}
-
 function getTimeMultiplier(time: number, rarity: string): number {
     let multiplier: number = 0;
 

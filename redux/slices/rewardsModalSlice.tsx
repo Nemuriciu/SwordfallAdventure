@@ -15,14 +15,14 @@ export const rewardsModalSlice = createSlice({
     name: 'rewardsModal',
     initialState,
     reducers: {
-        setRewardsModalVisible: (state, action: PayloadAction<boolean>) => {
-            state.modalVisible = action.payload;
+        rewardsModalHide: state => {
+            state.modalVisible = false;
         },
-        updateRewardsList: (state, action: PayloadAction<Item[]>) => {
+        rewardsModalInit: (state, action: PayloadAction<Item[]>) => {
             state.rewards = action.payload;
+            state.modalVisible = true;
         },
     },
 });
 
-export const {setRewardsModalVisible, updateRewardsList} =
-    rewardsModalSlice.actions;
+export const {rewardsModalHide, rewardsModalInit} = rewardsModalSlice.actions;

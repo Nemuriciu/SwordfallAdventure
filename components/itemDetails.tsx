@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react';
 import {
-    Modal,
     StyleSheet,
     Text,
     View,
@@ -8,6 +7,7 @@ import {
     Image,
     Alert,
 } from 'react-native';
+import Modal from 'react-native-modal';
 import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '../redux/store.tsx';
 import {
@@ -26,7 +26,7 @@ import {
 import {getImage} from '../assets/images/_index';
 import {OrangeButton} from './orangeButton.tsx';
 import {colors} from '../utils/colors.ts';
-import {getStats, Stats} from '../parsers/attributeParser.tsx';
+import {getStats} from '../parsers/attributeParser.tsx';
 import {CloseButton} from './closeButton.tsx';
 import {
     inventoryAddItemAt,
@@ -48,23 +48,7 @@ import {strings} from '../utils/strings.ts';
 import {isFull} from '../utils/arrayUtils.ts';
 import Toast from 'react-native-simple-toast';
 import {updateShards} from '../redux/slices/userInfoSlice.tsx';
-
-const emptyStats = {
-    health: 0,
-    physicalAtk: 0,
-    magicalAtk: 0,
-    physicalRes: 0,
-    magicalRes: 0,
-    critical: 0,
-    dodge: 0,
-    bonusHealth: 0,
-    bonusPhysicalAtk: 0,
-    bonusMagicalAtk: 0,
-    bonusPhysicalRes: 0,
-    bonusMagicalRes: 0,
-    bonusCritical: 0,
-    bonusDodge: 0,
-};
+import {emptyStats, Stats} from '../types/stats.ts';
 
 export function ItemDetails() {
     const userInfo = useSelector((state: RootState) => state.userInfo);
@@ -230,11 +214,13 @@ export function ItemDetails() {
         }
     }
 
+    // noinspection RequiredAttributes
     return (
         <Modal
-            animationType="fade"
-            transparent={true}
-            visible={itemDetails.modalVisible}>
+            animationIn={'zoomIn'}
+            animationOut={'zoomOut'}
+            isVisible={itemDetails.modalVisible}
+            backdropTransitionOutTiming={0}>
             {isItem(itemDetails.item) && (
                 <View style={styles.modalAlpha}>
                     <View style={styles.container}>
@@ -477,7 +463,6 @@ export function ItemDetails() {
 const styles = StyleSheet.create({
     modalAlpha: {
         flex: 1,
-        backgroundColor: 'rgba(0, 0, 0, 0.75)',
     },
     container: {
         flex: 1,

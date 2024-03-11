@@ -11,6 +11,7 @@ import {TopStatus} from './screens/topStatus';
 import {getImage} from './assets/images/_index';
 import {Provider} from 'react-redux';
 import {store} from './redux/store';
+import {RewardsModal} from './components/rewardsModal';
 
 // eslint-disable-next-line no-unused-vars
 const USERNAME = 'vlad.megaboy@gmail.com';
@@ -35,6 +36,7 @@ function App() {
                 <StatusBar />
                 <TopStatus />
                 <NavigationContainer>
+                    <RewardsModal />
                     <Tab.Navigator
                         screenOptions={{
                             headerShown: false,

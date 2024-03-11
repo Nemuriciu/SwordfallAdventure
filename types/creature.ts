@@ -1,4 +1,4 @@
-import {Stats} from '../parsers/attributeParser.tsx';
+import {Stats} from './stats.ts';
 
 export interface Creature {
     id: string;

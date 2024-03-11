@@ -113,7 +113,6 @@ export function Gathering() {
             style={styles.container}
             source={getImage('background_outer')}
             resizeMode={'stretch'}>
-            <RewardsModal />
             <ImageBackground
                 style={styles.innerContainer}
                 source={getImage('background_inner')}

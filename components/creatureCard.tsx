@@ -7,8 +7,9 @@ import {Creature} from '../types/creature.ts';
 import {getCreatureImg, getCreatureName} from '../parsers/creatureParser.tsx';
 import {getItemColor} from '../parsers/itemParser.tsx';
 import {getResistancePercent} from '../parsers/attributeParser.tsx';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {combatShow} from '../redux/slices/combatSlice.tsx';
+import {RootState} from '../redux/store.tsx';
 
 interface props {
     creature: Creature;
@@ -16,6 +17,7 @@ interface props {
 }
 
 export function CreatureCard({creature, index}: props) {
+    const attributes = useSelector((state: RootState) => state.attributes);
     const [disabled, setDisabled] = useState(false);
     const dispatch = useDispatch();
 
@@ -25,7 +27,7 @@ export function CreatureCard({creature, index}: props) {
         if (!disabled) {
             setDisabled(true);
 
-            dispatch(combatShow([creature, index]));
+            dispatch(combatShow([creature, index, attributes, creature.stats]));
 
             setTimeout(() => {
                 setDisabled(false);

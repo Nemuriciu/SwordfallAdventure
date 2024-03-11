@@ -1,16 +1,82 @@
 import {StyleSheet, Text} from 'react-native';
-import React from 'react';
+import SpannableBuilder from '@mj-studio/react-native-spannable-string';
+import {colors} from '../utils/colors.ts';
+import {Log} from '../types/log.ts';
 
 interface props {
-    text: string;
+    log: Log;
 }
 
-export function LogText({text}: props) {
-    return <Text style={styles.text}>{text}</Text>;
+export function LogText({log}: props) {
+    SpannableBuilder.getInstanceWithComponent(Text);
+
+    switch (log.atkType) {
+        case 'Win':
+            return SpannableBuilder.getInstance(styles.text)
+                .appendColored(
+                    log.username + ' has defeated ' + log.opponent,
+                    log.turn ? colors.enemy_color : colors.player_color,
+                )
+                .build();
+        case 'Dodge':
+            return SpannableBuilder.getInstance(styles.text)
+                .appendColored(
+                    log.username + ' ',
+                    log.turn ? colors.player_color : colors.enemy_color,
+                )
+                .append(' missed the attack. ')
+                .appendColored(' (Dodge)', colors.dodge_color)
+                .build();
+        case 'Physical':
+            return SpannableBuilder.getInstance(styles.text)
+                .appendColored(
+                    log.username + ' ',
+                    log.turn ? colors.player_color : colors.enemy_color,
+                )
+                .append(' deals ' + log.damage)
+                .appendColored(' physical ', colors.physicalAtk_color)
+                .append('damage.')
+                .build();
+        case 'Magical':
+            return SpannableBuilder.getInstance(styles.text)
+                .appendColored(
+                    log.username + ' ',
+                    log.turn ? colors.player_color : colors.enemy_color,
+                )
+                .append(' deals ' + log.damage)
+                .appendColored(' magical ', colors.magicalAtk_color)
+                .append('damage.')
+                .build();
+        case 'PhysicalCrit':
+            return SpannableBuilder.getInstance(styles.text)
+                .appendColored(
+                    log.username + ' ',
+                    log.turn ? colors.player_color : colors.enemy_color,
+                )
+                .append(' deals ' + log.damage)
+                .appendColored(' physical ', colors.physicalAtk_color)
+                .append('damage. ')
+                .appendColored('(Critical)', colors.critical_color)
+                .build();
+        case 'MagicalCrit':
+            return SpannableBuilder.getInstance(styles.text)
+                .appendColored(
+                    log.username + ' ',
+                    log.turn ? colors.player_color : colors.enemy_color,
+                )
+                .append(' deals ' + log.damage)
+                .appendColored(' magical ', colors.magicalAtk_color)
+                .append('damage. ')
+                .appendColored('(Critical)', colors.critical_color)
+                .build();
+        case 'Bleeding':
+        case 'Poison':
+        case 'Burning':
+            return;
+    }
 }
 
 const styles = StyleSheet.create({
-    container: {},
     text: {
         marginBottom: 8,
         textAlign: 'center',

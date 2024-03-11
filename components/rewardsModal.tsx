@@ -1,6 +1,5 @@
 import React, {useEffect} from 'react';
 import {
-    Modal,
     StyleSheet,
     View,
     ImageBackground,
@@ -9,11 +8,12 @@ import {
     Image,
     Dimensions,
 } from 'react-native';
+import Modal from 'react-native-modal';
 import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '../redux/store.tsx';
 import {getImage} from '../assets/images/_index';
 import {CloseButton} from './closeButton.tsx';
-import {setRewardsModalVisible} from '../redux/slices/rewardsModalSlice.tsx';
+import {rewardsModalHide} from '../redux/slices/rewardsModalSlice.tsx';
 import {getItemImg} from '../parsers/itemParser.tsx';
 import {strings} from '../utils/strings.ts';
 import {isFull} from '../utils/arrayUtils.ts';
@@ -30,18 +30,22 @@ export function RewardsModal() {
     useEffect(() => {
         if (rewardsModal.modalVisible) {
             if (!isFull(inventory.list)) {
-                dispatch(inventoryAddItems(rewardsModal.rewards));
-                dispatch(updateShards(userInfo.shards + 100)); //TODO:
+                setTimeout(() => {
+                    dispatch(inventoryAddItems(rewardsModal.rewards));
+                    dispatch(updateShards(userInfo.shards + 100)); //TODO:
+                }, 400);
             }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [rewardsModal]);
+    }, [rewardsModal.modalVisible]);
 
+    // noinspection RequiredAttributes
     return (
         <Modal
-            animationType="fade"
-            transparent={true}
-            visible={rewardsModal.modalVisible}>
+            animationIn={'zoomIn'}
+            animationOut={'zoomOut'}
+            isVisible={rewardsModal.modalVisible}
+            backdropTransitionOutTiming={0}>
             <View style={styles.modalAlpha}>
                 <View style={styles.container}>
                     <ImageBackground
@@ -54,7 +58,9 @@ export function RewardsModal() {
                                 style={styles.flatList}
                                 horizontal
                                 data={rewardsModal.rewards}
-                                keyExtractor={(item, index) => index.toString()}
+                                keyExtractor={(_item, index) =>
+                                    index.toString()
+                                }
                                 renderItem={({item}) => (
                                     <ImageBackground
                                         style={styles.rewardSlot}
@@ -82,9 +88,7 @@ export function RewardsModal() {
                         </View>
 
                         <CloseButton
-                            onPress={() =>
-                                dispatch(setRewardsModalVisible(false))
-                            }
+                            onPress={() => dispatch(rewardsModalHide())}
                             style={styles.closeButton}
                         />
                     </ImageBackground>
@@ -97,7 +101,6 @@ export function RewardsModal() {
 const styles = StyleSheet.create({
     modalAlpha: {
         flex: 1,
-        backgroundColor: 'rgba(0, 0, 0, 0.75)',
     },
     container: {
         flex: 1,

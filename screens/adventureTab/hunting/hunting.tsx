@@ -6,7 +6,7 @@ import {
     Text,
     View,
 } from 'react-native';
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef} from 'react';
 import {getImage} from '../../../assets/images/_index';
 import {colors} from '../../../utils/colors.ts';
 import {CreatureCard} from '../../../components/creatureCard.tsx';
@@ -25,7 +25,6 @@ import {Combat} from './combat.tsx';
 export function Hunting() {
     const userInfo = useSelector((state: RootState) => state.userInfo);
     const hunting = useSelector((state: RootState) => state.hunting);
-    //const [killCount, setKillCount] = useState(0);
     const dispatch = useDispatch();
     const didMount = useRef(1);
 
@@ -81,7 +80,13 @@ export function Hunting() {
             creatureList.push(getCreature(userInfo.level, depth));
         }
 
-        dispatch(huntingUpdate({depth: depth, creatureList: creatureList}));
+        dispatch(
+            huntingUpdate({
+                depth: depth,
+                creatureList: creatureList,
+                killCount: 0,
+            }),
+        );
     }
 
     function resetDepth() {
@@ -93,7 +98,13 @@ export function Hunting() {
             creatureList.push(getCreature(userInfo.level, depth));
         }
 
-        dispatch(huntingUpdate({depth: depth, creatureList: creatureList}));
+        dispatch(
+            huntingUpdate({
+                depth: depth,
+                creatureList: creatureList,
+                killCount: 0,
+            }),
+        );
     }
 
     return (
@@ -128,11 +139,12 @@ export function Hunting() {
                 <OrangeButton
                     style={styles.button}
                     title={strings.back}
-                    onPress={() => {}}
+                    onPress={goDeeper}
                 />
                 <OrangeButton
                     style={styles.button}
                     title={strings.go_deeper}
+                    disabled={hunting.killCount < 3}
                     onPress={goDeeper}
                 />
                 <OrangeButton

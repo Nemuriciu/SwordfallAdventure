@@ -15,10 +15,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '../redux/store.tsx';
 import {setGatherInfo} from '../redux/slices/gatherInfoSlice.tsx';
 import ProgressBar from './progressBar.tsx';
-import {
-    setRewardsModalVisible,
-    updateRewardsList,
-} from '../redux/slices/rewardsModalSlice.tsx';
+import {rewardsModalInit} from '../redux/slices/rewardsModalSlice.tsx';
 
 interface props {
     node: Node;
@@ -79,15 +76,13 @@ export function GatherNode({node, index}: props) {
     function claimGathering() {
         /* Generate Rewards */
         dispatch(
-            updateRewardsList(
+            rewardsModalInit(
                 generateNodeRewards(
                     gatherInfo.nodes[gatherInfo.nodeIndex],
                     userInfo.level,
                 ),
             ),
         );
-        /* Display Rewards Modal */
-        dispatch(setRewardsModalVisible(true));
         /* Remove Node from list */
         const nodeList = cloneDeep(gatherInfo.nodes);
         nodeList.splice(index, 1);
