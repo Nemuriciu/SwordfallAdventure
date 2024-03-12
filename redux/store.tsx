@@ -21,10 +21,6 @@ export const store = configureStore({
         itemDetails: itemDetailsSlice.reducer,
         rewardsModal: rewardsModalSlice.reducer,
     },
-    middleware: getDefaultMiddleware =>
-        getDefaultMiddleware({
-            serializableCheck: false,
-        }),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

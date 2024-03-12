@@ -50,7 +50,7 @@ export function getNode(level: number, type: string): Node {
     };
 }
 
-export function generateNodeRewards(node: Node, level: number): Item[] {
+export function getNodeRewards(node: Node, level: number): Item[] {
     // @ts-ignore
     const rewards: Item[] = [];
 

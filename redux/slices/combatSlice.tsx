@@ -53,15 +53,13 @@ export const combatSlice = createSlice({
             state.statsEnemy.critical =
                 statsCopy.critical + statsCopy.bonusCritical;
             state.statsEnemy.dodge = statsCopy.dodge + statsCopy.bonusDodge;
+            state.effectsPlayer = [];
+            state.effectsEnemy = [];
+            state.combatLog = [];
+            state.playerTurn = true;
         },
         combatHide: state => {
             state.modalVisible = initialState.modalVisible;
-            state.creature = initialState.creature;
-            state.index = initialState.index;
-            state.statsPlayer = state.statsEnemy = emptyStats;
-            state.effectsPlayer = state.effectsEnemy = [];
-            state.combatLog = [];
-            state.playerTurn = true;
         },
         combatUpdate: (
             state,

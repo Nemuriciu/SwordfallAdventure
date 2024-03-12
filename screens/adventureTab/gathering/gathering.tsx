@@ -11,7 +11,6 @@ import {dynamoDb} from '../../../database';
 import {setGatherInfo} from '../../../redux/slices/gatherInfoSlice.tsx';
 import {getNode, Node} from '../../../parsers/nodeParser.tsx';
 import {rand} from '../../../parsers/itemParser.tsx';
-import {RewardsModal} from '../../../components/rewardsModal.tsx';
 import arrayShuffle from 'array-shuffle';
 
 export function Gathering() {

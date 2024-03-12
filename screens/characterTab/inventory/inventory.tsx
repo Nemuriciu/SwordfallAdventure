@@ -109,16 +109,19 @@ export function Inventory() {
         <ImageBackground
             style={styles.container}
             source={getImage('background_outer')}
-            resizeMode={'stretch'}>
+            resizeMode={'stretch'}
+            fadeDuration={0}>
             <ItemDetails />
             <ImageBackground
                 style={styles.innerContainer}
                 source={getImage('background_inner')}
-                resizeMode={'stretch'}>
+                resizeMode={'stretch'}
+                fadeDuration={0}>
                 <View style={styles.infoContainer}>
                     <Image
                         style={styles.bagIcon}
                         source={getImage('icon_bag')}
+                        fadeDuration={0}
                     />
                     <Text
                         numberOfLines={1}
@@ -159,7 +162,8 @@ export function Inventory() {
                                         isItem(item)
                                             ? getImage(getItemImg(item.id))
                                             : getImage('icon_slot')
-                                    }>
+                                    }
+                                    fadeDuration={0}>
                                     <Text style={styles.inventorySlotUpgrade}>
                                         {isItem(item) && item.upgrade
                                             ? '+' + item.upgrade

@@ -19,15 +19,9 @@ export function OrangeButton({title, onPress, disabled, style}: props) {
 
     const handlePress = () => {
         if (!disabled) {
-            //setDisabled(true);
-            //disabled = true;
             if (onPress) {
                 onPress();
             }
-            /*setTimeout(() => {
-                //setDisabled(false);
-                disabled = false;
-            }, 300);*/
         }
     };
 
@@ -55,7 +49,8 @@ export function OrangeButton({title, onPress, disabled, style}: props) {
                         ? pressedImage
                         : defaultImage
                 }
-                resizeMode={'stretch'}>
+                resizeMode={'stretch'}
+                fadeDuration={0}>
                 <Text
                     style={{
                         width: '100%',

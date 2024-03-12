@@ -1,6 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {
-    Modal,
     StyleSheet,
     View,
     ImageBackground,
@@ -10,11 +9,12 @@ import {
     Dimensions,
     TouchableOpacity,
 } from 'react-native';
+import Modal from 'react-native-modal';
 import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '../../../redux/store.tsx';
 import {getImage} from '../../../assets/images/_index';
 import {
-    generateCombatRewards,
+    getCombatRewards,
     getCreatureImg,
     getCreatureName,
 } from '../../../parsers/creatureParser.tsx';
@@ -85,7 +85,7 @@ export function Combat() {
                         setTimeout(() => {
                             dispatch(
                                 rewardsModalInit(
-                                    generateCombatRewards(
+                                    getCombatRewards(
                                         (combat.creature as Creature).rarity,
                                         hunting.depth,
                                         (combat.creature as Creature).level,
@@ -590,19 +590,34 @@ export function Combat() {
         return rand(Math.round(damage * 0.97), Math.round(damage * 1.03));
     }
 
+    function leaveCombat() {
+        dispatch(combatHide());
+        setDisabled(false);
+        setTimeout(() => {
+            setCombatComplete(false);
+        }, 500);
+    }
+
+    // noinspection RequiredAttributes
     return (
         <Modal
-            animationType="fade"
-            transparent={true}
-            visible={combat.modalVisible}
-            onRequestClose={() => {
+            /* eslint-disable-next-line react-native/no-inline-styles */
+            style={{margin: 0}}
+            animationIn={'zoomIn'}
+            animationOut={'fadeOut'}
+            animationInTiming={500}
+            isVisible={combat.modalVisible}
+            hideModalContentWhileAnimating={true}
+            useNativeDriver={true}
+            hasBackdrop={false}
+            onBackButtonPress={() => {
                 dispatch(combatHide());
                 setDisabled(false);
                 setCombatComplete(false);
             }}>
-            {combat.creature && (
-                <View style={styles.container}>
-                    {/* Creature Info */}
+            <View style={styles.container}>
+                {/* Creature Info */}
+                {combat.creature && (
                     <View>
                         <ImageBackground
                             source={getImage('background_combat_info')}
@@ -785,7 +800,9 @@ export function Combat() {
                             </View>
                         </ImageBackground>
                     </View>
-                    {/* Combat Log */}
+                )}
+                {/* Combat Log */}
+                {combat.creature && (
                     <ImageBackground
                         style={styles.logBackground}
                         source={getImage('background_log')}
@@ -810,7 +827,9 @@ export function Combat() {
                             />
                         </View>
                     </ImageBackground>
-                    {/* Actionbar */}
+                )}
+                {/* Actionbar */}
+                {combat.creature && (
                     <View>
                         <ImageBackground
                             style={styles.actionbarBackground}
@@ -821,11 +840,7 @@ export function Combat() {
                                     <OrangeButton
                                         style={styles.leaveButton}
                                         title={'Leave Combat'}
-                                        onPress={() => {
-                                            dispatch(combatHide());
-                                            setDisabled(false);
-                                            setCombatComplete(false);
-                                        }}
+                                        onPress={() => leaveCombat()}
                                     />
                                 )}
                                 {!combatComplete && (
@@ -939,7 +954,9 @@ export function Combat() {
                             </View>
                         </ImageBackground>
                     </View>
-                    {/* Player Info */}
+                )}
+                {/* Player Info */}
+                {combat.creature && (
                     <View>
                         <ImageBackground
                             source={getImage('background_combat_info')}
@@ -1082,8 +1099,8 @@ export function Combat() {
                             </View>
                         </ImageBackground>
                     </View>
-                </View>
-            )}
+                )}
+            </View>
         </Modal>
     );
 }
@@ -1092,7 +1109,6 @@ const styles = StyleSheet.create({
     container: {
         width: '100%',
         height: '100%',
-        backgroundColor: 'rgba(0, 0, 0, 0.75)',
     },
     topContainer: {
         flexDirection: 'row',

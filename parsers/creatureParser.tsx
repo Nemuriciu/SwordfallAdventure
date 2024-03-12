@@ -151,7 +151,7 @@ export function getCreature(level: number, depth: number): Creature {
     } as Creature;
 }
 
-export function generateCombatRewards(
+export function getCombatRewards(
     rarity: string,
     depth: number,
     level: number,

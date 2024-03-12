@@ -1,5 +1,5 @@
 import {isItem, Item} from '../types/item';
-import {getItemCategory} from '../parsers/itemParser.tsx';
+import {getItemCategory, getKey} from '../parsers/itemParser.tsx';
 
 export function addItem(item: Item, list: (Item | {})[]) {
     const category = getItemCategory(item.id);
@@ -30,6 +30,15 @@ export function isFull(list: (Item | {})[]): boolean {
     return true;
 }
 
+export function hasTreasureKey(
+    list: (Item | {})[],
+    rarity: string,
+    level: number,
+): boolean {
+    const key = getKey(rarity, level, 1);
+    return itemExists(key, list);
+}
+
 function itemExists(item: Item, list: (Item | {})[]) {
     for (let i = 0; i < list.length; i++) {
         const _item = list[i];
@@ -47,7 +56,7 @@ function itemExists(item: Item, list: (Item | {})[]) {
     return false;
 }
 
-function getInventoryIndex(item: Item, list: (Item | {})[]): number {
+export function getInventoryIndex(item: Item, list: (Item | {})[]): number {
     for (let i = 0; i < list.length; i++) {
         const _item = list[i];
         if (isItem(_item)) {

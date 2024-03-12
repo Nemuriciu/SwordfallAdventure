@@ -43,6 +43,8 @@ export const strings = {
     mountains: 'Mountains',
     forest: 'Forest',
     claim: 'Claim',
+    open: 'Open',
+    use: 'Use',
     crafting_table: 'Crafting Table',
     consumables: 'Consumables',
     resources: 'Resources',

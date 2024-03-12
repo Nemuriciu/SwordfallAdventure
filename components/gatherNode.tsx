@@ -3,7 +3,7 @@ import React, {useEffect, useState} from 'react';
 import {Image, Text, StyleSheet, View, ImageBackground} from 'react-native';
 import {getImage} from '../assets/images/_index';
 import {
-    generateNodeRewards,
+    getNodeRewards,
     getNodeImg,
     getNodeName,
     Node,
@@ -77,7 +77,7 @@ export function GatherNode({node, index}: props) {
         /* Generate Rewards */
         dispatch(
             rewardsModalInit(
-                generateNodeRewards(
+                getNodeRewards(
                     gatherInfo.nodes[gatherInfo.nodeIndex],
                     userInfo.level,
                 ),
@@ -115,8 +115,9 @@ export function GatherNode({node, index}: props) {
             style={styles.nodeBackground}
             source={getImage('background_node')}>
             <Image
-                source={getImage(getNodeImg(node.id))}
                 style={styles.image}
+                source={getImage(getNodeImg(node.id))}
+                fadeDuration={0}
             />
             <View style={styles.infoContainer}>
                 <Text style={[styles.name, {color: getItemColor(node.rarity)}]}>

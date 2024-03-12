@@ -1,0 +1,239 @@
+import React, {useState} from 'react';
+import {StyleSheet, View, ImageBackground, Text, Image} from 'react-native';
+import Modal from 'react-native-modal';
+import {useDispatch} from 'react-redux';
+import {getImage} from '../assets/images/_index';
+import {Item} from '../types/item.ts';
+import SpannableBuilder from '@mj-studio/react-native-spannable-string';
+import {
+    getItemCategory,
+    getItemColor,
+    getItemName,
+    getItemRarity,
+} from '../parsers/itemParser.tsx';
+import {Slider} from '@miblanchard/react-native-slider';
+import {colors} from '../utils/colors.ts';
+import {OrangeButton} from './orangeButton.tsx';
+import {strings} from '../utils/strings.ts';
+import {itemDetailsHide} from '../redux/slices/itemDetailsSlice.tsx';
+import {inventoryRemoveItemAt} from '../redux/slices/inventorySlice.tsx';
+
+interface props {
+    visible: boolean;
+    setVisible: React.Dispatch<React.SetStateAction<boolean>>;
+    item: Item;
+    index: number;
+}
+
+export function DiscardModal({visible, setVisible, item, index}: props) {
+    const dispatch = useDispatch();
+    const [quantity, setQuantity] = useState(1);
+    const [disabled, setDisabled] = useState(false);
+    SpannableBuilder.getInstanceWithComponent(Text);
+
+    function removeItem() {
+        setDisabled(true);
+
+        /* Hide Item Details */
+        setTimeout(() => {
+            dispatch(itemDetailsHide());
+        }, 50);
+
+        /* Remove item from Inventory */
+        setTimeout(() => {
+            dispatch(inventoryRemoveItemAt({index: index, quantity: quantity}));
+        }, 50);
+
+        /* Hide Discard Modal */
+        setTimeout(() => {
+            setVisible(false);
+        }, 250);
+
+        setTimeout(() => {
+            setDisabled(false);
+        }, 1000);
+    }
+
+    const Title = () => {
+        return SpannableBuilder.getInstance(styles.title)
+            .append(
+                'Are you sure you want to ' +
+                    (getItemCategory(item.id) === 'equipment'
+                        ? 'break '
+                        : 'discard '),
+            )
+            .appendColored(
+                getItemName(item.id),
+                getItemColor(getItemRarity(item.id)),
+            )
+            .append(' ?')
+            .build();
+    };
+
+    // noinspection RequiredAttributes
+    return (
+        <Modal
+            animationIn={'fadeIn'}
+            animationOut={'fadeOut'}
+            isVisible={visible}
+            backdropTransitionOutTiming={0}
+            useNativeDriver={true}>
+            <View style={styles.container}>
+                <ImageBackground
+                    style={styles.background}
+                    source={getImage('background_details')}
+                    resizeMode={'stretch'}
+                    fadeDuration={0}>
+                    <View style={styles.innerContainer}>
+                        <Title />
+                        {item.quantity > 1 && (
+                            <View style={styles.sliderContainer}>
+                                <Slider
+                                    value={quantity}
+                                    step={1}
+                                    minimumValue={1}
+                                    maximumValue={item.quantity}
+                                    minimumTrackTintColor={colors.primary}
+                                    onValueChange={val => setQuantity(val[0])}
+                                    renderAboveThumbComponent={(_, ix) => (
+                                        <Text style={styles.thumbValue}>
+                                            {ix}
+                                        </Text>
+                                    )}
+                                    thumbStyle={styles.sliderThumb}
+                                />
+                            </View>
+                        )}
+                        {getItemCategory(item.id) === 'equipment' && (
+                            <View style={styles.rewardsContainer}>
+                                <Text style={styles.shardsTitle}>
+                                    You will receive:
+                                </Text>
+                                <View style={styles.shardsContainer}>
+                                    <Image
+                                        style={styles.shardsIcon}
+                                        source={getImage('icon_shards')}
+                                        fadeDuration={0}
+                                    />
+                                    <Text style={styles.shardsText}>100</Text>
+                                </View>
+                            </View>
+                        )}
+                        <View style={styles.buttonContainer}>
+                            <OrangeButton
+                                style={styles.actionButton}
+                                title={strings.yes}
+                                onPress={removeItem}
+                                disabled={disabled}
+                            />
+                            <OrangeButton
+                                style={styles.actionButton}
+                                title={strings.no}
+                                onPress={() => setVisible(false)}
+                                disabled={disabled}
+                            />
+                        </View>
+                    </View>
+                </ImageBackground>
+            </View>
+        </Modal>
+    );
+}
+
+const styles = StyleSheet.create({
+    modalAlpha: {
+        flex: 1,
+    },
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    background: {
+        width: '100%',
+    },
+    innerContainer: {
+        marginTop: 42,
+        marginBottom: 42,
+        marginStart: 32,
+        marginEnd: 32,
+    },
+    title: {
+        marginBottom: 28,
+        textAlign: 'center',
+        color: 'white',
+        fontSize: 18,
+        fontFamily: 'Myriad',
+        textShadowColor: 'rgba(0, 0, 0, 1)',
+        textShadowOffset: {width: 1, height: 1},
+        textShadowRadius: 5,
+    },
+    subtitle: {
+        marginBottom: 36,
+        textAlign: 'center',
+        color: 'white',
+        fontSize: 16,
+        fontFamily: 'Myriad',
+        textShadowColor: 'rgba(0, 0, 0, 1)',
+        textShadowOffset: {width: 1, height: 1},
+        textShadowRadius: 5,
+    },
+    shardsTitle: {
+        marginBottom: 12,
+        textAlign: 'center',
+        color: 'white',
+        fontSize: 16,
+        fontFamily: 'Myriad',
+        textShadowColor: 'rgba(0, 0, 0, 1)',
+        textShadowOffset: {width: 1, height: 1},
+        textShadowRadius: 5,
+    },
+    rewardsContainer: {
+        alignItems: 'center',
+        marginBottom: 8,
+    },
+    shardsContainer: {
+        flexDirection: 'row',
+        marginBottom: 18,
+    },
+    shardsIcon: {
+        aspectRatio: 1,
+        width: '8.5%',
+        height: undefined,
+    },
+    shardsText: {
+        marginStart: 4,
+        marginTop: 2,
+        alignSelf: 'center',
+        color: 'white',
+        fontSize: 16,
+        fontFamily: 'Myriad',
+        textShadowColor: 'rgba(0, 0, 0, 1)',
+        textShadowOffset: {width: 1, height: 1},
+        textShadowRadius: 5,
+    },
+    sliderContainer: {
+        marginStart: 12,
+        marginEnd: 12,
+        marginBottom: 24,
+    },
+    sliderThumb: {
+        backgroundColor: 'white',
+    },
+    thumbValue: {
+        color: colors.primary,
+        fontSize: 16,
+        fontFamily: 'Myriad_Bold',
+        textShadowColor: 'rgba(0, 0, 0, 1)',
+        textShadowOffset: {width: 1, height: 1},
+        textShadowRadius: 5,
+    },
+    buttonContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-evenly',
+    },
+    actionButton: {
+        aspectRatio: 3,
+        width: '40%',
+    },
+});

@@ -44,15 +44,18 @@ export function CreatureCard({creature, index}: props) {
                     style={styles.avatar}
                     source={getImage(getCreatureImg(creature.id))}
                     resizeMode={'stretch'}
+                    fadeDuration={0}
                 />
                 <Image
                     style={styles.avatarFrame}
                     source={getImage('avatar_frame_' + creature.rarity)}
+                    fadeDuration={0}
                 />
                 <View style={styles.levelContainer}>
                     <ImageBackground
                         source={getImage('icon_level')}
-                        resizeMode={'stretch'}>
+                        resizeMode={'stretch'}
+                        fadeDuration={0}>
                         <View style={styles.levelTextContainer}>
                             <Text style={styles.levelText}>
                                 {creature.level}
@@ -138,6 +141,7 @@ export function CreatureCard({creature, index}: props) {
                         <OrangeButton
                             title={'Attack'}
                             onPress={attackCreature}
+                            disabled={disabled}
                             style={styles.attackButton}
                         />
                         <View style={styles.staminaContainer}>

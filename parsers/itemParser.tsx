@@ -25,7 +25,7 @@ export function getItemRarity(id: string): string {
     // @ts-ignore
     return itemsJson[id].rarity;
 }
-export function getItemColor(rarity: string) {
+export function getItemColor(rarity: string): string {
     switch (rarity) {
         case 'common':
             return colors.common;
@@ -35,6 +35,8 @@ export function getItemColor(rarity: string) {
             return colors.rare;
         case 'epic':
             return colors.epic;
+        default:
+            return 'white';
     }
 }
 
@@ -77,6 +79,110 @@ export const getRandomEquip = (rarity: string, level: number): Item => {
 
     return item;
 };
+
+export function getTreasureRewards(rarity: string, level: number): Item[] {
+    /* Values defined in Sheet */
+    const r: number = Math.random();
+    const rewards: Item[] = [];
+    let resource: Item;
+    let dropCount: number = 0;
+    let equipDrop: boolean = false;
+    const loot: string[] = ['ore', 'wood', 'herb', 'cloth', 'fur'];
+
+    /* Check what items dropped */
+    switch (rarity) {
+        case 'common':
+        case 'uncommon':
+            /* Equipment drop */
+            if (r <= 0.5) {
+                equipDrop = true;
+            }
+            const r1: number = Math.random();
+            /* Resource Drop Count */
+            if (r1 <= 0.1) {
+                dropCount = 4;
+            } else if (r1 <= 0.3) {
+                dropCount = 3;
+            } else if (r1 <= 0.65) {
+                dropCount = 2;
+            } else {
+                dropCount = 1;
+            }
+            break;
+        case 'rare':
+            /* Equipment drop */
+            if (r <= 0.3) {
+                equipDrop = true;
+            }
+            const r2: number = Math.random();
+            /* Resource Drop Count */
+            if (r2 <= 0.1) {
+                dropCount = 4;
+            } else if (r2 <= 0.3) {
+                dropCount = 3;
+            } else if (r2 <= 0.65) {
+                dropCount = 2;
+            } else {
+                dropCount = 1;
+            }
+            break;
+        case 'epic':
+            /* Equipment drop */
+            if (r <= 0.15) {
+                equipDrop = true;
+            }
+            const r3: number = Math.random();
+            /* Resource Drop Count */
+            if (r3 <= 0.1) {
+                dropCount = 4;
+            } else if (r3 <= 0.3) {
+                dropCount = 3;
+            } else if (r3 <= 0.65) {
+                dropCount = 2;
+            } else {
+                dropCount = 1;
+            }
+            break;
+    }
+
+    /* Equipment Drop */
+    if (equipDrop) {
+        rewards.push(getRandomEquip(rarity, level));
+    }
+    /* Add rewards that dropped */
+    for (let i = 0; i < dropCount; i++) {
+        const index: number = rand(0, loot.length - 1);
+        const droppedLoot: string = loot.splice(index, 1)[0];
+
+        if (droppedLoot === 'ore') {
+            //TODO: Quantity formula
+            resource = getOre(rarity, level, 1);
+            rewards.push(resource);
+        }
+        if (droppedLoot === 'wood') {
+            //TODO: Quantity formula
+            resource = getWood(rarity, level, 1);
+            rewards.push(resource);
+        }
+        if (droppedLoot === 'herb') {
+            //TODO: Quantity formula
+            resource = getHerb(rarity, level, 1);
+            rewards.push(resource);
+        }
+        if (droppedLoot === 'cloth') {
+            //TODO: Quantity formula
+            resource = getCloth(rarity, level, 1);
+            rewards.push(resource);
+        }
+        if (droppedLoot === 'fur') {
+            //TODO: Quantity formula
+            resource = getFur(rarity, level, 1);
+            rewards.push(resource);
+        }
+    }
+
+    return rewards;
+}
 
 export const getChest = (
     rarity: string,

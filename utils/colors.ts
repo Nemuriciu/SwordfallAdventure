@@ -1,6 +1,7 @@
 export const colors = {
     /* Primary Colors */
     primary: '#d4ab63',
+    secondary: '#947131',
     /* Rarity Colors */
     common: '#B9B9B9',
     uncommon: '#64DD17',

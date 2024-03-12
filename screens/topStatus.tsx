@@ -71,6 +71,7 @@ export function TopStatus() {
                 <Image
                     style={styles.shardsIcon}
                     source={getImage('icon_shards')}
+                    fadeDuration={0}
                 />
                 <Text
                     style={styles.shardsValue}
@@ -81,6 +82,7 @@ export function TopStatus() {
                 <Image
                     style={styles.diamondsIcon}
                     source={getImage('icon_diamonds')}
+                    fadeDuration={0}
                 />
                 <Text
                     style={styles.diamondsValue}
@@ -133,6 +135,7 @@ export function TopStatus() {
                             style={styles.staminaIcon}
                             source={getImage('icon_stamina')}
                             resizeMode={'stretch'}
+                            fadeDuration={0}
                         />
                     </View>
                 </View>

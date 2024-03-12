@@ -43,15 +43,17 @@ export function RewardsModal() {
     return (
         <Modal
             animationIn={'zoomIn'}
-            animationOut={'zoomOut'}
+            animationOut={'fadeOut'}
             isVisible={rewardsModal.modalVisible}
-            backdropTransitionOutTiming={0}>
+            backdropTransitionOutTiming={0}
+            useNativeDriver={true}>
             <View style={styles.modalAlpha}>
                 <View style={styles.container}>
                     <ImageBackground
                         style={styles.background}
                         source={getImage('background_details')}
-                        resizeMode={'stretch'}>
+                        resizeMode={'stretch'}
+                        fadeDuration={0}>
                         <View style={styles.innerContainer}>
                             <Text style={styles.title}>{strings.rewards}</Text>
                             <FlatList
@@ -64,7 +66,8 @@ export function RewardsModal() {
                                 renderItem={({item}) => (
                                     <ImageBackground
                                         style={styles.rewardSlot}
-                                        source={getImage(getItemImg(item.id))}>
+                                        source={getImage(getItemImg(item.id))}
+                                        fadeDuration={0}>
                                         <Text style={styles.rewardQuantity}>
                                             {item.quantity > 1
                                                 ? item.quantity
@@ -77,11 +80,13 @@ export function RewardsModal() {
                             <Image
                                 style={styles.separator}
                                 source={getImage('separator')}
+                                fadeDuration={0}
                             />
                             <View style={styles.shardsContainer}>
                                 <Image
                                     style={styles.shardsIcon}
                                     source={getImage('icon_shards')}
+                                    fadeDuration={0}
                                 />
                                 <Text style={styles.shardsText}>100</Text>
                             </View>

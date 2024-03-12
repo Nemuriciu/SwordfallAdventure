@@ -16,12 +16,14 @@ export function TitleSeparator({title}: props) {
                 style={styles.separator}
                 source={image}
                 resizeMode={'contain'}
+                fadeDuration={0}
             />
             <Text style={styles.title}>{title}</Text>
             <Image
                 style={styles.separator}
                 source={image}
                 resizeMode={'contain'}
+                fadeDuration={0}
             />
         </View>
     );

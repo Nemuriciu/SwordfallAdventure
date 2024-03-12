@@ -12,6 +12,7 @@ import {getImage} from './assets/images/_index';
 import {Provider} from 'react-redux';
 import {store} from './redux/store';
 import {RewardsModal} from './components/rewardsModal';
+import {Combat} from './screens/adventureTab/hunting/combat';
 
 // eslint-disable-next-line no-unused-vars
 const USERNAME = 'vlad.megaboy@gmail.com';
@@ -37,8 +38,10 @@ function App() {
                 <TopStatus />
                 <NavigationContainer>
                     <RewardsModal />
+                    <Combat />
                     <Tab.Navigator
                         screenOptions={{
+                            lazy: false,
                             headerShown: false,
                             tabBarStyle: {
                                 height: 62,
@@ -59,6 +62,7 @@ function App() {
                             name="Character"
                             component={CharacterTab}
                             options={{
+                                lazy: false,
                                 tabBarIcon: () => {
                                     return (
                                         <Image
@@ -66,6 +70,8 @@ function App() {
                                             source={getImage(
                                                 'nav_icon_character',
                                             )}
+                                            resizeMode={'stretch'}
+                                            fadeDuration={0}
                                         />
                                     );
                                 },
@@ -75,6 +81,7 @@ function App() {
                             name="Adventure"
                             component={AdventureTab}
                             options={{
+                                lazy: false,
                                 tabBarIcon: () => {
                                     return (
                                         <Image
@@ -82,6 +89,8 @@ function App() {
                                             source={getImage(
                                                 'nav_icon_adventure',
                                             )}
+                                            resizeMode={'stretch'}
+                                            fadeDuration={0}
                                         />
                                     );
                                 },
@@ -91,11 +100,14 @@ function App() {
                             name="Town"
                             component={TownTab}
                             options={{
+                                lazy: false,
                                 tabBarIcon: () => {
                                     return (
                                         <Image
                                             style={styles.icon}
                                             source={getImage('nav_icon_town')}
+                                            resizeMode={'stretch'}
+                                            fadeDuration={0}
                                         />
                                     );
                                 },
@@ -105,6 +117,7 @@ function App() {
                             name="Settings"
                             component={SettingsTab}
                             options={{
+                                lazy: false,
                                 tabBarIcon: () => {
                                     return (
                                         <Image
@@ -112,6 +125,8 @@ function App() {
                                             source={getImage(
                                                 'nav_icon_settings',
                                             )}
+                                            resizeMode={'stretch'}
+                                            fadeDuration={0}
                                         />
                                     );
                                 },

@@ -20,7 +20,8 @@ const ProgressBar = ({progress, image, style}: props) => {
             }}>
             <ImageBackground
                 source={getImage('progress_bar_background')}
-                resizeMode={'stretch'}>
+                resizeMode={'stretch'}
+                fadeDuration={0}>
                 <View
                     /* eslint-disable-next-line react-native/no-inline-styles */
                     style={{
@@ -35,6 +36,7 @@ const ProgressBar = ({progress, image, style}: props) => {
                         }}
                         source={getImage(image)}
                         resizeMode={'stretch'}
+                        fadeDuration={0}
                     />
                 </View>
             </ImageBackground>

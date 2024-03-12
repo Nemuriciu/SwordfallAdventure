@@ -18,11 +18,13 @@ export function Character() {
         <ImageBackground
             style={styles.container}
             source={getImage('background_outer')}
-            resizeMode={'stretch'}>
+            resizeMode={'stretch'}
+            fadeDuration={0}>
             <ImageBackground
                 style={styles.innerContainer}
                 source={getImage('background_inner')}
-                resizeMode={'stretch'}>
+                resizeMode={'stretch'}
+                fadeDuration={0}>
                 <ScrollView
                     style={styles.scrollView}
                     alwaysBounceVertical={false}>
@@ -31,6 +33,7 @@ export function Character() {
                             style={styles.avatar}
                             source={getImage('user_avatar')}
                             resizeMode={'stretch'}
+                            fadeDuration={0}
                         />
                         <View style={styles.infoInnerContainer}>
                             <Text style={styles.username}>Username</Text>

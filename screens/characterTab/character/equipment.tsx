@@ -85,6 +85,7 @@ export function Equipment() {
                                 ? getImage(getItemImg(equipment.helmet.id))
                                 : getImage('icon_helmet')
                         }
+                        fadeDuration={0}
                     />
                     <Text style={styles.iconText}>
                         {isItem(equipment.helmet)
@@ -107,6 +108,7 @@ export function Equipment() {
                                 ? getImage(getItemImg(equipment.weapon.id))
                                 : getImage('icon_weapon')
                         }
+                        fadeDuration={0}
                     />
                     <Text style={styles.iconText}>
                         {isItem(equipment.weapon)
@@ -127,6 +129,7 @@ export function Equipment() {
                                 ? getImage(getItemImg(equipment.chest.id))
                                 : getImage('icon_chest')
                         }
+                        fadeDuration={0}
                     />
                     <Text style={styles.iconText}>
                         {isItem(equipment.chest)
@@ -147,6 +150,7 @@ export function Equipment() {
                                 ? getImage(getItemImg(equipment.offhand.id))
                                 : getImage('icon_offhand')
                         }
+                        fadeDuration={0}
                     />
                     <Text style={styles.iconText}>
                         {isItem(equipment.offhand)
@@ -169,6 +173,7 @@ export function Equipment() {
                                 ? getImage(getItemImg(equipment.gloves.id))
                                 : getImage('icon_gloves')
                         }
+                        fadeDuration={0}
                     />
                     <Text style={styles.iconText}>
                         {isItem(equipment.gloves)
@@ -189,6 +194,7 @@ export function Equipment() {
                                 ? getImage(getItemImg(equipment.pants.id))
                                 : getImage('icon_pants')
                         }
+                        fadeDuration={0}
                     />
                     <Text style={styles.iconText}>
                         {isItem(equipment.pants)
@@ -209,6 +215,7 @@ export function Equipment() {
                                 ? getImage(getItemImg(equipment.boots.id))
                                 : getImage('icon_boots')
                         }
+                        fadeDuration={0}
                     />
                     <Text style={styles.iconText}>
                         {isItem(equipment.boots)
