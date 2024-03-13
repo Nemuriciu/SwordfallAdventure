@@ -56,27 +56,36 @@ export function RewardsModal() {
                         fadeDuration={0}>
                         <View style={styles.innerContainer}>
                             <Text style={styles.title}>{strings.rewards}</Text>
-                            <FlatList
-                                style={styles.flatList}
-                                horizontal
-                                data={rewardsModal.rewards}
-                                keyExtractor={(_item, index) =>
-                                    index.toString()
-                                }
-                                renderItem={({item}) => (
-                                    <ImageBackground
-                                        style={styles.rewardSlot}
-                                        source={getImage(getItemImg(item.id))}
-                                        fadeDuration={0}>
-                                        <Text style={styles.rewardQuantity}>
-                                            {item.quantity > 1
-                                                ? item.quantity
-                                                : ''}
-                                        </Text>
-                                    </ImageBackground>
-                                )}
-                                overScrollMode={'never'}
-                            />
+                            {rewardsModal.rewards.length ? (
+                                <FlatList
+                                    style={styles.flatList}
+                                    horizontal
+                                    data={rewardsModal.rewards}
+                                    keyExtractor={(_item, index) =>
+                                        index.toString()
+                                    }
+                                    renderItem={({item}) => (
+                                        <ImageBackground
+                                            style={styles.rewardSlot}
+                                            source={getImage(
+                                                getItemImg(item.id),
+                                            )}
+                                            fadeDuration={0}>
+                                            <Text style={styles.rewardQuantity}>
+                                                {item.quantity > 1
+                                                    ? item.quantity
+                                                    : ''}
+                                            </Text>
+                                        </ImageBackground>
+                                    )}
+                                    overScrollMode={'never'}
+                                />
+                            ) : null}
+                            {rewardsModal.rewards.length === 0 ? (
+                                <Text style={styles.noRewardText}>
+                                    {strings.no_items_dropped}
+                                </Text>
+                            ) : null}
                             <Image
                                 style={styles.separator}
                                 source={getImage('separator')}
@@ -148,6 +157,16 @@ const styles = StyleSheet.create({
         right: 6,
         color: 'white',
         fontFamily: 'Myriad',
+        textShadowColor: 'rgba(0, 0, 0, 1)',
+        textShadowOffset: {width: 1, height: 1},
+        textShadowRadius: 5,
+    },
+    noRewardText: {
+        marginTop: 24,
+        marginBottom: 24,
+        color: 'white',
+        fontSize: 18,
+        fontFamily: 'Myriad_Regular',
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,

@@ -36,7 +36,7 @@ export const strings = {
     reset: 'Reset',
     rewards: 'Rewards',
     xp: 'XP',
-    no_items_received: 'No items received.',
+    no_items_dropped: 'No items dropped.',
     gathering_zones: 'Gathering Zones',
     explore: 'Explore',
     gather: 'Gather',

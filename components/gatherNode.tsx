@@ -16,6 +16,8 @@ import {RootState} from '../redux/store.tsx';
 import {setGatherInfo} from '../redux/slices/gatherInfoSlice.tsx';
 import ProgressBar from './progressBar.tsx';
 import {rewardsModalInit} from '../redux/slices/rewardsModalSlice.tsx';
+import Toast from 'react-native-simple-toast';
+import {updateStamina} from '../redux/slices/userInfoSlice.tsx';
 
 interface props {
     node: Node;
@@ -27,6 +29,8 @@ export function GatherNode({node, index}: props) {
     const gatherInfo = useSelector((state: RootState) => state.gatherInfo);
     const [timer, setTimer] = useState(1);
     const [nodeTime, setNodeTime] = useState(1);
+    const [disabled, setDisabled] = useState(false);
+    const [disabled_2, setDisabled_2] = useState(false);
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -63,38 +67,60 @@ export function GatherNode({node, index}: props) {
     }
 
     function startGathering() {
-        dispatch(
-            setGatherInfo({
-                isGathering: true,
-                nodeIndex: index,
-                timestamp: new Date().toISOString(),
-                nodes: gatherInfo.nodes,
-            }),
-        );
+        if (!disabled) {
+            setDisabled(true);
+
+            const staminaCost: number = 10; //TODO:
+
+            if (userInfo.stamina >= staminaCost) {
+                dispatch(updateStamina(userInfo.stamina - staminaCost));
+                dispatch(
+                    setGatherInfo({
+                        isGathering: true,
+                        nodeIndex: index,
+                        timestamp: new Date().toISOString(),
+                        nodes: gatherInfo.nodes,
+                    }),
+                );
+            } else {
+                Toast.show('Not enough stamina.', Toast.SHORT);
+            }
+
+            setTimeout(() => {
+                setDisabled(false);
+            }, 500);
+        }
     }
 
     function claimGathering() {
-        /* Generate Rewards */
-        dispatch(
-            rewardsModalInit(
-                getNodeRewards(
-                    gatherInfo.nodes[gatherInfo.nodeIndex],
-                    userInfo.level,
+        if (!disabled_2) {
+            setDisabled_2(true);
+            /* Generate Rewards */
+            dispatch(
+                rewardsModalInit(
+                    getNodeRewards(
+                        gatherInfo.nodes[gatherInfo.nodeIndex],
+                        userInfo.level,
+                    ),
                 ),
-            ),
-        );
-        /* Remove Node from list */
-        const nodeList = cloneDeep(gatherInfo.nodes);
-        nodeList.splice(index, 1);
+            );
+            /* Remove Node from list */
+            const nodeList = cloneDeep(gatherInfo.nodes);
+            nodeList.splice(index, 1);
 
-        dispatch(
-            setGatherInfo({
-                isGathering: false,
-                nodeIndex: -1,
-                timestamp: new Date().toISOString(),
-                nodes: nodeList,
-            }),
-        );
+            dispatch(
+                setGatherInfo({
+                    isGathering: false,
+                    nodeIndex: -1,
+                    timestamp: new Date().toISOString(),
+                    nodes: nodeList,
+                }),
+            );
+
+            setTimeout(() => {
+                setDisabled_2(false);
+            }, 250);
+        }
     }
 
     function formatTime(milliseconds: number): string {
@@ -147,6 +173,7 @@ export function GatherNode({node, index}: props) {
                     <OrangeButton
                         title={'Gather'}
                         onPress={startGathering}
+                        disabled={disabled}
                         style={styles.gatherButton}
                     />
                 )}
@@ -154,6 +181,7 @@ export function GatherNode({node, index}: props) {
                     <OrangeButton
                         title={'Claim'}
                         onPress={claimGathering}
+                        disabled={disabled_2}
                         style={styles.gatherButton}
                     />
                 )}

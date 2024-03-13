@@ -10,6 +10,7 @@ export interface UserInfo {
     skillPoints: number;
     shards: number;
     diamonds: number;
+    staminaTimestamp: string;
 }
 
 const initialState: UserInfo = {
@@ -22,6 +23,7 @@ const initialState: UserInfo = {
     skillPoints: 0,
     shards: 0,
     diamonds: 0,
+    staminaTimestamp: '',
 };
 
 export const userInfoSlice = createSlice({
@@ -38,6 +40,7 @@ export const userInfoSlice = createSlice({
             state.skillPoints = action.payload.skillPoints;
             state.shards = action.payload.shards;
             state.diamonds = action.payload.diamonds;
+            state.staminaTimestamp = action.payload.staminaTimestamp;
         },
         updateUsername: (state, action: PayloadAction<string>) => {
             state.username = action.payload;
@@ -56,6 +59,9 @@ export const userInfoSlice = createSlice({
         },
         updateStaminaMax: (state, action: PayloadAction<number>) => {
             state.staminaMax = action.payload;
+        },
+        updateTimestampStamina: (state, action: PayloadAction<string>) => {
+            state.staminaTimestamp = action.payload;
         },
         updateSkillPoints: (state, action: PayloadAction<number>) => {
             state.skillPoints = action.payload;
@@ -77,6 +83,7 @@ export const {
     updateExpMax,
     updateStamina,
     updateStaminaMax,
+    updateTimestampStamina,
     updateSkillPoints,
     updateShards,
     updateDiamonds,

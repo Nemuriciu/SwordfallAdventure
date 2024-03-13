@@ -1,32 +1,72 @@
 import {Image, StyleSheet, Text, View} from 'react-native';
-import React, {useEffect, useRef} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {getImage} from '../assets/images/_index';
 import {marshall, unmarshall} from '@aws-sdk/util-dynamodb';
 import {dynamoDb} from '../database';
 import {USER_ID} from '../App';
 import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '../redux/store.tsx';
-import {setUserInfo} from '../redux/slices/userInfoSlice.tsx';
+import {
+    setUserInfo,
+    updateStamina,
+    updateTimestampStamina,
+} from '../redux/slices/userInfoSlice.tsx';
 import {colors} from '../utils/colors.ts';
 import ProgressBar from '../components/progressBar.tsx';
 
 export function TopStatus() {
     const userInfo = useSelector((state: RootState) => state.userInfo);
+    const [staminaFetched, setStaminaFetched] = useState(false);
+    const [staminaTimer, setStaminaTimer] = useState(1);
     const dispatch = useDispatch();
-    const didMount = useRef(1);
+    const didMount_1 = useRef(2);
+    const didMount_2 = useRef(1);
+    const didMount_3 = useRef(2);
+    const fiveMin = 300000;
+    let timer: string | number | NodeJS.Timeout | undefined;
 
     useEffect(() => {
         fetchUserInfoDB();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     useEffect(() => {
-        if (!didMount.current) {
+        if (!didMount_1.current) {
             updateUserInfoDB();
         } else {
-            didMount.current -= 1;
+            didMount_1.current -= 1;
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [userInfo]);
+    useEffect(() => {
+        if (!didMount_2.current) {
+            if (!staminaFetched) {
+                updateStaminaOffline();
+                setStaminaFetched(true);
+            }
+        } else {
+            didMount_2.current -= 1;
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [userInfo.staminaTimestamp]);
+    useEffect(() => {
+        if (staminaTimer <= 0) {
+            clearInterval(timer);
+            setStaminaTimer(1);
+            updateStaminaOnline();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [staminaTimer]);
+    useEffect(() => {
+        if (!didMount_3.current) {
+            if (staminaTimer <= 1 && userInfo.stamina < userInfo.staminaMax) {
+                dispatch(updateTimestampStamina(new Date().toISOString()));
+                startTimer(fiveMin);
+            }
+        } else {
+            didMount_3.current -= 1;
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [userInfo.stamina]);
 
     function fetchUserInfoDB() {
         const params = {
@@ -57,6 +97,90 @@ export function TopStatus() {
                 console.log(err);
             }
         });
+    }
+
+    function updateStaminaOffline() {
+        if (
+            userInfo.staminaTimestamp === '' ||
+            userInfo.stamina === userInfo.staminaMax
+        ) {
+            return;
+        }
+
+        const timePassed =
+            new Date().getTime() -
+            new Date(userInfo.staminaTimestamp).getTime();
+
+        const minutes = Math.floor(timePassed / 60000);
+        const seconds = (timePassed / 1000) % 60;
+        const staminaVal = 10 * Math.floor(minutes / 5);
+
+        if (staminaVal > 0) {
+            /* Update Stamina */
+            dispatch(
+                updateStamina(
+                    userInfo.stamina + staminaVal >= userInfo.staminaMax
+                        ? userInfo.staminaMax
+                        : userInfo.stamina + staminaVal,
+                ),
+            );
+            /* Update remaining time Timestamp */
+            const c = new Date();
+            c.setMinutes(c.getMinutes() - (minutes % 5));
+            c.setSeconds(c.getSeconds() - seconds);
+            dispatch(updateTimestampStamina(c.toISOString()));
+
+            /* Start Stamina Timer */
+            startTimer(fiveMin - (new Date().getTime() - c.getTime()));
+        } else {
+            /* Start Stamina Timer */
+            startTimer(
+                fiveMin -
+                    (new Date().getTime() -
+                        new Date(userInfo.staminaTimestamp).getTime()),
+            );
+        }
+    }
+
+    function updateStaminaOnline() {
+        const staminaAdded = 10;
+
+        /* Start Timer */
+        if (userInfo.stamina + staminaAdded < userInfo.staminaMax) {
+            dispatch(updateTimestampStamina(new Date().toISOString()));
+            setStaminaTimer(fiveMin);
+        }
+
+        dispatch(
+            updateStamina(
+                userInfo.stamina + staminaAdded >= userInfo.staminaMax
+                    ? userInfo.staminaMax
+                    : userInfo.stamina + staminaAdded,
+            ),
+        );
+    }
+
+    function startTimer(remainingTime: number) {
+        setStaminaTimer(remainingTime);
+
+        timer = setInterval(() => {
+            setStaminaTimer(time => (time > 1 ? time - 1000 : time));
+        }, 1000);
+
+        return () => {
+            clearInterval(timer);
+        };
+    }
+
+    function formatTime(milliseconds: number): string {
+        const totalSeconds = Math.floor(milliseconds / 1000);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+
+        const formattedMinutes = String(minutes).padStart(2, '0');
+        const formattedSeconds = String(seconds).padStart(2, '0');
+
+        return `${formattedMinutes}:${formattedSeconds}`;
     }
 
     return (
@@ -116,17 +240,19 @@ export function TopStatus() {
                     </Text>
                 </View>
                 <View style={styles.midRightContainer}>
-                    <Text
-                        style={styles.staminaRefresh}
-                        adjustsFontSizeToFit={true}
-                        numberOfLines={1}>
-                        +10 in 04:52
-                    </Text>
+                    {staminaTimer > 1 ? (
+                        <Text
+                            style={styles.staminaRefresh}
+                            adjustsFontSizeToFit={true}
+                            numberOfLines={1}>
+                            {'+10 in ' + formatTime(staminaTimer)}
+                        </Text>
+                    ) : null}
                     <Text
                         style={styles.staminaValue}
                         adjustsFontSizeToFit={true}
                         numberOfLines={1}>
-                        {userInfo.stamina && userInfo.staminaMax
+                        {userInfo.staminaMax
                             ? userInfo.stamina + '/' + userInfo.staminaMax
                             : ''}
                     </Text>
@@ -208,7 +334,7 @@ const styles = StyleSheet.create({
     username: {
         flex: 1,
         fontSize: 18,
-        color: colors.primary,
+        color: 'white',
         fontFamily: 'Myriad',
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
@@ -223,8 +349,8 @@ const styles = StyleSheet.create({
         marginStart: 6,
         marginTop: 2,
         fontSize: 16,
-        color: colors.primary,
-        fontFamily: 'Myriad',
+        color: 'white',
+        fontFamily: 'Myriad_Regular',
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -239,8 +365,8 @@ const styles = StyleSheet.create({
         marginStart: 6,
         marginTop: 2,
         fontSize: 16,
-        color: colors.primary,
-        fontFamily: 'Myriad',
+        color: 'white',
+        fontFamily: 'Myriad_Regular',
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -249,7 +375,7 @@ const styles = StyleSheet.create({
     level: {
         marginEnd: 4,
         fontSize: 16,
-        color: colors.primary,
+        color: 'white',
         fontFamily: 'Myriad',
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
@@ -259,8 +385,8 @@ const styles = StyleSheet.create({
         flex: 1,
         textAlign: 'right',
         fontSize: 16,
-        color: colors.primary,
-        fontFamily: 'Myriad',
+        color: colors.experience_color,
+        fontFamily: 'Myriad_Regular',
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -270,17 +396,16 @@ const styles = StyleSheet.create({
         marginEnd: 4,
         fontSize: 16,
         color: colors.experience_color,
-        fontFamily: 'Myriad',
+        fontFamily: 'Myriad_Bold',
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
     },
 
     staminaRefresh: {
-        marginStart: 4,
         fontSize: 16,
-        color: colors.primary,
-        fontFamily: 'Myriad',
+        color: colors.stamina_color,
+        fontFamily: 'Myriad_Regular',
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -290,7 +415,7 @@ const styles = StyleSheet.create({
         marginRight: 2,
         textAlign: 'right',
         fontSize: 16,
-        color: colors.primary,
+        color: colors.stamina_color,
         fontFamily: 'Myriad',
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
