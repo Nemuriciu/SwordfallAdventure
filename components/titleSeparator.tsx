@@ -7,7 +7,7 @@ interface props {
     title: string;
 }
 
-const image = getImage('separator');
+const image = getImage('icon_separator_semi');
 
 export function TitleSeparator({title}: props) {
     return (
@@ -38,6 +38,7 @@ const styles = StyleSheet.create({
     },
     separator: {
         flex: 1,
+        height: 24,
     },
     title: {
         marginStart: 12,

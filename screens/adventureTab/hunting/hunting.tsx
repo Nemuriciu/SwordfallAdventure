@@ -15,7 +15,7 @@ import {RootState} from '../../../redux/store.tsx';
 import {Creature} from '../../../types/creature.ts';
 import {getCreature} from '../../../parsers/creatureParser.tsx';
 import {huntingUpdate} from '../../../redux/slices/huntingSlice.tsx';
-import {OrangeButton} from '../../../components/orangeButton.tsx';
+import {ButtonType, CustomButton} from '../../../components/customButton.tsx';
 import {marshall, unmarshall} from '@aws-sdk/util-dynamodb';
 import {USER_ID} from '../../../App';
 import {dynamoDb} from '../../../database';
@@ -134,18 +134,21 @@ export function Hunting() {
                 />
             </ImageBackground>
             <View style={styles.buttonContainer}>
-                <OrangeButton
+                <CustomButton
+                    type={ButtonType.Orange}
                     style={styles.button}
                     title={strings.back}
                     onPress={goDeeper}
                 />
-                <OrangeButton
+                <CustomButton
+                    type={ButtonType.Orange}
                     style={styles.button}
                     title={strings.go_deeper}
                     disabled={hunting.killCount < 3}
                     onPress={goDeeper}
                 />
-                <OrangeButton
+                <CustomButton
+                    type={ButtonType.Orange}
                     style={styles.button}
                     title={strings.reset}
                     onPress={resetDepth}

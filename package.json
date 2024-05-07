@@ -22,7 +22,7 @@
     "bundletool": "^1.1.7",
     "lodash.clonedeep": "^4.5.0",
     "react": "18.2.0",
-    "react-native": "0.73.5",
+    "react-native": "0.73.6",
     "react-native-modal": "^13.0.1",
     "react-native-pager-view": "^6.2.3",
     "react-native-progress": "^5.0.1",

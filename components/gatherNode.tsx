@@ -7,10 +7,12 @@ import {
     getNodeImg,
     getNodeName,
     Node,
+    getNodeExperience,
+    getNodeShards,
 } from '../parsers/nodeParser.tsx';
 import {colors} from '../utils/colors.ts';
 import {getItemColor} from '../parsers/itemParser.tsx';
-import {OrangeButton} from './orangeButton.tsx';
+import {ButtonType, CustomButton} from './customButton.tsx';
 import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '../redux/store.tsx';
 import {setGatherInfo} from '../redux/slices/gatherInfoSlice.tsx';
@@ -97,12 +99,20 @@ export function GatherNode({node, index}: props) {
             setDisabled_2(true);
             /* Generate Rewards */
             dispatch(
-                rewardsModalInit(
-                    getNodeRewards(
+                rewardsModalInit({
+                    rewards: getNodeRewards(
                         gatherInfo.nodes[gatherInfo.nodeIndex],
                         userInfo.level,
                     ),
-                ),
+                    experience: getNodeExperience(
+                        gatherInfo.nodes[gatherInfo.nodeIndex],
+                        userInfo.level,
+                    ),
+                    shards: getNodeShards(
+                        gatherInfo.nodes[gatherInfo.nodeIndex],
+                        userInfo.level,
+                    ),
+                }),
             );
             /* Remove Node from list */
             const nodeList = cloneDeep(gatherInfo.nodes);
@@ -139,7 +149,8 @@ export function GatherNode({node, index}: props) {
     return (
         <ImageBackground
             style={styles.nodeBackground}
-            source={getImage('background_node')}>
+            source={getImage('background_node')}
+            resizeMode={'stretch'}>
             <Image
                 style={styles.image}
                 source={getImage(getNodeImg(node.id))}
@@ -170,7 +181,8 @@ export function GatherNode({node, index}: props) {
                     )}
 
                 {!gatherInfo.isGathering && (
-                    <OrangeButton
+                    <CustomButton
+                        type={ButtonType.Orange}
                         title={'Gather'}
                         onPress={startGathering}
                         disabled={disabled}
@@ -178,7 +190,8 @@ export function GatherNode({node, index}: props) {
                     />
                 )}
                 {isGatheringReady() && gatherInfo.nodeIndex === index && (
-                    <OrangeButton
+                    <CustomButton
+                        type={ButtonType.Green}
                         title={'Claim'}
                         onPress={claimGathering}
                         disabled={disabled_2}

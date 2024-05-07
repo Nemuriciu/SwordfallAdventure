@@ -486,6 +486,57 @@ export function getCombatRewards(
     return rewards;
 }
 
+export function getCombatExperience(rarity: string, level: number): number {
+    let exp = Math.round(5 * Math.pow(level, 1.7) + Math.pow(level, 3.2));
+
+    /* Green +100% / Blue +150% / Purple +250% */
+    switch (rarity) {
+        case 'uncommon':
+            exp *= 2;
+            break;
+        case 'rare':
+            exp *= 2.5;
+            break;
+        case 'epic':
+            exp *= 3.5;
+            break;
+    }
+
+    /* Variation ~5% of exp */
+    const expMin: number = Math.round(exp * 0.95);
+
+    return rand(expMin, exp);
+}
+
+export function getCombatShards(rarity: string, level: number): number {
+    /* Creature Shards Formula */
+    const cLevel = level % 10 === 0 ? 9 : (level % 10) - 1;
+    let shardsValue = Math.round(
+        12 * Math.pow(cLevel + 1, 2) + Math.pow(3, cLevel),
+    );
+
+    /* Increase Shards by Creature Rarity */
+    switch (rarity) {
+        /* Green +100% Shards */
+        case 'uncommon':
+            shardsValue *= 2;
+            break;
+        /* Blue +150% Shards */
+        case 'rare':
+            shardsValue *= 2.5;
+            break;
+        /* Purple +250% Shards */
+        case 'epic':
+            shardsValue *= 3.5;
+            break;
+    }
+
+    /* Variation ~2% of Shards */
+    const shardsMin = Math.round(shardsValue * 0.98);
+
+    return rand(shardsMin, shardsValue);
+}
+
 function getDepthDropBonus(value: number, depth: number): number {
     /* 5% Drop bonus (1->10)
      * 10% Drop bonus (11->20)*/

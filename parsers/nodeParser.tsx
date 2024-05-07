@@ -21,7 +21,7 @@ export function getNodeImg(id: string): string {
     return nodesJson[id].img;
 }
 
-export function getNode(level: number, type: string): Node {
+export function getNode(type: string): Node {
     /* Roll for Rarity */
     const r = Math.random();
     let rarity: string;
@@ -70,6 +70,29 @@ export function getNodeRewards(node: Node, level: number): Item[] {
     }
 
     return rewards;
+}
+
+export function getNodeExperience(node: Node, level: number): number {
+    const timeMultiplier = node.time / 5;
+    const exp = Math.round(4 * Math.pow(level, 2.5) * timeMultiplier);
+
+    /* Variation ~2% of Exp */
+    const expMin = Math.round(exp * 0.98);
+
+    return rand(expMin, exp);
+}
+
+export function getNodeShards(node: Node, level: number): number {
+    const timeMultiplier = node.time / 5;
+    const lvl = level % 10 === 0 ? 9 : (level % 10) - 1;
+    const shards = Math.round(
+        (7 * Math.pow(lvl + 1, 2) + Math.pow(3, lvl)) * timeMultiplier,
+    );
+
+    /* Variation ~2% of Shards */
+    const shardsMin: number = Math.round(shards * 0.98);
+
+    return rand(shardsMin, shards);
 }
 
 function getRandomTime(rarity: string): number {

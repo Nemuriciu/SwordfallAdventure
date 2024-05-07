@@ -1,7 +1,7 @@
 import {FlatList, ImageBackground, StyleSheet, View} from 'react-native';
 import React, {useEffect, useRef} from 'react';
 import {getImage} from '../../../assets/images/_index';
-import {OrangeButton} from '../../../components/orangeButton.tsx';
+import {ButtonType, CustomButton} from '../../../components/customButton.tsx';
 import {GatherNode} from '../../../components/gatherNode.tsx';
 import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '../../../redux/store.tsx';
@@ -70,13 +70,13 @@ export function Gathering() {
         const r_herb = rand(1, 3);
 
         for (let i = 0; i < r_ore; i++) {
-            nodeList.push(getNode(userInfo.level, 'ore'));
+            nodeList.push(getNode('ore'));
         }
         for (let i = 0; i < r_wood; i++) {
-            nodeList.push(getNode(userInfo.level, 'wood'));
+            nodeList.push(getNode('wood'));
         }
         for (let i = 0; i < r_herb; i++) {
-            nodeList.push(getNode(userInfo.level, 'herb'));
+            nodeList.push(getNode('herb'));
         }
 
         nodeList = arrayShuffle(nodeList);
@@ -127,13 +127,15 @@ export function Gathering() {
                 />
             </ImageBackground>
             <View style={styles.buttonsContainer}>
-                <OrangeButton
+                <CustomButton
+                    type={ButtonType.Orange}
                     style={styles.buttonStyle}
                     title={'Explore'}
                     onPress={refreshNodes}
                     disabled={gatherInfo.isGathering}
                 />
-                <OrangeButton
+                <CustomButton
+                    type={ButtonType.Orange}
                     style={styles.buttonStyle}
                     title={'Finish'}
                     onPress={finish}

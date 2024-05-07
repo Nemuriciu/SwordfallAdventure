@@ -184,6 +184,16 @@ export function getTreasureRewards(rarity: string, level: number): Item[] {
     return rewards;
 }
 
+export function getTreasureShards(level: number): number {
+    const lvl = level % 10 === 0 ? 9 : (level % 10) - 1;
+    const shards = Math.round(207 * Math.pow(lvl + 1, 2) + Math.pow(4, lvl));
+
+    /* Variation ~2% of shards */
+    const shardsMin: number = Math.round(shards * 0.98);
+
+    return rand(shardsMin, shards);
+}
+
 export const getChest = (
     rarity: string,
     level: number,

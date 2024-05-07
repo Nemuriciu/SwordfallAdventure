@@ -43,6 +43,8 @@ export function CloseButton({onPress, style}: props) {
             style={style}>
             <Image
                 source={isPressed ? pressedImage : defaultImage}
+                resizeMode={'contain'}
+                fadeDuration={0}
                 /* eslint-disable-next-line react-native/no-inline-styles */
                 style={{width: '100%', height: '100%'}}
             />

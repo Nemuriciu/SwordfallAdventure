@@ -10,7 +10,7 @@ import {
 import React, {useEffect, useRef, useState} from 'react';
 import {getItemImg, getRandomEquip} from '../../../parsers/itemParser.tsx';
 import {getImage} from '../../../assets/images/_index';
-import {OrangeButton} from '../../../components/orangeButton';
+import {ButtonType, CustomButton} from '../../../components/customButton.tsx';
 import {clearInventory} from '../../../utils/arrayUtils.ts';
 import {marshall, unmarshall} from '@aws-sdk/util-dynamodb';
 import {USER_ID} from '../../../App';
@@ -140,7 +140,8 @@ export function Inventory() {
                         ]}>
                         {usedSlots + '/' + inventory.list.length}
                     </Text>
-                    <OrangeButton
+                    <CustomButton
+                        type={ButtonType.Orange}
                         title={'Sort'}
                         onPress={() => {}}
                         style={styles.sortButton}
@@ -190,13 +191,15 @@ export function Inventory() {
                         marginBottom: 36,
                     }}>
                     {/* ADD ITEM */}
-                    <OrangeButton
+                    <CustomButton
+                        type={ButtonType.Orange}
                         title={'Add Item'}
                         onPress={addItemOnPress}
                         style={styles.button}
                     />
                     {/* CLEAR INVENTORY */}
-                    <OrangeButton
+                    <CustomButton
+                        type={ButtonType.Orange}
                         title={'CLEAR'}
                         onPress={clearInventoryList}
                         style={styles.clearButton}

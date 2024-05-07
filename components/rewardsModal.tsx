@@ -18,7 +18,7 @@ import {getItemImg} from '../parsers/itemParser.tsx';
 import {strings} from '../utils/strings.ts';
 import {isFull} from '../utils/arrayUtils.ts';
 import {inventoryAddItems} from '../redux/slices/inventorySlice.tsx';
-import {updateShards} from '../redux/slices/userInfoSlice.tsx';
+import {updateExp, updateShards} from '../redux/slices/userInfoSlice.tsx';
 import {colors} from '../utils/colors.ts';
 
 export function RewardsModal() {
@@ -31,9 +31,20 @@ export function RewardsModal() {
         if (rewardsModal.modalVisible) {
             if (!isFull(inventory.list)) {
                 setTimeout(() => {
-                    dispatch(inventoryAddItems(rewardsModal.rewards));
-                    dispatch(updateShards(userInfo.shards + 100)); //TODO:
-                }, 400);
+                    if (rewardsModal.rewards.length) {
+                        dispatch(inventoryAddItems(rewardsModal.rewards));
+                    }
+                    if (rewardsModal.experience) {
+                        dispatch(
+                            updateExp(userInfo.exp + rewardsModal.experience),
+                        );
+                    }
+                    if (rewardsModal.shards) {
+                        dispatch(
+                            updateShards(userInfo.shards + rewardsModal.shards),
+                        );
+                    }
+                }, 250);
             }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -88,16 +99,33 @@ export function RewardsModal() {
                             ) : null}
                             <Image
                                 style={styles.separator}
-                                source={getImage('separator')}
+                                source={getImage('icon_separator')}
+                                resizeMode={'contain'}
                                 fadeDuration={0}
                             />
-                            <View style={styles.shardsContainer}>
-                                <Image
-                                    style={styles.shardsIcon}
-                                    source={getImage('icon_shards')}
-                                    fadeDuration={0}
-                                />
-                                <Text style={styles.shardsText}>100</Text>
+                            <View style={styles.bottomContainer}>
+                                {rewardsModal.shards ? (
+                                    <Image
+                                        style={styles.shardsIcon}
+                                        source={getImage('icon_shards')}
+                                        fadeDuration={0}
+                                    />
+                                ) : null}
+                                {rewardsModal.shards ? (
+                                    <Text style={styles.shardsText}>
+                                        {rewardsModal.shards}
+                                    </Text>
+                                ) : null}
+                                {rewardsModal.experience ? (
+                                    <Text style={styles.expIcon}>
+                                        {strings.xp}
+                                    </Text>
+                                ) : null}
+                                {rewardsModal.experience ? (
+                                    <Text style={styles.expText}>
+                                        {rewardsModal.experience}
+                                    </Text>
+                                ) : null}
                             </View>
                         </View>
 
@@ -174,22 +202,45 @@ const styles = StyleSheet.create({
     separator: {
         width: '100%',
     },
-    shardsContainer: {
+    bottomContainer: {
         flexDirection: 'row',
-        marginTop: 16,
+        alignContent: 'center',
+        justifyContent: 'space-evenly',
+        marginTop: 24,
         marginBottom: 24,
     },
     shardsIcon: {
         aspectRatio: 1,
-        width: '8.5%',
+        width: '10%',
         height: undefined,
+        alignSelf: 'center',
     },
     shardsText: {
-        marginStart: 4,
-        marginTop: 2,
+        marginStart: 6,
+        marginEnd: 'auto',
+        alignSelf: 'center',
+        fontSize: 16,
+        color: 'white',
+        fontFamily: 'Myriad',
+        textShadowColor: 'rgba(0, 0, 0, 1)',
+        textShadowOffset: {width: 1, height: 1},
+        textShadowRadius: 5,
+    },
+    expIcon: {
+        marginStart: 46,
         alignSelf: 'center',
         fontSize: 18,
         color: colors.primary,
+        fontFamily: 'Myriad',
+        textShadowColor: 'rgba(0, 0, 0, 1)',
+        textShadowOffset: {width: 1, height: 1},
+        textShadowRadius: 5,
+    },
+    expText: {
+        marginStart: 6,
+        alignSelf: 'center',
+        fontSize: 16,
+        color: 'white',
         fontFamily: 'Myriad',
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},

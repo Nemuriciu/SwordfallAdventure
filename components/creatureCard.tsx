@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from 'react';
-import {Image, Text, StyleSheet, View, ImageBackground} from 'react-native';
+import {Image, ImageBackground, StyleSheet, Text, View} from 'react-native';
 import {getImage} from '../assets/images/_index';
 import {colors} from '../utils/colors.ts';
-import {OrangeButton} from './orangeButton.tsx';
+import {ButtonType, CustomButton} from './customButton.tsx';
 import {Creature} from '../types/creature.ts';
 import {getCreatureImg, getCreatureName} from '../parsers/creatureParser.tsx';
 import {getItemColor} from '../parsers/itemParser.tsx';
@@ -149,7 +149,8 @@ export function CreatureCard({creature, index}: props) {
                         </View>
                     </View>
                     <View style={styles.buttonContainer}>
-                        <OrangeButton
+                        <CustomButton
+                            type={ButtonType.Orange}
                             title={'Attack'}
                             onPress={attackCreature}
                             disabled={disabled}

@@ -14,7 +14,9 @@ import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '../../../redux/store.tsx';
 import {getImage} from '../../../assets/images/_index';
 import {
+    getCombatExperience,
     getCombatRewards,
+    getCombatShards,
     getCreatureImg,
     getCreatureName,
 } from '../../../parsers/creatureParser.tsx';
@@ -32,7 +34,7 @@ import {rand} from '../../../parsers/itemParser.tsx';
 import {Creature} from '../../../types/creature.ts';
 import cloneDeep from 'lodash.clonedeep';
 import {rewardsModalInit} from '../../../redux/slices/rewardsModalSlice.tsx';
-import {OrangeButton} from '../../../components/orangeButton.tsx';
+import {ButtonType, CustomButton} from '../../../components/customButton.tsx';
 import {huntingUpdate} from '../../../redux/slices/huntingSlice.tsx';
 
 export function Combat() {
@@ -84,13 +86,21 @@ export function Combat() {
 
                         setTimeout(() => {
                             dispatch(
-                                rewardsModalInit(
-                                    getCombatRewards(
+                                rewardsModalInit({
+                                    rewards: getCombatRewards(
                                         (combat.creature as Creature).rarity,
                                         hunting.depth,
                                         (combat.creature as Creature).level,
                                     ),
-                                ),
+                                    experience: getCombatExperience(
+                                        (combat.creature as Creature).rarity,
+                                        (combat.creature as Creature).level,
+                                    ),
+                                    shards: getCombatShards(
+                                        (combat.creature as Creature).rarity,
+                                        (combat.creature as Creature).level,
+                                    ),
+                                }),
                             );
                         }, 500);
 
@@ -837,7 +847,8 @@ export function Combat() {
                             resizeMode={'stretch'}>
                             <View style={styles.actionbarContainer}>
                                 {combatComplete && (
-                                    <OrangeButton
+                                    <CustomButton
+                                        type={ButtonType.Orange}
                                         style={styles.leaveButton}
                                         title={'Leave Combat'}
                                         onPress={() => leaveCombat()}

@@ -4,17 +4,34 @@ import {TouchableOpacity, Text, ImageBackground, ViewStyle} from 'react-native';
 import {getImage} from '../assets/images/_index';
 
 interface props {
+    type: ButtonType;
     title: string;
     onPress: () => void;
     disabled?: boolean;
     style?: ViewStyle;
 }
 
-export function OrangeButton({title, onPress, disabled, style}: props) {
+export enum ButtonType {
+    Orange = 'orange',
+    Green = 'green',
+    Red = 'red',
+}
+
+export function CustomButton({type, title, onPress, disabled, style}: props) {
     const [isPressed, setIsPressed] = useState(false);
     //const [disabled, setDisabled] = useState(false);
-    const defaultImage = getImage('button_orange');
-    const pressedImage = getImage('button_orange_pressed');
+    const defaultImage =
+        type === ButtonType.Orange
+            ? getImage('button_orange')
+            : type === ButtonType.Green
+            ? getImage('button_green')
+            : getImage('button_red');
+    const pressedImage =
+        type === ButtonType.Orange
+            ? getImage('button_orange_pressed')
+            : type === ButtonType.Green
+            ? getImage('button_green')
+            : getImage('button_red');
     const disabledImage = getImage('button_orange_disabled');
 
     const handlePress = () => {
@@ -58,7 +75,7 @@ export function OrangeButton({title, onPress, disabled, style}: props) {
                         textAlign: 'center',
                         textAlignVertical: 'center',
                         color: 'white',
-                        fontFamily: 'Myriad',
+                        fontFamily: 'Myriad_Regular',
                         textShadowColor: 'rgba(0, 0, 0, 1)',
                         textShadowOffset: {width: 1, height: 1},
                         textShadowRadius: 5,

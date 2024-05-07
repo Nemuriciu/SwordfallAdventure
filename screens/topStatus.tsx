@@ -115,30 +115,42 @@ export function TopStatus() {
         const seconds = (timePassed / 1000) % 60;
         const staminaVal = 10 * Math.floor(minutes / 5);
 
-        if (staminaVal > 0) {
-            /* Update Stamina */
-            dispatch(
-                updateStamina(
-                    userInfo.stamina + staminaVal >= userInfo.staminaMax
-                        ? userInfo.staminaMax
-                        : userInfo.stamina + staminaVal,
-                ),
-            );
-            /* Update remaining time Timestamp */
-            const c = new Date();
-            c.setMinutes(c.getMinutes() - (minutes % 5));
-            c.setSeconds(c.getSeconds() - seconds);
-            dispatch(updateTimestampStamina(c.toISOString()));
-
-            /* Start Stamina Timer */
-            startTimer(fiveMin - (new Date().getTime() - c.getTime()));
+        if (userInfo.stamina + staminaVal >= userInfo.staminaMax) {
+            if (staminaVal > 0) {
+                dispatch(
+                    updateStamina(
+                        userInfo.stamina + staminaVal >= userInfo.staminaMax
+                            ? userInfo.staminaMax
+                            : userInfo.stamina + staminaVal,
+                    ),
+                );
+            }
         } else {
-            /* Start Stamina Timer */
-            startTimer(
-                fiveMin -
-                    (new Date().getTime() -
-                        new Date(userInfo.staminaTimestamp).getTime()),
-            );
+            if (staminaVal > 0) {
+                /* Update Stamina */
+                dispatch(
+                    updateStamina(
+                        userInfo.stamina + staminaVal >= userInfo.staminaMax
+                            ? userInfo.staminaMax
+                            : userInfo.stamina + staminaVal,
+                    ),
+                );
+                /* Update remaining time Timestamp */
+                const c = new Date();
+                c.setMinutes(c.getMinutes() - (minutes % 5));
+                c.setSeconds(c.getSeconds() - seconds);
+                dispatch(updateTimestampStamina(c.toISOString()));
+
+                /* Start Stamina Timer */
+                startTimer(fiveMin - (new Date().getTime() - c.getTime()));
+            } else {
+                /* Start Stamina Timer */
+                startTimer(
+                    fiveMin -
+                        (new Date().getTime() -
+                            new Date(userInfo.staminaTimestamp).getTime()),
+                );
+            }
         }
     }
 

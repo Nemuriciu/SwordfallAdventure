@@ -13,7 +13,7 @@ import {
 } from '../parsers/itemParser.tsx';
 import {Slider} from '@miblanchard/react-native-slider';
 import {colors} from '../utils/colors.ts';
-import {OrangeButton} from './orangeButton.tsx';
+import {ButtonType, CustomButton} from './customButton.tsx';
 import {strings} from '../utils/strings.ts';
 import {itemDetailsHide} from '../redux/slices/itemDetailsSlice.tsx';
 import {inventoryRemoveItemAt} from '../redux/slices/inventorySlice.tsx';
@@ -120,13 +120,15 @@ export function DiscardModal({visible, setVisible, item, index}: props) {
                             </View>
                         )}
                         <View style={styles.buttonContainer}>
-                            <OrangeButton
+                            <CustomButton
+                                type={ButtonType.Orange}
                                 style={styles.actionButton}
                                 title={strings.yes}
                                 onPress={removeItem}
                                 disabled={disabled}
                             />
-                            <OrangeButton
+                            <CustomButton
+                                type={ButtonType.Orange}
                                 style={styles.actionButton}
                                 title={strings.no}
                                 onPress={() => setVisible(false)}

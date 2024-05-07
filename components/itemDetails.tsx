@@ -17,9 +17,10 @@ import {
     getItemType,
     getKey,
     getTreasureRewards,
+    getTreasureShards,
 } from '../parsers/itemParser.tsx';
 import {getImage} from '../assets/images/_index';
-import {OrangeButton} from './orangeButton.tsx';
+import {ButtonType, CustomButton} from './customButton.tsx';
 import {colors} from '../utils/colors.ts';
 import {getStats} from '../parsers/attributeParser.tsx';
 import {CloseButton} from './closeButton.tsx';
@@ -55,15 +56,69 @@ export function ItemDetails() {
     const itemDetails = useSelector((state: RootState) => state.itemDetails);
     const inventory = useSelector((state: RootState) => state.inventory);
     const equipment = useSelector((state: RootState) => state.equipment);
+    const [equippedItem, setEquippedItem] = useState<Item | {}>({});
     const [itemStats, setItemStats] = useState<Stats>(emptyStats);
+    const [equippedStats, setEquippedStats] = useState<Stats>(emptyStats);
     const [discardVisible, setDiscardVisible] = useState(false);
     const [disabled, setDisabled] = useState(false);
     const dispatch = useDispatch();
 
     useEffect(() => {
+        setEquippedItem({});
+
         if (isItem(itemDetails.item)) {
-            setItemStats(getStats(itemDetails.item));
+            if (getItemCategory(itemDetails.item.id) === 'equipment') {
+                setItemStats(getStats(itemDetails.item));
+
+                if (itemDetails.index !== -1) {
+                    switch (getItemType(itemDetails.item.id)) {
+                        case 'helmet':
+                            if (isItem(equipment.helmet)) {
+                                setEquippedItem(equipment.helmet);
+                                setEquippedStats(getStats(equipment.helmet));
+                            }
+                            break;
+                        case 'weapon':
+                            if (isItem(equipment.weapon)) {
+                                setEquippedItem(equipment.weapon);
+                                setEquippedStats(getStats(equipment.weapon));
+                            }
+                            break;
+                        case 'chest':
+                            if (isItem(equipment.chest)) {
+                                setEquippedItem(equipment.chest);
+                                setEquippedStats(getStats(equipment.chest));
+                            }
+                            break;
+                        case 'offhand':
+                            if (isItem(equipment.offhand)) {
+                                setEquippedItem(equipment.offhand);
+                                setEquippedStats(getStats(equipment.offhand));
+                            }
+                            break;
+                        case 'gloves':
+                            if (isItem(equipment.gloves)) {
+                                setEquippedItem(equipment.gloves);
+                                setEquippedStats(getStats(equipment.gloves));
+                            }
+                            break;
+                        case 'pants':
+                            if (isItem(equipment.pants)) {
+                                setEquippedItem(equipment.pants);
+                                setEquippedStats(getStats(equipment.pants));
+                            }
+                            break;
+                        case 'boots':
+                            if (isItem(equipment.boots)) {
+                                setEquippedItem(equipment.boots);
+                                setEquippedStats(getStats(equipment.boots));
+                            }
+                            break;
+                    }
+                }
+            }
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [itemDetails.item]);
 
     function upgradeItem() {
@@ -211,7 +266,13 @@ export function ItemDetails() {
                     }),
                 );
                 /* Show Rewards Modal */
-                dispatch(rewardsModalInit(rewards));
+                dispatch(
+                    rewardsModalInit({
+                        rewards: rewards,
+                        experience: 0,
+                        shards: getTreasureShards(itemDetails.item.level),
+                    }),
+                );
                 dispatch(itemDetailsHide());
             }
 
@@ -250,12 +311,193 @@ export function ItemDetails() {
             {isItem(itemDetails.item) && (
                 <View style={styles.modalAlpha}>
                     <View style={styles.container}>
+                        {isItem(equippedItem) ? (
+                            <ImageBackground
+                                style={styles.background}
+                                source={getImage('background_details')}
+                                resizeMode={'stretch'}
+                                fadeDuration={0}>
+                                <View>
+                                    <Text style={styles.equippedTitle}>
+                                        {strings.equipped}
+                                    </Text>
+                                    <View style={styles.topContainer}>
+                                        <View style={styles.imageContainer}>
+                                            <Image
+                                                style={styles.image}
+                                                source={getImage(
+                                                    getItemImg(equippedItem.id),
+                                                )}
+                                                fadeDuration={0}
+                                            />
+                                            <Text style={styles.imageUpgrade}>
+                                                {equippedItem.upgrade
+                                                    ? '+' + equippedItem.upgrade
+                                                    : ''}
+                                            </Text>
+                                        </View>
+                                        <View style={styles.itemInfoContainer}>
+                                            <Text
+                                                style={[
+                                                    styles.name,
+                                                    {
+                                                        color: getItemColor(
+                                                            getItemRarity(
+                                                                equippedItem.id,
+                                                            ),
+                                                        ),
+                                                    },
+                                                ]}>
+                                                {getItemName(equippedItem.id)}
+                                            </Text>
+                                            <Text
+                                                style={[
+                                                    styles.type,
+                                                    {
+                                                        color: getItemColor(
+                                                            getItemRarity(
+                                                                equippedItem.id,
+                                                            ),
+                                                        ),
+                                                    },
+                                                ]}>
+                                                {getItemRarity(
+                                                    equippedItem.id,
+                                                ) +
+                                                    ' ' +
+                                                    getItemType(
+                                                        equippedItem.id,
+                                                    )}
+                                            </Text>
+                                            <Text style={styles.level}>
+                                                {'Level ' + equippedItem.level}
+                                            </Text>
+                                        </View>
+                                    </View>
+                                    <View style={styles.separatorContainer}>
+                                        <Image
+                                            style={styles.separatorImage}
+                                            source={getImage('icon_separator')}
+                                            resizeMode={'contain'}
+                                            fadeDuration={0}
+                                        />
+                                    </View>
+                                    <View style={styles.attributesContainer}>
+                                        {equippedStats.health > 0 && (
+                                            <Text
+                                                style={[
+                                                    styles.attribute,
+                                                    {
+                                                        color: colors.health_color,
+                                                    },
+                                                ]}>
+                                                {equippedStats
+                                                    ? equippedStats.health +
+                                                          equippedStats.bonusHealth >
+                                                      0
+                                                        ? '+ ' +
+                                                          (equippedStats.health +
+                                                              equippedStats.bonusHealth) +
+                                                          ' ' +
+                                                          strings.health
+                                                        : ''
+                                                    : ''}
+                                            </Text>
+                                        )}
+                                        {equippedStats.physicalAtk > 0 && (
+                                            <Text
+                                                style={[
+                                                    styles.attribute,
+                                                    {
+                                                        color: colors.physicalAtk_color,
+                                                    },
+                                                ]}>
+                                                {equippedStats
+                                                    ? equippedStats.physicalAtk +
+                                                          equippedStats.bonusPhysicalAtk >
+                                                      0
+                                                        ? '+ ' +
+                                                          (equippedStats.physicalAtk +
+                                                              equippedStats.bonusPhysicalAtk) +
+                                                          ' ' +
+                                                          strings.physical_atk
+                                                        : ''
+                                                    : ''}
+                                            </Text>
+                                        )}
+                                        {equippedStats.magicalAtk > 0 && (
+                                            <Text
+                                                style={[
+                                                    styles.attribute,
+                                                    {
+                                                        color: colors.magicalAtk_color,
+                                                    },
+                                                ]}>
+                                                {equippedStats
+                                                    ? equippedStats.magicalAtk +
+                                                          equippedStats.bonusMagicalAtk >
+                                                      0
+                                                        ? '+ ' +
+                                                          (equippedStats.magicalAtk +
+                                                              equippedStats.bonusMagicalAtk) +
+                                                          ' ' +
+                                                          strings.magical_atk
+                                                        : ''
+                                                    : ''}
+                                            </Text>
+                                        )}
+                                        {equippedStats.physicalRes > 0 && (
+                                            <Text
+                                                style={[
+                                                    styles.attribute,
+                                                    {
+                                                        color: colors.physicalRes_color,
+                                                    },
+                                                ]}>
+                                                {equippedStats
+                                                    ? equippedStats.physicalRes +
+                                                          equippedStats.bonusPhysicalRes >
+                                                      0
+                                                        ? '+ ' +
+                                                          (equippedStats.physicalRes +
+                                                              equippedStats.bonusPhysicalRes) +
+                                                          ' ' +
+                                                          strings.physical_res
+                                                        : ''
+                                                    : ''}
+                                            </Text>
+                                        )}
+                                        {equippedStats.magicalRes > 0 && (
+                                            <Text
+                                                style={[
+                                                    styles.attribute,
+                                                    {
+                                                        color: colors.magicalRes_color,
+                                                    },
+                                                ]}>
+                                                {equippedStats
+                                                    ? equippedStats.magicalRes +
+                                                          equippedStats.bonusMagicalRes >
+                                                      0
+                                                        ? '+ ' +
+                                                          (equippedStats.magicalRes +
+                                                              equippedStats.bonusMagicalRes) +
+                                                          ' ' +
+                                                          strings.magical_res
+                                                        : ''
+                                                    : ''}
+                                            </Text>
+                                        )}
+                                    </View>
+                                </View>
+                            </ImageBackground>
+                        ) : null}
                         <ImageBackground
                             style={styles.background}
                             source={getImage('background_details')}
                             resizeMode={'stretch'}
                             fadeDuration={0}>
-                            <View style={styles.innerContainer}>
+                            <View>
                                 <View style={styles.topContainer}>
                                     <View style={styles.imageContainer}>
                                         <Image
@@ -321,7 +563,7 @@ export function ItemDetails() {
                                 <View style={styles.separatorContainer}>
                                     <Image
                                         style={styles.separatorImage}
-                                        source={getImage('separator')}
+                                        source={getImage('icon_separator')}
                                         resizeMode={'contain'}
                                         fadeDuration={0}
                                     />
@@ -440,7 +682,8 @@ export function ItemDetails() {
                                     {/* Upgrade Button */}
                                     {getItemCategory(itemDetails.item.id) ===
                                         'equipment' && (
-                                        <OrangeButton
+                                        <CustomButton
+                                            type={ButtonType.Orange}
                                             title={strings.upgrade}
                                             onPress={upgradeItem}
                                             disabled={
@@ -455,7 +698,8 @@ export function ItemDetails() {
                                         'resource' &&
                                         getItemCategory(itemDetails.item.id) !==
                                             'key' && (
-                                            <OrangeButton
+                                            <CustomButton
+                                                type={ButtonType.Orange}
                                                 title={
                                                     getItemCategory(
                                                         itemDetails.item.id,
@@ -530,7 +774,8 @@ export function ItemDetails() {
                                         )}
                                     {/* Break/Discard Button */}
                                     {itemDetails.index !== -1 && (
-                                        <OrangeButton
+                                        <CustomButton
+                                            type={ButtonType.Orange}
                                             title={
                                                 getItemCategory(
                                                     itemDetails.item.id,
@@ -545,7 +790,9 @@ export function ItemDetails() {
                                     )}
                                 </View>
                                 <CloseButton
-                                    onPress={() => dispatch(itemDetailsHide())}
+                                    onPress={() => {
+                                        dispatch(itemDetailsHide());
+                                    }}
                                     style={styles.closeButton}
                                 />
                             </View>
@@ -568,16 +815,27 @@ const styles = StyleSheet.create({
     },
     background: {
         width: '100%',
+        marginBottom: 2,
     },
-    innerContainer: {},
+    equippedTitle: {
+        marginTop: -28,
+        marginBottom: 2,
+        textAlign: 'center',
+        color: colors.primary,
+        fontSize: 20,
+        fontFamily: 'Myriad',
+        textShadowColor: 'rgba(0, 0, 0, 1)',
+        textShadowOffset: {width: 1, height: 1},
+        textShadowRadius: 5,
+    },
     topContainer: {
         flexDirection: 'row',
-        marginTop: 32,
+        marginTop: 24,
         marginStart: 32,
         marginEnd: 32,
     },
     imageContainer: {
-        width: '25%',
+        width: '22%',
         aspectRatio: 1,
         marginEnd: 12,
     },
@@ -590,7 +848,7 @@ const styles = StyleSheet.create({
         top: '7.5%',
         right: '12.5%',
         color: 'white',
-        fontSize: 18,
+        fontSize: 16,
         fontFamily: 'Myriad',
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
@@ -598,7 +856,6 @@ const styles = StyleSheet.create({
     },
     itemInfoContainer: {},
     name: {
-        marginTop: 4,
         fontSize: 18,
         fontFamily: 'Myriad',
         textShadowColor: 'rgba(0, 0, 0, 1)',
@@ -622,8 +879,8 @@ const styles = StyleSheet.create({
         textShadowRadius: 5,
     },
     separatorContainer: {
-        marginTop: 12,
-        marginBottom: 12,
+        marginTop: 8,
+        marginBottom: 8,
         marginStart: 24,
         marginEnd: 24,
     },
@@ -643,7 +900,6 @@ const styles = StyleSheet.create({
     },
     attribute: {
         marginTop: 2,
-        fontSize: 15,
         fontFamily: 'Myriad',
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
@@ -653,7 +909,7 @@ const styles = StyleSheet.create({
         marginStart: 6,
         marginEnd: 6,
         aspectRatio: 2.5,
-        width: '27.5%',
+        width: '25%',
         marginBottom: 36,
     },
     closeButton: {
