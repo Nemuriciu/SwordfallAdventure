@@ -13,12 +13,13 @@ import {Provider} from 'react-redux';
 import {store} from './redux/store';
 import {RewardsModal} from './components/rewardsModal';
 import {Combat} from './screens/adventureTab/hunting/combat';
+import {createUser} from './database';
 
 // eslint-disable-next-line no-unused-vars
 const USERNAME = 'vlad.megaboy@gmail.com';
 // eslint-disable-next-line no-unused-vars
 const PASSWORD = '12345678';
-export const USER_ID = 'c3e45822-9081-70e4-304a-423a62121bfa';
+export const USER_ID = 'e3e408f2-0061-7050-cc66-5c04d5540e9f';
 
 /*const UpdateExpression = "set equipment.boots=:1";
 const ExpressionAttributeValues = {

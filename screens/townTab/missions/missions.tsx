@@ -16,7 +16,11 @@ import {
     isMissionComplete,
     sortMissions,
 } from '../../../parsers/questParser.tsx';
-import {missionsSetList} from '../../../redux/slices/missionsSlice.tsx';
+import {
+    missionsSet,
+    missionsSetList,
+    missionsSetTimestamp,
+} from '../../../redux/slices/missionsSlice.tsx';
 import {getItemImg} from '../../../parsers/itemParser.tsx';
 import {strings} from '../../../utils/strings.ts';
 import {colors} from '../../../utils/colors.ts';
@@ -29,17 +33,20 @@ import {dynamoDb} from '../../../database';
 import {rewardsModalInit} from '../../../redux/slices/rewardsModalSlice.tsx';
 import {AbandonModal} from '../../../components/abandonModal.tsx';
 
-const MISSIONS_AMOUNT: number = 5;
+export const MISSIONS_AMOUNT: number = 8;
 
 export function Missions() {
     const userInfo = useSelector((state: RootState) => state.userInfo);
     const missions = useSelector((state: RootState) => state.missions);
     const dispatch = useDispatch();
+    const [refreshFetched, setRefreshFetched] = useState(false);
+    const [refreshTimer, setRefreshTimer] = useState(1);
     const [abandonIndex, setAbandonIndex] = useState(-1);
     const [abandonVisible, setAbandonVisible] = useState(false);
-    const didMount = useRef(1);
-
-    //TODO: REFRESH TIMER
+    const didMount = useRef(2);
+    const didMount_2 = useRef(1);
+    const twoHour = 7200000;
+    let timer: string | number | NodeJS.Timeout | undefined;
 
     useEffect(() => {
         fetchMissionsDB();
@@ -53,7 +60,47 @@ export function Missions() {
             didMount.current -= 1;
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [missions.missionsList]);
+    }, [missions]);
+
+    useEffect(() => {
+        if (!didMount_2.current) {
+            if (!refreshFetched) {
+                setRefreshFetched(true);
+
+                let diff =
+                    new Date().getTime() -
+                    new Date(missions.refreshTimestamp).getTime();
+
+                if (diff >= twoHour) {
+                    refreshMissions();
+
+                    diff %= twoHour;
+                    dispatch(
+                        missionsSetTimestamp(
+                            new Date(Date.now() - diff).toISOString(),
+                        ),
+                    );
+                }
+
+                /* Start Refresh Timer */
+                startTimer(twoHour - diff);
+            }
+        } else {
+            didMount_2.current -= 1;
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [missions.refreshTimestamp]);
+
+    useEffect(() => {
+        if (refreshTimer <= 0) {
+            clearInterval(timer);
+            setRefreshTimer(1);
+            refreshMissions();
+            dispatch(missionsSetTimestamp(new Date().toISOString()));
+            setRefreshTimer(twoHour);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [refreshTimer]);
 
     function fetchMissionsDB() {
         const params = {
@@ -66,7 +113,7 @@ export function Missions() {
                 console.log(err);
             } else {
                 // @ts-ignore
-                dispatch(missionsSetList(unmarshall(data.Item).missions));
+                dispatch(missionsSet(unmarshall(data.Item).missions));
             }
         });
     }
@@ -77,7 +124,7 @@ export function Missions() {
             Key: marshall({id: USER_ID}),
             UpdateExpression: 'set missions = :val',
             ExpressionAttributeValues: marshall({
-                ':val': missions.missionsList,
+                ':val': missions,
             }),
         };
         dynamoDb.updateItem(params, function (err) {
@@ -117,9 +164,12 @@ export function Missions() {
     }
 
     function refreshMissions() {
-        const missionsList = cloneDeep(missions.missionsList).filter(
-            mission => mission.isActive,
-        );
+        const missionsList =
+            missions.missionsList.length > 0
+                ? cloneDeep(missions.missionsList).filter(
+                      mission => mission.isActive,
+                  )
+                : [];
 
         const activeCount = missionsList.length;
         for (let i = 0; i < MISSIONS_AMOUNT - activeCount; i++) {
@@ -127,6 +177,31 @@ export function Missions() {
         }
 
         dispatch(missionsSetList(missionsList));
+    }
+
+    function startTimer(remainingTime: number) {
+        setRefreshTimer(remainingTime);
+
+        timer = setInterval(() => {
+            setRefreshTimer(time => (time > 1 ? time - 1000 : time));
+        }, 1000);
+
+        return () => {
+            clearInterval(timer);
+        };
+    }
+
+    function formatTime(milliseconds: number): string {
+        const totalSeconds = Math.floor(milliseconds / 1000);
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+
+        const formattedHours = String(hours).padStart(2, '0');
+        const formattedMinutes = String(minutes).padStart(2, '0');
+        const formattedSeconds = String(seconds).padStart(2, '0');
+
+        return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
     }
 
     return (
@@ -139,8 +214,11 @@ export function Missions() {
                 setVisible={setAbandonVisible}
                 index={abandonIndex}
             />
-            <Text style={styles.refreshTitle}>
-                Missions refresh in: 01:00:00
+            <Text
+                style={styles.refreshTitle}
+                adjustsFontSizeToFit={true}
+                numberOfLines={1}>
+                Missions refresh in: {formatTime(refreshTimer)}
             </Text>
             <ImageBackground
                 style={styles.innerContainer}
@@ -336,7 +414,7 @@ const styles = StyleSheet.create({
         marginTop: 12,
         marginBottom: 12,
         alignSelf: 'center',
-        fontSize: 18,
+        fontSize: 16,
         color: 'white',
         fontFamily: 'Myriad',
         textShadowColor: 'rgba(0, 0, 0, 1)',
@@ -377,7 +455,7 @@ const styles = StyleSheet.create({
         width: '100%',
     },
     missionIcon: {
-        width: '7.5%',
+        width: '7%',
         aspectRatio: 1,
     },
     descriptionContainer: {
@@ -386,7 +464,6 @@ const styles = StyleSheet.create({
     description: {
         marginStart: 10,
         marginEnd: 4,
-        fontSize: 15,
         color: 'white',
         fontFamily: 'Myriad',
         textShadowColor: 'rgba(0, 0, 0, 1)',

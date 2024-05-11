@@ -1,5 +1,8 @@
 import AWS from 'aws-sdk';
 import {marshall} from '@aws-sdk/util-dynamodb';
+import {MISSIONS_AMOUNT} from './screens/townTab/missions/missions';
+import {generateMission} from './parsers/questParser';
+import {getCreature} from './parsers/creatureParser';
 //import "react-native-get-random-values";
 //import 'react-native-url-polyfill/auto';
 //import {ReadableStream} from 'web-streams-polyfill/ponyfill';
@@ -101,7 +104,7 @@ export function authUser(username, password) {
         }
     });
 }
-/* Create Entry in Database on Registration */
+/* Create Entry in Database on Registration */ //TODO:
 function createUserEntry(userID, username) {
     const params = {
         Item: marshall({
@@ -132,16 +135,25 @@ function createUserEntry(userID, username) {
                 isGathering: false,
                 nodeIndex: -1,
                 timestamp: null,
+                //TODO:
                 nodes: [],
             },
             hunting: {
                 depth: 0,
-                creatureList: [],
+                killCount: 0,
+                //TODO: creature_count hardcoded
+                creatureList: [...Array(4).keys()].map(_ => getCreature(1, 0)),
             },
             inventory: {
+                //TODO:
                 list: new Array(36).fill({}),
             },
-            missions: [],
+            missions: {
+                missionsList: [...Array(MISSIONS_AMOUNT).keys()].map(_ =>
+                    generateMission(1),
+                ),
+                refreshTimestamp: new Date().toISOString(),
+            },
             quests: [],
             skills: [],
         }),
