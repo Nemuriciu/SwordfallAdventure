@@ -7,13 +7,14 @@ import {
     Text,
     View,
 } from 'react-native';
-import React, {useEffect, useRef} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {getImage} from '../../../assets/images/_index';
 import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '../../../redux/store.tsx';
 import {
     generateMission,
     isMissionComplete,
+    sortMissions,
 } from '../../../parsers/questParser.tsx';
 import {missionsSetList} from '../../../redux/slices/missionsSlice.tsx';
 import {getItemImg} from '../../../parsers/itemParser.tsx';
@@ -22,18 +23,23 @@ import {colors} from '../../../utils/colors.ts';
 import ProgressBar from '../../../components/progressBar.tsx';
 import {ButtonType, CustomButton} from '../../../components/customButton.tsx';
 import cloneDeep from 'lodash.clonedeep';
-import {Mission} from '../../../types/mission.ts';
 import {marshall, unmarshall} from '@aws-sdk/util-dynamodb';
 import {USER_ID} from '../../../App';
 import {dynamoDb} from '../../../database';
+import {rewardsModalInit} from '../../../redux/slices/rewardsModalSlice.tsx';
+import {AbandonModal} from '../../../components/abandonModal.tsx';
 
-const MISSION_COUNT = 5;
+const MISSIONS_AMOUNT: number = 5;
 
 export function Missions() {
     const userInfo = useSelector((state: RootState) => state.userInfo);
     const missions = useSelector((state: RootState) => state.missions);
     const dispatch = useDispatch();
+    const [abandonIndex, setAbandonIndex] = useState(-1);
+    const [abandonVisible, setAbandonVisible] = useState(false);
     const didMount = useRef(1);
+
+    //TODO: REFRESH TIMER
 
     useEffect(() => {
         fetchMissionsDB();
@@ -90,53 +96,37 @@ export function Missions() {
     }
 
     function abandonMission(index: number) {
-        const missionsList = cloneDeep(missions.missionsList);
-        missionsList[index].isActive = false;
+        setAbandonIndex(index);
+        setAbandonVisible(true);
+    }
 
-        sortMissions(missionsList);
+    function claimMissionRewards(index: number) {
+        const missionsList = cloneDeep(missions.missionsList);
+        /* Display Rewards */
+        dispatch(
+            rewardsModalInit({
+                rewards: missionsList[index].rewards,
+                experience: missionsList[index].exp,
+                shards: missionsList[index].shards,
+            }),
+        );
+        /* Remove mission */
+        missionsList.splice(index, 1);
+        //sortMissions(missionsList);
         dispatch(missionsSetList(missionsList));
     }
 
-    /*function claimRewards(index: number) {
-        const missionsList = cloneDeep(missions.missionsList);
-        missionsList[index].progress = Math.min(
-            missionsList[index].progress + 1,
-            missionsList[index].maxProgress,
+    function refreshMissions() {
+        const missionsList = cloneDeep(missions.missionsList).filter(
+            mission => mission.isActive,
         );
 
-        sortMissions(missionsList);
-        dispatch(missionsSetList(missionsList));
-    }*/
-
-    function refreshMissions() {
-        const missionsList = [];
-
-        for (let i = 0; i < MISSION_COUNT; i++) {
+        const activeCount = missionsList.length;
+        for (let i = 0; i < MISSIONS_AMOUNT - activeCount; i++) {
             missionsList.push(generateMission(userInfo.level));
         }
 
-        sortMissions(missionsList);
         dispatch(missionsSetList(missionsList));
-    }
-
-    function sortMissions(list: Mission[]) {
-        list.sort((a, b) => {
-            if (a.isActive && b.isActive) {
-                if (isMissionComplete(a) && isMissionComplete(b)) {
-                    return 0;
-                } else if (isMissionComplete(a)) {
-                    return -1;
-                } else if (isMissionComplete(b)) {
-                    return 1;
-                }
-                return 0;
-            } else if (a.isActive) {
-                return -1;
-            } else if (b.isActive) {
-                return 1;
-            }
-            return 0;
-        });
     }
 
     return (
@@ -144,6 +134,11 @@ export function Missions() {
             style={styles.container}
             source={getImage('background_outer')}
             resizeMode={'stretch'}>
+            <AbandonModal
+                visible={abandonVisible}
+                setVisible={setAbandonVisible}
+                index={abandonIndex}
+            />
             <Text style={styles.refreshTitle}>
                 Missions refresh in: 01:00:00
             </Text>
@@ -219,9 +214,6 @@ export function Missions() {
                                 />
                             </View>
                             <View style={styles.bottomContainer}>
-                                {/*<Text style={styles.rewardsLabel}>
-                                    {strings.rewards + ':'}
-                                </Text>*/}
                                 {/* Shards & Exp */}
                                 <View style={styles.shardsExpContainer}>
                                     <View style={styles.shardsContainer}>
@@ -312,7 +304,8 @@ export function Missions() {
                                         }
                                         onPress={
                                             item.isActive
-                                                ? () => {}
+                                                ? () =>
+                                                      claimMissionRewards(index)
                                                 : () => startMission(index)
                                         }
                                         style={styles.button}

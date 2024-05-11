@@ -20,6 +20,8 @@ import ProgressBar from './progressBar.tsx';
 import {rewardsModalInit} from '../redux/slices/rewardsModalSlice.tsx';
 import Toast from 'react-native-simple-toast';
 import {updateStamina} from '../redux/slices/userInfoSlice.tsx';
+import {isMissionComplete, sortMissions} from '../parsers/questParser.tsx';
+import {missionsSetList} from '../redux/slices/missionsSlice.tsx';
 
 interface props {
     node: Node;
@@ -29,6 +31,7 @@ interface props {
 export function GatherNode({node, index}: props) {
     const userInfo = useSelector((state: RootState) => state.userInfo);
     const gatherInfo = useSelector((state: RootState) => state.gatherInfo);
+    const missions = useSelector((state: RootState) => state.missions);
     const [timer, setTimer] = useState(1);
     const [nodeTime, setNodeTime] = useState(1);
     const [disabled, setDisabled] = useState(false);
@@ -114,6 +117,28 @@ export function GatherNode({node, index}: props) {
                     ),
                 }),
             );
+            /* Update Missions */
+            const missionsList = cloneDeep(missions.missionsList);
+
+            for (let i = 0; i < missionsList.length; i++) {
+                let mission = missionsList[i];
+                if (
+                    mission.isActive &&
+                    !isMissionComplete(mission) &&
+                    (mission.type === 'gather' || mission.type === 'craft')
+                    //TODO: remove craft
+                ) {
+                    if (mission.description.includes(node.type)) {
+                        mission.progress = Math.min(
+                            mission.progress + node.time,
+                            mission.maxProgress,
+                        );
+                    }
+                }
+            }
+            sortMissions(missionsList);
+            dispatch(missionsSetList(missionsList));
+
             /* Remove Node from list */
             const nodeList = cloneDeep(gatherInfo.nodes);
             nodeList.splice(index, 1);

@@ -36,10 +36,16 @@ import cloneDeep from 'lodash.clonedeep';
 import {rewardsModalInit} from '../../../redux/slices/rewardsModalSlice.tsx';
 import {ButtonType, CustomButton} from '../../../components/customButton.tsx';
 import {huntingUpdate} from '../../../redux/slices/huntingSlice.tsx';
+import {missionsSetList} from '../../../redux/slices/missionsSlice.tsx';
+import {
+    isMissionComplete,
+    sortMissions,
+} from '../../../parsers/questParser.tsx';
 
 export function Combat() {
     const userInfo = useSelector((state: RootState) => state.userInfo);
     const attributes = useSelector((state: RootState) => state.attributes);
+    const missions = useSelector((state: RootState) => state.missions);
     const hunting = useSelector((state: RootState) => state.hunting);
     const combat = useSelector((state: RootState) => state.combat);
     const [combatComplete, setCombatComplete] = useState(false);
@@ -83,7 +89,7 @@ export function Combat() {
                         setTimeout(() => {
                             dispatch(combatSetLog(combatLog));
                         }, 100);
-
+                        /* Display Rewards */
                         setTimeout(() => {
                             dispatch(
                                 rewardsModalInit({
@@ -108,6 +114,31 @@ export function Combat() {
                             setCombatComplete(true);
                         }, 500);
 
+                        /* Update Missions */
+                        const missionsList = cloneDeep(missions.missionsList);
+
+                        for (let i = 0; i < missionsList.length; i++) {
+                            let mission = missionsList[i];
+                            if (
+                                mission.isActive &&
+                                !isMissionComplete(mission) &&
+                                mission.type === 'hunt'
+                            ) {
+                                if (
+                                    mission.description.includes(
+                                        getCreatureName(
+                                            (combat.creature as Creature).id,
+                                        ),
+                                    )
+                                ) {
+                                    mission.progress += 1;
+                                }
+                            }
+                        }
+                        sortMissions(missionsList);
+                        dispatch(missionsSetList(missionsList));
+
+                        /* Remove Creature from list */
                         const creatureList = cloneDeep(hunting.creatureList);
                         creatureList.splice(combat.index, 1);
                         dispatch(

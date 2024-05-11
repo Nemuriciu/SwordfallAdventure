@@ -69,6 +69,26 @@ export function isMissionComplete(mission: Mission): boolean {
     return mission.progress >= mission.maxProgress;
 }
 
+export function sortMissions(list: Mission[]) {
+    list.sort((a, b) => {
+        if (a.isActive && b.isActive) {
+            if (isMissionComplete(a) && isMissionComplete(b)) {
+                return 0;
+            } else if (isMissionComplete(a)) {
+                return -1;
+            } else if (isMissionComplete(b)) {
+                return 1;
+            }
+            return 0;
+        } else if (a.isActive) {
+            return -1;
+        } else if (b.isActive) {
+            return 1;
+        }
+        return 0;
+    });
+}
+
 function getMissionRewards(missionRarity: string, level: number): Item[] {
     const rewards: Item[] = [];
     const r = Math.random();
