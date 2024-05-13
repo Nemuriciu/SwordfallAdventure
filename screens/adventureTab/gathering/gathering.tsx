@@ -2,7 +2,7 @@ import {FlatList, ImageBackground, StyleSheet, View} from 'react-native';
 import React, {useEffect, useRef} from 'react';
 import {getImage} from '../../../assets/images/_index';
 import {ButtonType, CustomButton} from '../../../components/customButton.tsx';
-import {GatherNode} from '../../../components/gatherNode.tsx';
+import {GatherNode} from './gatherNode.tsx';
 import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '../../../redux/store.tsx';
 import {marshall, unmarshall} from '@aws-sdk/util-dynamodb';

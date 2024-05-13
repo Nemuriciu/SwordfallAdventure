@@ -1,16 +1,19 @@
 import React, {useEffect, useState} from 'react';
 import {Image, ImageBackground, StyleSheet, Text, View} from 'react-native';
-import {getImage} from '../assets/images/_index';
-import {colors} from '../utils/colors.ts';
-import {ButtonType, CustomButton} from './customButton.tsx';
-import {Creature} from '../types/creature.ts';
-import {getCreatureImg, getCreatureName} from '../parsers/creatureParser.tsx';
-import {getItemColor} from '../parsers/itemParser.tsx';
-import {getResistancePercent} from '../parsers/attributeParser.tsx';
+import {getImage} from '../../../assets/images/_index';
+import {colors} from '../../../utils/colors.ts';
+import {ButtonType, CustomButton} from '../../../components/customButton.tsx';
+import {Creature} from '../../../types/creature.ts';
+import {
+    getCreatureImg,
+    getCreatureName,
+} from '../../../parsers/creatureParser.tsx';
+import {getItemColor} from '../../../parsers/itemParser.tsx';
+import {getResistancePercent} from '../../../parsers/attributeParser.tsx';
 import {useDispatch, useSelector} from 'react-redux';
-import {combatShow} from '../redux/slices/combatSlice.tsx';
-import {RootState} from '../redux/store.tsx';
-import {updateStamina} from '../redux/slices/userInfoSlice.tsx';
+import {combatShow} from '../../../redux/slices/combatSlice.tsx';
+import {RootState} from '../../../redux/store.tsx';
+import {updateStamina} from '../../../redux/slices/userInfoSlice.tsx';
 import Toast from 'react-native-simple-toast';
 
 interface props {

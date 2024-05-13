@@ -1,7 +1,7 @@
 import {StyleSheet, Text} from 'react-native';
 import SpannableBuilder from '@mj-studio/react-native-spannable-string';
-import {colors} from '../utils/colors.ts';
-import {Log} from '../types/log.ts';
+import {colors} from '../../../utils/colors.ts';
+import {Log} from '../../../types/log.ts';
 
 interface props {
     log: Log;

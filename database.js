@@ -120,7 +120,7 @@ function createUserEntry(userID, username) {
                 shards: 500,
                 diamonds: 50,
                 skillPoints: 5,
-                staminaTimestamp: '',
+                staminaTimestamp: new Date().toISOString(),
             },
             equipment: {
                 boots: {},

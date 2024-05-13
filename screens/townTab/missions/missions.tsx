@@ -31,7 +31,7 @@ import {marshall, unmarshall} from '@aws-sdk/util-dynamodb';
 import {USER_ID} from '../../../App';
 import {dynamoDb} from '../../../database';
 import {rewardsModalInit} from '../../../redux/slices/rewardsModalSlice.tsx';
-import {AbandonModal} from '../../../components/abandonModal.tsx';
+import {AbandonModal} from './abandonModal.tsx';
 
 export const MISSIONS_AMOUNT: number = 8;
 

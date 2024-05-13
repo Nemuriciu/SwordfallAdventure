@@ -2,14 +2,14 @@ import React, {useState} from 'react';
 import {StyleSheet, View, ImageBackground, Text} from 'react-native';
 import Modal from 'react-native-modal';
 import {useDispatch, useSelector} from 'react-redux';
-import {getImage} from '../assets/images/_index';
+import {getImage} from '../../../assets/images/_index';
 import SpannableBuilder from '@mj-studio/react-native-spannable-string';
-import {ButtonType, CustomButton} from './customButton.tsx';
-import {strings} from '../utils/strings.ts';
-import {RootState} from '../redux/store.tsx';
+import {ButtonType, CustomButton} from '../../../components/customButton.tsx';
+import {strings} from '../../../utils/strings.ts';
+import {RootState} from '../../../redux/store.tsx';
 import cloneDeep from 'lodash.clonedeep';
-import {sortMissions} from '../parsers/questParser.tsx';
-import {missionsSetList} from '../redux/slices/missionsSlice.tsx';
+import {sortMissions} from '../../../parsers/questParser.tsx';
+import {missionsSetList} from '../../../redux/slices/missionsSlice.tsx';
 
 interface props {
     visible: boolean;

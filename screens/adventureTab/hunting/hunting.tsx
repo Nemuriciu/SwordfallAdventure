@@ -9,7 +9,7 @@ import {
 import React, {useEffect, useRef} from 'react';
 import {getImage} from '../../../assets/images/_index';
 import {colors} from '../../../utils/colors.ts';
-import {CreatureCard} from '../../../components/creatureCard.tsx';
+import {CreatureCard} from './creatureCard.tsx';
 import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '../../../redux/store.tsx';
 import {Creature} from '../../../types/creature.ts';

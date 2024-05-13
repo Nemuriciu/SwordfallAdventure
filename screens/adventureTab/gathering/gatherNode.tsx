@@ -1,7 +1,7 @@
 import cloneDeep from 'lodash.clonedeep';
 import React, {useEffect, useState} from 'react';
 import {Image, Text, StyleSheet, View, ImageBackground} from 'react-native';
-import {getImage} from '../assets/images/_index';
+import {getImage} from '../../../assets/images/_index';
 import {
     getNodeRewards,
     getNodeImg,
@@ -9,19 +9,22 @@ import {
     Node,
     getNodeExperience,
     getNodeShards,
-} from '../parsers/nodeParser.tsx';
-import {colors} from '../utils/colors.ts';
-import {getItemColor} from '../parsers/itemParser.tsx';
-import {ButtonType, CustomButton} from './customButton.tsx';
+} from '../../../parsers/nodeParser.tsx';
+import {colors} from '../../../utils/colors.ts';
+import {getItemColor} from '../../../parsers/itemParser.tsx';
+import {ButtonType, CustomButton} from '../../../components/customButton.tsx';
 import {useDispatch, useSelector} from 'react-redux';
-import {RootState} from '../redux/store.tsx';
-import {setGatherInfo} from '../redux/slices/gatherInfoSlice.tsx';
-import ProgressBar from './progressBar.tsx';
-import {rewardsModalInit} from '../redux/slices/rewardsModalSlice.tsx';
+import {RootState} from '../../../redux/store.tsx';
+import {setGatherInfo} from '../../../redux/slices/gatherInfoSlice.tsx';
+import ProgressBar from '../../../components/progressBar.tsx';
+import {rewardsModalInit} from '../../../redux/slices/rewardsModalSlice.tsx';
 import Toast from 'react-native-simple-toast';
-import {updateStamina} from '../redux/slices/userInfoSlice.tsx';
-import {isMissionComplete, sortMissions} from '../parsers/questParser.tsx';
-import {missionsSetList} from '../redux/slices/missionsSlice.tsx';
+import {updateStamina} from '../../../redux/slices/userInfoSlice.tsx';
+import {
+    isMissionComplete,
+    sortMissions,
+} from '../../../parsers/questParser.tsx';
+import {missionsSetList} from '../../../redux/slices/missionsSlice.tsx';
 
 interface props {
     node: Node;
@@ -246,7 +249,7 @@ const styles = StyleSheet.create({
         width: '13.5%',
         marginTop: 8,
         marginBottom: 8,
-        marginStart: 18,
+        marginStart: 20,
     },
     infoContainer: {
         flex: 1,

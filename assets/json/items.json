@@ -1443,6 +1443,7 @@
     "rarity": "epic"
   },
 
+
   "1207": {
     "name": "Goldenglow",
     "img": "item_res_goldenglow",
@@ -1471,6 +1472,7 @@
     "type": "herb",
     "rarity": "common"
   },
+
   "1211": {
     "name": "Ohicries",
     "img": "item_res_ohicries",
@@ -1499,6 +1501,7 @@
     "type": "herb",
     "rarity": "uncommon"
   },
+
   "1215": {
     "name": "Demonbloom",
     "img": "item_res_demonbloom",
@@ -1527,6 +1530,7 @@
     "type": "herb",
     "rarity": "rare"
   },
+
   "1219": {
     "name": "Imperial Lotus",
     "img": "item_res_imperial_lotus",
@@ -1585,6 +1589,7 @@
     "rarity": "epic"
   },
 
+
   "1227": {
     "name": "Soft Fur",
     "img": "item_res_soft_fur",
@@ -1641,5 +1646,203 @@
     "category": "resource",
     "type": "cloth",
     "rarity": "epic"
+  },
+
+  "1235": {
+    "name": "Silver Bar",
+    "img": "item_res_silver_bar",
+    "category": "resource",
+    "type": "ore",
+    "rarity": "common"
+  },
+  "1236": {
+    "name": "Gold Bar",
+    "img": "item_res_gold_bar",
+    "category": "resource",
+    "type": "ore",
+    "rarity": "uncommon"
+  },
+  "1237": {
+    "name": "Asmenium Bar",
+    "img": "item_res_asmenium_bar",
+    "category": "resource",
+    "type": "ore",
+    "rarity": "rare"
+  },
+  "1238": {
+    "name": "Dragonite Bar",
+    "img": "item_res_dragonite_bar",
+    "category": "resource",
+    "type": "ore",
+    "rarity": "epic"
+  },
+
+  "1239": {
+    "name": "Common Weapon",
+    "rarity": "common",
+    "img": "item_crafting_common_weapon",
+    "category": "equipment"
+  },
+  "1240": {
+    "name": "Common Offhand",
+    "rarity": "common",
+    "img": "item_crafting_common_offhand",
+    "category": "equipment"
+  },
+  "1241": {
+    "name": "Common Helmet",
+    "rarity": "common",
+    "img": "item_crafting_common_helmet",
+    "category": "equipment"
+  },
+  "1242": {
+    "name": "Common Chest",
+    "rarity": "common",
+    "img": "item_crafting_common_chest",
+    "category": "equipment"
+  },
+  "1243": {
+    "name": "Common Pants",
+    "rarity": "common",
+    "img": "item_crafting_common_pants",
+    "category": "equipment"
+  },
+  "1244": {
+    "name": "Common Gloves",
+    "rarity": "common",
+    "img": "item_crafting_common_gloves",
+    "category": "equipment"
+  },
+  "1245": {
+    "name": "Common Boots",
+    "rarity": "common",
+    "img": "item_crafting_common_boots",
+    "category": "equipment"
+  },
+  "1246": {
+    "name": "Uncommon Weapon",
+    "rarity": "uncommon",
+    "img": "item_crafting_uncommon_weapon",
+    "category": "equipment"
+  },
+  "1247": {
+    "name": "Uncommon Offhand",
+    "rarity": "uncommon",
+    "img": "item_crafting_uncommon_offhand",
+    "category": "equipment"
+  },
+  "1248": {
+    "name": "Uncommon Helmet",
+    "rarity": "uncommon",
+    "img": "item_crafting_uncommon_helmet",
+    "category": "equipment"
+  },
+  "1249": {
+    "name": "Uncommon Chest",
+    "rarity": "uncommon",
+    "img": "item_crafting_uncommon_chest",
+    "category": "equipment"
+  },
+  "1250": {
+    "name": "Uncommon Pants",
+    "rarity": "uncommon",
+    "img": "item_crafting_uncommon_pants",
+    "category": "equipment"
+  },
+  "1251": {
+    "name": "Uncommon Gloves",
+    "rarity": "uncommon",
+    "img": "item_crafting_uncommon_gloves",
+    "category": "equipment"
+  },
+  "1252": {
+    "name": "Uncommon Boots",
+    "rarity": "uncommon",
+    "img": "item_crafting_uncommon_boots",
+    "category": "equipment"
+  },
+  "1253": {
+    "name": "Rare Weapon",
+    "rarity": "rare",
+    "img": "item_crafting_rare_weapon",
+    "category": "equipment"
+  },
+  "1254": {
+    "name": "Rare Offhand",
+    "rarity": "rare",
+    "img": "item_crafting_rare_offhand",
+    "category": "equipment"
+  },
+  "1255": {
+    "name": "Rare Helmet",
+    "rarity": "rare",
+    "img": "item_crafting_rare_helmet",
+    "category": "equipment"
+  },
+  "1256": {
+    "name": "Rare Chest",
+    "rarity": "rare",
+    "img": "item_crafting_rare_chest",
+    "category": "equipment"
+  },
+  "1257": {
+    "name": "Rare Pants",
+    "rarity": "rare",
+    "img": "item_crafting_rare_pants",
+    "category": "equipment"
+  },
+  "1258": {
+    "name": "Rare Gloves",
+    "rarity": "rare",
+    "img": "item_crafting_rare_gloves",
+    "category": "equipment"
+  },
+  "1259": {
+    "name": "Rare Boots",
+    "rarity": "rare",
+    "img": "item_crafting_rare_boots",
+    "category": "equipment"
+  },
+  "1260": {
+    "name": "Epic Weapon",
+    "rarity": "epic",
+    "img": "item_crafting_epic_weapon",
+    "category": "equipment"
+  },
+  "1261": {
+    "name": "Epic Offhand",
+    "rarity": "epic",
+    "img": "item_crafting_epic_offhand",
+    "category": "equipment"
+  },
+  "1262": {
+    "name": "Epic Helmet",
+    "rarity": "epic",
+    "img": "item_crafting_epic_helmet",
+    "category": "equipment"
+  },
+  "1263": {
+    "name": "Epic Chest",
+    "rarity": "epic",
+    "img": "item_crafting_epic_chest",
+    "category": "equipment"
+  },
+  "1264": {
+    "name": "Epic Pants",
+    "rarity": "epic",
+    "img": "item_crafting_epic_pants",
+    "category": "equipment"
+  },
+  "1265": {
+    "name": "Epic Gloves",
+    "rarity": "epic",
+    "img": "item_crafting_epic_gloves",
+    "category": "equipment"
+  },
+  "1266": {
+    "name": "Epic Boots",
+    "rarity": "epic",
+    "img": "item_crafting_epic_boots",
+    "category": "equipment"
   }
 }

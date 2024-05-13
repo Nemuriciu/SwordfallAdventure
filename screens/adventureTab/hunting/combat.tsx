@@ -24,7 +24,7 @@ import {getResistancePercent} from '../../../parsers/attributeParser.tsx';
 import {colors} from '../../../utils/colors.ts';
 import ProgressBar from '../../../components/progressBar.tsx';
 import {strings} from '../../../utils/strings.ts';
-import {LogText} from '../../../components/logText.tsx';
+import {LogText} from './logText.tsx';
 import {
     combatHide,
     combatSetLog,

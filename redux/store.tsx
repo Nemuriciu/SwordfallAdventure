@@ -9,6 +9,7 @@ import {rewardsModalSlice} from './slices/rewardsModalSlice.tsx';
 import {huntingSlice} from './slices/huntingSlice.tsx';
 import {combatSlice} from './slices/combatSlice.tsx';
 import {missionsSlice} from './slices/missionsSlice.tsx';
+import {craftingDetailsSlice} from './slices/craftingDetailsSlice.tsx';
 
 export const store = configureStore({
     reducer: {
@@ -20,6 +21,7 @@ export const store = configureStore({
         combat: combatSlice.reducer,
         gatherInfo: gatherInfoSlice.reducer,
         itemDetails: itemDetailsSlice.reducer,
+        craftingDetails: craftingDetailsSlice.reducer,
         rewardsModal: rewardsModalSlice.reducer,
         missions: missionsSlice.reducer,
     },

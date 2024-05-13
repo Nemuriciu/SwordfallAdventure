@@ -1,12 +1,13 @@
-import {StyleSheet, useWindowDimensions} from 'react-native';
+import {useWindowDimensions} from 'react-native';
 import React from 'react';
 import {TabView, SceneMap} from 'react-native-tab-view';
 import {Missions} from './missions/missions.tsx';
+import {Crafting} from './crafting/crafting.tsx';
 
 const renderScene = SceneMap({
-    1: Missions,
-    //2: DailyQuests,
-    //3: Crafting,
+    1: Crafting,
+    2: Missions,
+    //3: DailyQuests,
     //4: Shop,
 });
 
@@ -15,9 +16,9 @@ export function TownTab() {
 
     const [index, setIndex] = React.useState(0);
     const [routes] = React.useState([
-        {key: '1', title: 'Missions'},
-        //{key: '2', title: 'Daily Quests'},
-        //{key: '3', title: 'Crafting'},
+        {key: '1', title: 'Crafting'},
+        {key: '2', title: 'Missions'},
+        //{key: '3', title: 'Daily Quests'},
         //{key: '4', title: 'Shop'},
     ]);
 
@@ -31,11 +32,3 @@ export function TownTab() {
         />
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-});
