@@ -84,6 +84,10 @@ export const images = {
     },
     inventory: {
         icon_bag: require('./inventory/icon_bag.png'),
+        icon_break_common: require('./inventory/icon_break_common.png'),
+        icon_break_epic: require('./inventory/icon_break_epic.png'),
+        icon_break_rare: require('./inventory/icon_break_rare.png'),
+        icon_break_uncommon: require('./inventory/icon_break_uncommon.png'),
         icon_slot: require('./inventory/icon_slot.png'),
     },
     items: {

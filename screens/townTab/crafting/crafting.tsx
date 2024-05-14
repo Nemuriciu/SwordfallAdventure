@@ -81,7 +81,6 @@ export function Crafting() {
                         ? equipmentList[1][index]
                         : consumablesList[1][index]
                 }
-                index={index}
             />
         </TouchableOpacity>
     );
@@ -134,7 +133,6 @@ const styles = StyleSheet.create({
     },
     buttonGroupContainer: {
         marginTop: 12,
-        marginBottom: 8,
         marginStart: 16,
         marginEnd: 16,
         backgroundColor: 'transparent',
@@ -153,12 +151,14 @@ const styles = StyleSheet.create({
     },
     innerContainer: {
         flex: 1,
-        marginStart: 2,
-        marginEnd: 2,
+        marginStart: 4,
+        marginEnd: 4,
+        marginTop: 2,
+        marginBottom: 4,
     },
     craftingList: {
-        marginTop: 4,
-        marginBottom: 4,
+        marginTop: 5,
+        marginBottom: 6,
     },
     itemBackground: {},
     image: {

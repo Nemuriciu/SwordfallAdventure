@@ -49,7 +49,7 @@ import {
 import Toast from 'react-native-simple-toast';
 import {emptyStats, Stats} from '../types/stats.ts';
 import {rewardsModalInit} from '../redux/slices/rewardsModalSlice.tsx';
-import {DiscardModal} from './discardModal.tsx';
+import {DiscardModal} from '../screens/characterTab/inventory/discardModal.tsx';
 
 export function ItemDetails() {
     //const userInfo = useSelector((state: RootState) => state.userInfo);
@@ -190,6 +190,7 @@ export function ItemDetails() {
             setDisabled(true);
 
             if (isFull(inventory.list)) {
+                //TODO: localization
                 Toast.show('Inventory is full.', Toast.SHORT);
             } else {
                 if (isItem(itemDetails.item)) {
@@ -915,7 +916,7 @@ const styles = StyleSheet.create({
     closeButton: {
         position: 'absolute',
         bottom: '-5%',
-        width: '10%',
+        width: '11%',
         aspectRatio: 1,
         alignSelf: 'center',
     },

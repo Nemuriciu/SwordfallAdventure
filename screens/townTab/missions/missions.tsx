@@ -204,6 +204,162 @@ export function Missions() {
         return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
     }
 
+    // @ts-ignore
+    const renderItem = ({item, index}) => {
+        return (
+            <ImageBackground
+                style={styles.missionBackground}
+                source={getImage('background_node')}
+                resizeMode={'stretch'}
+                fadeDuration={0}>
+                <View style={styles.topContainer}>
+                    {/* Icon */}
+                    <Image
+                        style={styles.missionIcon}
+                        source={
+                            item.type === 'hunt'
+                                ? getImage('missions_icon_hunting')
+                                : item.type === 'craft'
+                                ? getImage('missions_icon_crafting')
+                                : item.type === 'gather'
+                                ? getImage('missions_icon_gathering')
+                                : null
+                        }
+                        resizeMode={'stretch'}
+                        fadeDuration={0}
+                    />
+                    {/* Description */}
+                    <View style={styles.descriptionContainer}>
+                        <Text style={styles.description}>
+                            {item.description}
+                        </Text>
+                    </View>
+                    {/* Progress Bar */}
+                    <View style={styles.progressBarContainer}>
+                        {item.isActive ? (
+                            <ProgressBar
+                                progress={item.progress / item.maxProgress}
+                                image={
+                                    isMissionComplete(item)
+                                        ? 'progress_bar_green'
+                                        : 'progress_bar_orange'
+                                }
+                            />
+                        ) : (
+                            <View />
+                        )}
+                        {item.isActive ? (
+                            <Text style={styles.progressText}>
+                                {item.progress + '/' + item.maxProgress}
+                            </Text>
+                        ) : null}
+                    </View>
+                </View>
+                <View style={styles.separatorContainer}>
+                    <Image
+                        style={styles.separator}
+                        source={getImage('icon_separator')}
+                        resizeMode={'contain'}
+                        fadeDuration={0}
+                    />
+                </View>
+                <View style={styles.bottomContainer}>
+                    {/* Shards & Exp */}
+                    <View style={styles.shardsExpContainer}>
+                        <View style={styles.shardsContainer}>
+                            {item.shards ? (
+                                <Image
+                                    style={styles.shardsIcon}
+                                    source={getImage('icon_shards')}
+                                    resizeMode={'stretch'}
+                                    fadeDuration={0}
+                                />
+                            ) : null}
+                            {item.shards ? (
+                                <Text
+                                    style={styles.shardsText}
+                                    adjustsFontSizeToFit={true}
+                                    numberOfLines={1}>
+                                    {item.shards}
+                                </Text>
+                            ) : null}
+                        </View>
+                        <View style={styles.expContainer}>
+                            {item.exp ? (
+                                <Text
+                                    style={styles.expIcon}
+                                    adjustsFontSizeToFit={true}
+                                    numberOfLines={1}>
+                                    {strings.xp}
+                                </Text>
+                            ) : null}
+                            {item.exp ? (
+                                <Text
+                                    style={styles.expText}
+                                    adjustsFontSizeToFit={true}
+                                    numberOfLines={1}>
+                                    {item.exp}
+                                </Text>
+                            ) : null}
+                        </View>
+                    </View>
+                    {/* Rewards */}
+                    <View style={styles.rewardsListContainer}>
+                        {item.rewards.length ? (
+                            <FlatList
+                                horizontal
+                                data={item.rewards}
+                                /* eslint-disable-next-line @typescript-eslint/no-shadow */
+                                renderItem={({item}) => (
+                                    <ImageBackground
+                                        style={styles.rewardSlot}
+                                        source={getImage(getItemImg(item.id))}
+                                        fadeDuration={0}>
+                                        <Text style={styles.rewardQuantity}>
+                                            {item.quantity > 1
+                                                ? item.quantity
+                                                : ''}
+                                        </Text>
+                                    </ImageBackground>
+                                )}
+                                scrollEnabled={false}
+                                overScrollMode={'never'}
+                            />
+                        ) : null}
+                    </View>
+                    {/* Action Button */}
+                    {item.isActive && !isMissionComplete(item) ? (
+                        <CustomButton
+                            type={ButtonType.Red}
+                            title={'Abandon'}
+                            onPress={() => abandonMission(index)}
+                            style={styles.button}
+                        />
+                    ) : (
+                        <CustomButton
+                            type={
+                                isMissionComplete(item)
+                                    ? ButtonType.Green
+                                    : ButtonType.Orange
+                            }
+                            title={
+                                isMissionComplete(item)
+                                    ? strings.claim
+                                    : strings.start
+                            }
+                            onPress={
+                                item.isActive
+                                    ? () => claimMissionRewards(index)
+                                    : () => startMission(index)
+                            }
+                            style={styles.button}
+                        />
+                    )}
+                </View>
+            </ImageBackground>
+        );
+    };
+
     return (
         <ImageBackground
             style={styles.container}
@@ -228,170 +384,7 @@ export function Missions() {
                 <FlatList
                     style={styles.missionsList}
                     data={missions.missionsList}
-                    renderItem={({item, index}) => (
-                        <ImageBackground
-                            style={styles.missionBackground}
-                            source={getImage('background_node')}
-                            resizeMode={'stretch'}
-                            fadeDuration={0}>
-                            <View style={styles.topContainer}>
-                                {/* Icon */}
-                                <Image
-                                    style={styles.missionIcon}
-                                    source={
-                                        item.type === 'hunt'
-                                            ? getImage('missions_icon_hunting')
-                                            : item.type === 'craft'
-                                            ? getImage('missions_icon_crafting')
-                                            : item.type === 'gather'
-                                            ? getImage(
-                                                  'missions_icon_gathering',
-                                              )
-                                            : null
-                                    }
-                                    resizeMode={'stretch'}
-                                    fadeDuration={0}
-                                />
-                                {/* Description */}
-                                <View style={styles.descriptionContainer}>
-                                    <Text style={styles.description}>
-                                        {item.description}
-                                    </Text>
-                                </View>
-                                {/* Progress Bar */}
-                                <View style={styles.progressBarContainer}>
-                                    {item.isActive ? (
-                                        <ProgressBar
-                                            progress={
-                                                item.progress / item.maxProgress
-                                            }
-                                            image={
-                                                isMissionComplete(item)
-                                                    ? 'progress_bar_green'
-                                                    : 'progress_bar_orange'
-                                            }
-                                        />
-                                    ) : (
-                                        <View />
-                                    )}
-                                    {item.isActive ? (
-                                        <Text style={styles.progressText}>
-                                            {item.progress +
-                                                '/' +
-                                                item.maxProgress}
-                                        </Text>
-                                    ) : null}
-                                </View>
-                            </View>
-                            <View style={styles.separatorContainer}>
-                                <Image
-                                    style={styles.separator}
-                                    source={getImage('icon_separator')}
-                                    resizeMode={'contain'}
-                                    fadeDuration={0}
-                                />
-                            </View>
-                            <View style={styles.bottomContainer}>
-                                {/* Shards & Exp */}
-                                <View style={styles.shardsExpContainer}>
-                                    <View style={styles.shardsContainer}>
-                                        {item.shards ? (
-                                            <Image
-                                                style={styles.shardsIcon}
-                                                source={getImage('icon_shards')}
-                                                resizeMode={'stretch'}
-                                                fadeDuration={0}
-                                            />
-                                        ) : null}
-                                        {item.shards ? (
-                                            <Text
-                                                style={styles.shardsText}
-                                                adjustsFontSizeToFit={true}
-                                                numberOfLines={1}>
-                                                {item.shards}
-                                            </Text>
-                                        ) : null}
-                                    </View>
-                                    <View style={styles.expContainer}>
-                                        {item.exp ? (
-                                            <Text
-                                                style={styles.expIcon}
-                                                adjustsFontSizeToFit={true}
-                                                numberOfLines={1}>
-                                                {strings.xp}
-                                            </Text>
-                                        ) : null}
-                                        {item.exp ? (
-                                            <Text
-                                                style={styles.expText}
-                                                adjustsFontSizeToFit={true}
-                                                numberOfLines={1}>
-                                                {item.exp}
-                                            </Text>
-                                        ) : null}
-                                    </View>
-                                </View>
-                                {/* Rewards */}
-                                <View style={styles.rewardsListContainer}>
-                                    {item.rewards.length ? (
-                                        <FlatList
-                                            horizontal
-                                            data={item.rewards}
-                                            /* eslint-disable-next-line @typescript-eslint/no-shadow */
-                                            renderItem={({item}) => (
-                                                <ImageBackground
-                                                    style={styles.rewardSlot}
-                                                    source={getImage(
-                                                        getItemImg(item.id),
-                                                    )}
-                                                    fadeDuration={0}>
-                                                    <Text
-                                                        style={
-                                                            styles.rewardQuantity
-                                                        }>
-                                                        {item.quantity > 1
-                                                            ? item.quantity
-                                                            : ''}
-                                                    </Text>
-                                                </ImageBackground>
-                                            )}
-                                            scrollEnabled={false}
-                                            overScrollMode={'never'}
-                                        />
-                                    ) : null}
-                                </View>
-                                {/* Action Button */}
-                                {item.isActive && !isMissionComplete(item) ? (
-                                    <CustomButton
-                                        type={ButtonType.Red}
-                                        title={'Abandon'}
-                                        onPress={() => abandonMission(index)}
-                                        style={styles.button}
-                                    />
-                                ) : (
-                                    <CustomButton
-                                        type={
-                                            isMissionComplete(item)
-                                                ? ButtonType.Green
-                                                : ButtonType.Orange
-                                        }
-                                        title={
-                                            isMissionComplete(item)
-                                                ? strings.claim
-                                                : strings.start
-                                        }
-                                        onPress={
-                                            item.isActive
-                                                ? () =>
-                                                      claimMissionRewards(index)
-                                                : () => startMission(index)
-                                        }
-                                        style={styles.button}
-                                    />
-                                )}
-                            </View>
-                        </ImageBackground>
-                    )}
+                    renderItem={renderItem}
                     overScrollMode={'never'}
                 />
             </ImageBackground>
@@ -427,8 +420,8 @@ const styles = StyleSheet.create({
         marginEnd: 2,
     },
     missionsList: {
-        marginTop: 4,
-        marginBottom: 4,
+        marginTop: 5,
+        marginBottom: 6,
     },
     missionBackground: {},
     topContainer: {

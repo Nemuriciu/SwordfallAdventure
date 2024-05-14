@@ -21,17 +21,19 @@ import {strings} from '../../../utils/strings.ts';
 interface props {
     craftedItem: Item;
     materials: Item[];
-    index: number;
 }
 
-export function CraftingCard({craftedItem, materials, index}: props) {
+export function CraftingCard({craftedItem, materials}: props) {
     // @ts-ignore
     const renderItem = ({item}) => (
         <ImageBackground
             style={styles.materialSlot}
             source={getImage(getItemImg(item.id))}
-            fadeDuration={0}
-        />
+            fadeDuration={0}>
+            <Text style={styles.materialQuantity}>
+                {item.quantity > 1 ? item.quantity : ''}
+            </Text>
+        </ImageBackground>
     );
     // noinspection RequiredAttributes
     return (
@@ -97,7 +99,7 @@ const styles = StyleSheet.create({
     imageContainer: {
         width: '14%',
         aspectRatio: 1,
-        marginStart: 24,
+        marginStart: 32,
         marginTop: 12,
         marginBottom: 12,
     },
@@ -153,8 +155,19 @@ const styles = StyleSheet.create({
     },
     materialSlot: {
         aspectRatio: 1,
-        height: Dimensions.get('screen').height / 24,
+        height: Dimensions.get('screen').height / 25,
         marginStart: 1,
         marginEnd: 1,
+    },
+    materialQuantity: {
+        position: 'absolute',
+        bottom: 3,
+        right: 4,
+        color: 'white',
+        fontSize: 12,
+        fontFamily: 'Myriad',
+        textShadowColor: 'rgba(0, 0, 0, 1)',
+        textShadowOffset: {width: 1, height: 1},
+        textShadowRadius: 5,
     },
 });

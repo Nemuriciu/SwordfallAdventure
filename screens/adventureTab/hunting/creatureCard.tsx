@@ -35,11 +35,14 @@ export function CreatureCard({creature, index}: props) {
 
             const staminaCost: number = 10; //TODO:
             if (userInfo.stamina >= staminaCost) {
-                dispatch(updateStamina(userInfo.stamina - staminaCost));
                 dispatch(
                     combatShow([creature, index, attributes, creature.stats]),
                 );
+                setTimeout(() => {
+                    dispatch(updateStamina(userInfo.stamina - staminaCost));
+                }, 250);
             } else {
+                //TODO: localization
                 Toast.show('Not enough stamina.', Toast.SHORT);
             }
 
@@ -294,7 +297,7 @@ const styles = StyleSheet.create({
         textShadowRadius: 5,
     },
     buttonContainer: {
-        aspectRatio: 3.5,
+        aspectRatio: 3,
         width: '35%',
     },
     attackButton: {},

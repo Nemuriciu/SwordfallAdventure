@@ -2,21 +2,21 @@ import React, {useState} from 'react';
 import {StyleSheet, View, ImageBackground, Text, Image} from 'react-native';
 import Modal from 'react-native-modal';
 import {useDispatch} from 'react-redux';
-import {getImage} from '../assets/images/_index';
-import {Item} from '../types/item.ts';
+import {getImage} from '../../../assets/images/_index';
+import {Item} from '../../../types/item.ts';
 import SpannableBuilder from '@mj-studio/react-native-spannable-string';
 import {
     getItemCategory,
     getItemColor,
     getItemName,
     getItemRarity,
-} from '../parsers/itemParser.tsx';
+} from '../../../parsers/itemParser.tsx';
 import {Slider} from '@miblanchard/react-native-slider';
-import {colors} from '../utils/colors.ts';
-import {ButtonType, CustomButton} from './customButton.tsx';
-import {strings} from '../utils/strings.ts';
-import {itemDetailsHide} from '../redux/slices/itemDetailsSlice.tsx';
-import {inventoryRemoveItemAt} from '../redux/slices/inventorySlice.tsx';
+import {colors} from '../../../utils/colors.ts';
+import {ButtonType, CustomButton} from '../../../components/customButton.tsx';
+import {strings} from '../../../utils/strings.ts';
+import {itemDetailsHide} from '../../../redux/slices/itemDetailsSlice.tsx';
+import {inventoryRemoveItemAt} from '../../../redux/slices/inventorySlice.tsx';
 
 interface props {
     visible: boolean;

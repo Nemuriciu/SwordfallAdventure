@@ -24,7 +24,7 @@ export function Counter({amount, setAmount, style}: props) {
 
     function increaseCraftAmount() {
         if (amount !== '') {
-            if (parseInt(amount, 10) < 999) {
+            if (parseInt(amount, 10) < 99) {
                 setAmount((1 + parseInt(amount, 10)).toString());
             }
         } else {
@@ -66,7 +66,7 @@ export function Counter({amount, setAmount, style}: props) {
                         value={amount}
                         onChangeText={val => updateAmount(val)}
                         keyboardType={'numeric'}
-                        maxLength={3}
+                        maxLength={2}
                     />
                     <TouchableOpacity
                         style={styles.arrowContainer}

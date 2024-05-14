@@ -20,6 +20,10 @@ import {marshall, unmarshall} from '@aws-sdk/util-dynamodb';
 import {USER_ID} from '../../../App';
 import {dynamoDb} from '../../../database';
 import {strings} from '../../../utils/strings.ts';
+import {rand} from '../../../parsers/itemParser.tsx';
+
+export const CREATURE_COUNT_MIN = 5;
+export const CREATURE_COUNT_MAX = 7;
 
 export function Hunting() {
     const userInfo = useSelector((state: RootState) => state.userInfo);
@@ -72,10 +76,9 @@ export function Hunting() {
 
     function goDeeper() {
         const depth = hunting.depth + 1;
-        let creatureList: Creature[] = [];
+        const creatureList: Creature[] = [];
 
-        for (let i = 0; i < 4; i++) {
-            //TODO:
+        for (let i = 0; i < rand(CREATURE_COUNT_MIN, CREATURE_COUNT_MAX); i++) {
             creatureList.push(getCreature(userInfo.level, depth));
         }
 
@@ -92,7 +95,7 @@ export function Hunting() {
         const depth = 0;
         let creatureList: Creature[] = [];
 
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i < rand(CREATURE_COUNT_MIN, CREATURE_COUNT_MAX); i++) {
             //TODO:
             creatureList.push(getCreature(userInfo.level, depth));
         }

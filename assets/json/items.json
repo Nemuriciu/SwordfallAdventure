@@ -3,24 +3,28 @@
     "name": "Silver Chest",
     "img": "item_chest_silver_chest",
     "category": "chest",
+    "type": "chest",
     "rarity": "common"
   },
   "1001": {
     "name": "Emerald Chest",
     "img": "item_chest_emerald_chest",
     "category": "chest",
+    "type": "chest",
     "rarity": "uncommon"
   },
   "1002": {
     "name": "Sapphire Chest",
     "img": "item_chest_sapphire_chest",
     "category": "chest",
+    "type": "chest",
     "rarity": "rare"
   },
   "1003": {
     "name": "Amethyst Chest",
     "img": "item_chest_amethyst_chest",
     "category": "chest",
+    "type": "chest",
     "rarity": "epic"
   },
 
@@ -1681,31 +1685,36 @@
     "name": "Common Weapon",
     "rarity": "common",
     "img": "item_crafting_common_weapon",
-    "category": "equipment"
+    "category": "equipment",
+    "type": "weapon"
   },
   "1240": {
     "name": "Common Offhand",
     "rarity": "common",
     "img": "item_crafting_common_offhand",
-    "category": "equipment"
+    "category": "equipment",
+    "type": "offhand"
   },
   "1241": {
     "name": "Common Helmet",
     "rarity": "common",
     "img": "item_crafting_common_helmet",
-    "category": "equipment"
+    "category": "equipment",
+    "type": "helmet"
   },
   "1242": {
     "name": "Common Chest",
     "rarity": "common",
     "img": "item_crafting_common_chest",
-    "category": "equipment"
+    "category": "equipment",
+    "type": "chest"
   },
   "1243": {
     "name": "Common Pants",
     "rarity": "common",
     "img": "item_crafting_common_pants",
-    "category": "equipment"
+    "category": "equipment",
+    "type": "pants"
   },
   "1244": {
     "name": "Common Gloves",
@@ -1723,126 +1732,147 @@
     "name": "Uncommon Weapon",
     "rarity": "uncommon",
     "img": "item_crafting_uncommon_weapon",
-    "category": "equipment"
+    "category": "equipment",
+    "type": "weapon"
   },
   "1247": {
     "name": "Uncommon Offhand",
     "rarity": "uncommon",
     "img": "item_crafting_uncommon_offhand",
-    "category": "equipment"
+    "category": "equipment",
+    "type": "offhand"
   },
   "1248": {
     "name": "Uncommon Helmet",
     "rarity": "uncommon",
     "img": "item_crafting_uncommon_helmet",
-    "category": "equipment"
+    "category": "equipment",
+    "type": "helmet"
   },
   "1249": {
     "name": "Uncommon Chest",
     "rarity": "uncommon",
     "img": "item_crafting_uncommon_chest",
-    "category": "equipment"
+    "category": "equipment",
+    "type": "chest"
   },
   "1250": {
     "name": "Uncommon Pants",
     "rarity": "uncommon",
     "img": "item_crafting_uncommon_pants",
-    "category": "equipment"
+    "category": "equipment",
+    "type": "pants"
   },
   "1251": {
     "name": "Uncommon Gloves",
     "rarity": "uncommon",
     "img": "item_crafting_uncommon_gloves",
-    "category": "equipment"
+    "category": "equipment",
+    "type": "gloves"
   },
   "1252": {
     "name": "Uncommon Boots",
     "rarity": "uncommon",
     "img": "item_crafting_uncommon_boots",
-    "category": "equipment"
+    "category": "equipment",
+    "type": "boots"
   },
   "1253": {
     "name": "Rare Weapon",
     "rarity": "rare",
     "img": "item_crafting_rare_weapon",
-    "category": "equipment"
+    "category": "equipment",
+    "type": "weapon"
   },
   "1254": {
     "name": "Rare Offhand",
     "rarity": "rare",
     "img": "item_crafting_rare_offhand",
-    "category": "equipment"
+    "category": "equipment",
+    "type": "offhand"
   },
   "1255": {
     "name": "Rare Helmet",
     "rarity": "rare",
     "img": "item_crafting_rare_helmet",
-    "category": "equipment"
+    "category": "equipment",
+    "type": "helmet"
   },
   "1256": {
     "name": "Rare Chest",
     "rarity": "rare",
     "img": "item_crafting_rare_chest",
-    "category": "equipment"
+    "category": "equipment",
+    "type": "chest"
   },
   "1257": {
     "name": "Rare Pants",
     "rarity": "rare",
     "img": "item_crafting_rare_pants",
-    "category": "equipment"
+    "category": "equipment",
+    "type": "pants"
   },
   "1258": {
     "name": "Rare Gloves",
     "rarity": "rare",
     "img": "item_crafting_rare_gloves",
-    "category": "equipment"
+    "category": "equipment",
+    "type": "gloves"
   },
   "1259": {
     "name": "Rare Boots",
     "rarity": "rare",
     "img": "item_crafting_rare_boots",
-    "category": "equipment"
+    "category": "equipment",
+    "type": "boots"
   },
   "1260": {
     "name": "Epic Weapon",
     "rarity": "epic",
     "img": "item_crafting_epic_weapon",
-    "category": "equipment"
+    "category": "equipment",
+    "type": "weapon"
   },
   "1261": {
     "name": "Epic Offhand",
     "rarity": "epic",
     "img": "item_crafting_epic_offhand",
-    "category": "equipment"
+    "category": "equipment",
+    "type": "offhand"
   },
   "1262": {
     "name": "Epic Helmet",
     "rarity": "epic",
     "img": "item_crafting_epic_helmet",
-    "category": "equipment"
+    "category": "equipment",
+    "type": "helmet"
   },
   "1263": {
     "name": "Epic Chest",
     "rarity": "epic",
     "img": "item_crafting_epic_chest",
-    "category": "equipment"
+    "category": "equipment",
+    "type": "chest"
   },
   "1264": {
     "name": "Epic Pants",
     "rarity": "epic",
     "img": "item_crafting_epic_pants",
-    "category": "equipment"
+    "category": "equipment",
+    "type": "pants"
   },
   "1265": {
     "name": "Epic Gloves",
     "rarity": "epic",
     "img": "item_crafting_epic_gloves",
-    "category": "equipment"
+    "category": "equipment",
+    "type": "gloves"
   },
   "1266": {
     "name": "Epic Boots",
     "rarity": "epic",
     "img": "item_crafting_epic_boots",
-    "category": "equipment"
+    "category": "equipment",
+    "type": "boots"
   }
 }

@@ -45,6 +45,22 @@ export const inventorySlice = createSlice({
                 state.list[action.payload.index] = {};
             }
         },
+        inventoryRemoveMultipleItemsAt: (
+            state,
+            action: PayloadAction<{index: number[]; quantity: number[]}>,
+        ) => {
+            for (let i = 0; i < action.payload.index.length; i++) {
+                if (
+                    (state.list[action.payload.index[i]] as Item).quantity >
+                    action.payload.quantity[i]
+                ) {
+                    (state.list[action.payload.index[i]] as Item).quantity -=
+                        action.payload.quantity[i];
+                } else {
+                    state.list[action.payload.index[i]] = {};
+                }
+            }
+        },
         inventoryUpgradeItem: (state, action: PayloadAction<number>) => {
             if (isItem(state.list[action.payload])) {
                 // @ts-ignore
@@ -59,5 +75,6 @@ export const {
     inventoryAddItems,
     inventoryAddItemAt,
     inventoryRemoveItemAt,
+    inventoryRemoveMultipleItemsAt,
     inventoryUpgradeItem,
 } = inventorySlice.actions;

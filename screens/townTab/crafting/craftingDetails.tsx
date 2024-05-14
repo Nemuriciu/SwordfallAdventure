@@ -12,13 +12,16 @@ import Modal from 'react-native-modal';
 import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '../../../redux/store.tsx';
 import {craftingDetailsHide} from '../../../redux/slices/craftingDetailsSlice.tsx';
-import {isItem, Item} from '../../../types/item.ts';
+import {Category, isItem, Item} from '../../../types/item.ts';
 import {getImage} from '../../../assets/images/_index';
 import {
+    getItemCategory,
     getItemColor,
     getItemImg,
     getItemName,
     getItemRarity,
+    getItemType,
+    getSpecificEquip,
 } from '../../../parsers/itemParser.tsx';
 import {ButtonType, CustomButton} from '../../../components/customButton.tsx';
 import {strings} from '../../../utils/strings.ts';
@@ -26,6 +29,8 @@ import {CloseButton} from '../../../components/closeButton.tsx';
 import cloneDeep from 'lodash.clonedeep';
 import {Counter} from '../../../components/counter.tsx';
 import {getInventoryIndex} from '../../../utils/arrayUtils.ts';
+import {rewardsModalInit} from '../../../redux/slices/rewardsModalSlice.tsx';
+import {inventoryRemoveItemAt} from '../../../redux/slices/inventorySlice.tsx';
 
 export function CraftingDetails() {
     const inventory = useSelector((state: RootState) => state.inventory);
@@ -44,7 +49,7 @@ export function CraftingDetails() {
         setMaterialsTemp(cloneDeep(craftingDetails.materials));
         updateMatsOwned();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [craftingDetails.materials]);
+    }, [craftingDetails.materials, inventory.list]);
 
     useEffect(() => {
         if (!didMount_1.current) {
@@ -66,6 +71,7 @@ export function CraftingDetails() {
         } else {
             didMount_1.current -= 1;
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [materialsOwned, materialsTemp, amount]);
 
     function updateMatsOwned() {
@@ -94,6 +100,80 @@ export function CraftingDetails() {
 
     function handlerSetAmount(val: string) {
         setAmount(val);
+    }
+
+    //TODO: Check Inventory Full
+    function craftItem() {
+        if (isItem(craftingDetails.item)) {
+            /* Resources and Consumables */
+            if (
+                getItemCategory(craftingDetails.item.id) !== Category.equipment
+            ) {
+                /* Add Item to Inventory */
+                const item = cloneDeep(craftingDetails.item);
+                item.quantity = parseInt(amount, 10);
+                dispatch(
+                    rewardsModalInit({
+                        rewards: [item],
+                        experience: 0,
+                        shards: 0,
+                    }),
+                );
+                /* Remove materials from Inventory */
+                for (let i = 0; i < materialsTemp.length; i++) {
+                    const index = getInventoryIndex(
+                        materialsTemp[i],
+                        inventory.list,
+                    );
+                    dispatch(
+                        inventoryRemoveItemAt({
+                            index: index,
+                            quantity:
+                                materialsTemp[i].quantity *
+                                parseInt(amount, 10),
+                        }),
+                    );
+                }
+            } else if (
+                getItemCategory(craftingDetails.item.id) === Category.equipment
+            ) {
+                /* Equipment */
+                /* Add Items to Inventory */
+                const amountNr = parseInt(amount, 10);
+                const rewards = [];
+                for (let i = 0; i < amountNr; i++) {
+                    const equipItem = cloneDeep(craftingDetails.item);
+                    const item = getSpecificEquip(
+                        getItemType(equipItem.id),
+                        getItemRarity(equipItem.id),
+                        equipItem.level,
+                    );
+                    rewards.push(item);
+                }
+                dispatch(
+                    rewardsModalInit({
+                        rewards: rewards,
+                        experience: 0,
+                        shards: 0,
+                    }),
+                );
+                /* Remove materials from Inventory */
+                for (let i = 0; i < materialsTemp.length; i++) {
+                    const index = getInventoryIndex(
+                        materialsTemp[i],
+                        inventory.list,
+                    );
+                    dispatch(
+                        inventoryRemoveItemAt({
+                            index: index,
+                            quantity:
+                                materialsTemp[i].quantity *
+                                parseInt(amount, 10),
+                        }),
+                    );
+                }
+            }
+        }
     }
 
     // noinspection RequiredAttributes
@@ -153,16 +233,13 @@ export function CraftingDetails() {
                                     </View>
                                 </View>
                                 <FlatList
-                                    style={styles.flatList}
-                                    contentContainerStyle={
-                                        styles.flatListContent
-                                    }
                                     horizontal
+                                    contentContainerStyle={
+                                        styles.materialsListContainer
+                                    }
                                     scrollEnabled={false}
                                     data={craftingDetails.materials}
-                                    keyExtractor={(item, index) =>
-                                        index.toString()
-                                    }
+                                    keyExtractor={item => item.id}
                                     renderItem={({item, index}) => (
                                         <ImageBackground
                                             style={styles.materialSlot}
@@ -214,7 +291,6 @@ export function CraftingDetails() {
                                             </Text>
                                         </ImageBackground>
                                     )}
-                                    overScrollMode={'never'}
                                 />
                                 <View style={styles.separatorContainer}>
                                     <Image
@@ -229,7 +305,7 @@ export function CraftingDetails() {
                                     <CustomButton
                                         type={ButtonType.Orange}
                                         title={strings.craft}
-                                        onPress={() => {}}
+                                        onPress={craftItem}
                                         style={styles.actionButton}
                                         disabled={disabled}
                                     />
@@ -310,11 +386,9 @@ const styles = StyleSheet.create({
     separatorImage: {
         width: '100%',
     },
-    flatList: {
-        marginTop: 12,
-    },
-    flatListContent: {
+    materialsListContainer: {
         flex: 1,
+        marginTop: 12,
         justifyContent: 'center',
     },
     materialSlot: {
@@ -329,7 +403,7 @@ const styles = StyleSheet.create({
         right: 5,
         color: 'white',
         fontSize: 12,
-        fontFamily: 'Myriad_Regular',
+        fontFamily: 'Myriad',
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,

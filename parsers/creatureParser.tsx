@@ -472,9 +472,9 @@ export function getCombatRewards(
                     clothBasePurple +
                         getDepthRarityBonus(clothBasePurple, depth)
                 ) {
-                    itemRarity = 'rarity_purple';
+                    itemRarity = 'epic';
                 } else {
-                    itemRarity = 'rarity_blue';
+                    itemRarity = 'rare';
                 }
                 break;
         }

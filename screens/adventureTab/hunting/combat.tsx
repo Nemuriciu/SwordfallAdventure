@@ -17,6 +17,7 @@ import {
     getCombatExperience,
     getCombatRewards,
     getCombatShards,
+    getCreature,
     getCreatureImg,
     getCreatureName,
 } from '../../../parsers/creatureParser.tsx';
@@ -65,11 +66,11 @@ export function Combat() {
                         /* Enemy Attack */
                         setTimeout(() => {
                             simulateAttack(combat.playerTurn, null, 'Physical'); //TODO:
-                        }, 500);
+                        }, 400);
                     } else {
                         setTimeout(() => {
                             setDisabled(false);
-                        }, 500);
+                        }, 400);
                     }
                     /* End Combat */
                 } else {
@@ -85,10 +86,10 @@ export function Combat() {
                             atkType: 'Win',
                             damage: 0,
                         });
-                        /* Show Defeated Log */
+                        /* Show Victory Log */
                         setTimeout(() => {
                             dispatch(combatSetLog(combatLog));
-                        }, 100);
+                        }, 400);
                         /* Display Rewards */
                         setTimeout(() => {
                             dispatch(
@@ -136,18 +137,39 @@ export function Combat() {
                             }
                         }
                         sortMissions(missionsList);
-                        dispatch(missionsSetList(missionsList));
+                        setTimeout(() => {
+                            dispatch(missionsSetList(missionsList));
+                        }, 2000);
 
                         /* Remove Creature from list */
                         const creatureList = cloneDeep(hunting.creatureList);
                         creatureList.splice(combat.index, 1);
-                        dispatch(
-                            huntingUpdate({
-                                depth: hunting.depth,
-                                creatureList: creatureList,
-                                killCount: hunting.killCount + 1,
-                            }),
-                        );
+
+                        /* Roll for chance to add new creature */
+                        const r = Math.random();
+                        /* 10% chance to add 0 creatures */
+                        if (r <= 0.2) {
+                            /* 20% chance to add 2 creatures */
+                            creatureList.unshift(
+                                getCreature(userInfo.level, hunting.depth),
+                                getCreature(userInfo.level, hunting.depth),
+                            );
+                        } else if (r > 0.2 && r <= 0.9) {
+                            /* 70% chance to add 1 creature */
+                            creatureList.unshift(
+                                getCreature(userInfo.level, hunting.depth),
+                            );
+                        }
+
+                        setTimeout(() => {
+                            dispatch(
+                                huntingUpdate({
+                                    depth: hunting.depth,
+                                    creatureList: creatureList,
+                                    killCount: hunting.killCount + 1,
+                                }),
+                            );
+                        }, 1000);
                     } else {
                         /* Enemy Win */
                         combatLog.push({
@@ -167,6 +189,34 @@ export function Combat() {
                         setTimeout(() => {
                             setCombatComplete(true);
                         }, 250);
+
+                        /* Remove Creature from list */
+                        const creatureList = cloneDeep(hunting.creatureList);
+                        creatureList.splice(combat.index, 1);
+
+                        /* Roll for chance to add new creature */
+                        const r = Math.random();
+                        /* 10% chance to add 0 creatures */
+                        if (r <= 0.2) {
+                            /* 20% chance to add 2 creatures */
+                            creatureList.unshift(
+                                getCreature(userInfo.level, hunting.depth),
+                                getCreature(userInfo.level, hunting.depth),
+                            );
+                        } else if (r > 0.2 && r <= 0.9) {
+                            /* 70% chance to add 1 creature */
+                            creatureList.unshift(
+                                getCreature(userInfo.level, hunting.depth),
+                            );
+                        }
+
+                        dispatch(
+                            huntingUpdate({
+                                depth: hunting.depth,
+                                creatureList: creatureList,
+                                killCount: hunting.killCount,
+                            }),
+                        );
                     }
                 }
             }

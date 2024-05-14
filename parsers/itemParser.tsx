@@ -80,6 +80,44 @@ export const getRandomEquip = (rarity: string, level: number): Item => {
     return item;
 };
 
+export const getSpecificEquip = (
+    type: string,
+    rarity: string,
+    level: number,
+): Item => {
+    /* Choose a Random Item ID */
+    // @ts-ignore
+    const list = equipJson[rarity][type];
+    const id = list[rand(0, list.length - 1)];
+
+    /* Choose a Random Item */
+    const item: Item = {
+        id: id,
+        level: level,
+        quantity: 1,
+        variant: 0,
+        upgrade: 0,
+    };
+
+    switch (type) {
+        case 'weapon':
+        case 'chest':
+            item.variant = rand(1, 2);
+            break;
+        case 'offhand':
+        case 'helmet':
+        case 'pants':
+        case 'gloves':
+        case 'boots':
+            item.variant = rand(1, 4);
+            break;
+        default:
+            break;
+    }
+
+    return item;
+};
+
 export function getTreasureRewards(rarity: string, level: number): Item[] {
     /* Values defined in Sheet */
     const r: number = Math.random();

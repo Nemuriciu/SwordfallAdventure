@@ -27,6 +27,8 @@ export const itemDetailsSlice = createSlice({
         },
         itemDetailsHide: state => {
             state.modalVisible = false;
+            state.item = {};
+            state.index = -1;
         },
         upgradeSelectedItem: state => {
             if (isItem(state.item)) {

@@ -3,6 +3,7 @@ import {Item} from '../../types/item.ts';
 
 export interface RewardsModalState {
     modalVisible: boolean;
+    title?: string;
     rewards: Item[];
     experience: number;
     shards: number;
@@ -25,12 +26,14 @@ export const rewardsModalSlice = createSlice({
         rewardsModalInit: (
             state,
             action: PayloadAction<{
+                title?: string;
                 rewards: Item[];
                 experience: number;
                 shards: number;
             }>,
         ) => {
             state.modalVisible = true;
+            state.title = action.payload.title;
             state.rewards = action.payload.rewards;
             state.experience = action.payload.experience;
             state.shards = action.payload.shards;

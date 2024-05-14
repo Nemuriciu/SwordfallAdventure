@@ -30,25 +30,33 @@ export function RewardsModal() {
     useEffect(() => {
         if (rewardsModal.modalVisible) {
             if (!isFull(inventory.list)) {
-                setTimeout(() => {
-                    if (rewardsModal.rewards.length) {
-                        dispatch(inventoryAddItems(rewardsModal.rewards));
-                    }
-                    if (rewardsModal.experience) {
-                        dispatch(
-                            updateExp(userInfo.exp + rewardsModal.experience),
-                        );
-                    }
-                    if (rewardsModal.shards) {
-                        dispatch(
-                            updateShards(userInfo.shards + rewardsModal.shards),
-                        );
-                    }
-                }, 250);
+                if (rewardsModal.rewards.length) {
+                    dispatch(inventoryAddItems(rewardsModal.rewards));
+                }
+                if (rewardsModal.experience) {
+                    dispatch(updateExp(userInfo.exp + rewardsModal.experience));
+                }
+                if (rewardsModal.shards) {
+                    dispatch(
+                        updateShards(userInfo.shards + rewardsModal.shards),
+                    );
+                }
             }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [rewardsModal.modalVisible]);
+
+    // @ts-ignore
+    const renderItem = ({item}) => (
+        <ImageBackground
+            style={styles.rewardSlot}
+            source={getImage(getItemImg(item.id))}
+            fadeDuration={0}>
+            <Text style={styles.rewardQuantity}>
+                {item.quantity > 1 ? item.quantity : ''}
+            </Text>
+        </ImageBackground>
+    );
 
     // noinspection RequiredAttributes
     return (
@@ -66,29 +74,18 @@ export function RewardsModal() {
                         resizeMode={'stretch'}
                         fadeDuration={0}>
                         <View style={styles.innerContainer}>
-                            <Text style={styles.title}>{strings.rewards}</Text>
+                            <Text style={styles.title}>
+                                {rewardsModal.title
+                                    ? rewardsModal.title
+                                    : strings.rewards}
+                            </Text>
                             {rewardsModal.rewards.length ? (
                                 <FlatList
                                     style={styles.flatList}
                                     horizontal
                                     data={rewardsModal.rewards}
-                                    keyExtractor={(_item, index) =>
-                                        index.toString()
-                                    }
-                                    renderItem={({item}) => (
-                                        <ImageBackground
-                                            style={styles.rewardSlot}
-                                            source={getImage(
-                                                getItemImg(item.id),
-                                            )}
-                                            fadeDuration={0}>
-                                            <Text style={styles.rewardQuantity}>
-                                                {item.quantity > 1
-                                                    ? item.quantity
-                                                    : ''}
-                                            </Text>
-                                        </ImageBackground>
-                                    )}
+                                    keyExtractor={item => item.id}
+                                    renderItem={renderItem}
                                     overScrollMode={'never'}
                                 />
                             ) : null}
@@ -130,7 +127,9 @@ export function RewardsModal() {
                         </View>
 
                         <CloseButton
-                            onPress={() => dispatch(rewardsModalHide())}
+                            onPress={() => {
+                                dispatch(rewardsModalHide());
+                            }}
                             style={styles.closeButton}
                         />
                     </ImageBackground>
@@ -249,7 +248,7 @@ const styles = StyleSheet.create({
     closeButton: {
         position: 'absolute',
         bottom: '-5%',
-        width: '10%',
+        width: '11%',
         aspectRatio: 1,
         alignSelf: 'center',
     },

@@ -8,14 +8,18 @@ import {
     TouchableOpacity,
 } from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
-import {getItemImg, getRandomEquip} from '../../../parsers/itemParser.tsx';
+import {
+    getItemCategory,
+    getItemImg,
+    getItemRarity,
+    getRandomEquip,
+} from '../../../parsers/itemParser.tsx';
 import {getImage} from '../../../assets/images/_index';
 import {ButtonType, CustomButton} from '../../../components/customButton.tsx';
-import {clearInventory} from '../../../utils/arrayUtils.ts';
 import {marshall, unmarshall} from '@aws-sdk/util-dynamodb';
 import {USER_ID} from '../../../App';
 import {dynamoDb} from '../../../database';
-import {isItem, Item} from '../../../types/item';
+import {Category, isItem, Item} from '../../../types/item';
 import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '../../../redux/store.tsx';
 import {
@@ -24,6 +28,9 @@ import {
 } from '../../../redux/slices/inventorySlice.tsx';
 import {ItemDetails} from '../../../components/itemDetails.tsx';
 import {itemDetailsShow} from '../../../redux/slices/itemDetailsSlice.tsx';
+import {strings} from '../../../utils/strings.ts';
+import {BreakAllModal} from './breakAllModal.tsx';
+import Toast from 'react-native-simple-toast';
 
 const COLUMN_NR = 6;
 
@@ -32,6 +39,8 @@ export function Inventory() {
     const [usedSlots, setUsedSlots] = useState<number>(
         inventory.list.filter(item => isItem(item)).length,
     );
+    const [breakAllVisible, setBreakAllVisible] = useState(false);
+    const [breakAllRarity, setBreakAllRarity] = useState('');
     const [disabled, setDisabled] = useState(false);
     const didMount = useRef(2);
     const dispatch = useDispatch();
@@ -87,11 +96,11 @@ export function Inventory() {
         }
     }
 
-    function clearInventoryList() {
+    /*function clearInventoryList() {
         if (usedSlots > 0) {
             dispatch(inventoryUpdate(clearInventory(inventory.list)));
         }
-    }
+    }*/
 
     function slotPress(item: {} | Item, index: number) {
         if (!disabled) {
@@ -105,6 +114,38 @@ export function Inventory() {
         }
     }
 
+    function showBreakAll(rarity: string) {
+        /* Check at least one equipment exists */
+        for (let i = 0; i < inventory.list.length; i++) {
+            const item = inventory.list[i];
+            if (isItem(item)) {
+                if (
+                    getItemCategory(item.id) === Category.equipment &&
+                    getItemRarity(item.id) === rarity
+                ) {
+                    setBreakAllRarity(rarity);
+                    setBreakAllVisible(true);
+                    return;
+                }
+            }
+        }
+        //TODO: localization
+        Toast.show('No equipment of that rarity found.', Toast.SHORT);
+    }
+
+    const breakButton = (image: string, onPress: () => void) => {
+        return (
+            <TouchableOpacity style={styles.breakButton} onPress={onPress}>
+                <Image
+                    style={styles.breakButtonImage}
+                    source={getImage(image)}
+                    resizeMode={'stretch'}
+                    fadeDuration={0}
+                />
+            </TouchableOpacity>
+        );
+    };
+
     return (
         <ImageBackground
             style={styles.container}
@@ -112,6 +153,11 @@ export function Inventory() {
             resizeMode={'stretch'}
             fadeDuration={0}>
             <ItemDetails />
+            <BreakAllModal
+                visible={breakAllVisible}
+                setVisible={setBreakAllVisible}
+                rarity={breakAllRarity}
+            />
             <ImageBackground
                 style={styles.innerContainer}
                 source={getImage('background_inner')}
@@ -198,14 +244,25 @@ export function Inventory() {
                         style={styles.button}
                     />
                     {/* CLEAR INVENTORY */}
-                    <CustomButton
+                    {/*<CustomButton
                         type={ButtonType.Orange}
                         title={'CLEAR'}
                         onPress={clearInventoryList}
                         style={styles.clearButton}
-                    />
+                    />*/}
                 </View>
             </ImageBackground>
+            <View style={styles.breakContainer}>
+                <Text style={styles.breakLabel}>
+                    {strings.equipment + ' ' + strings.Break + ':'}
+                </Text>
+                {breakButton('icon_break_common', () => showBreakAll('common'))}
+                {breakButton('icon_break_uncommon', () =>
+                    showBreakAll('uncommon'),
+                )}
+                {breakButton('icon_break_rare', () => showBreakAll('rare'))}
+                {breakButton('icon_break_epic', () => showBreakAll('epic'))}
+            </View>
         </ImageBackground>
     );
 }
@@ -217,7 +274,6 @@ const styles = StyleSheet.create({
     innerContainer: {
         flex: 1,
         marginTop: 4,
-        marginBottom: 4,
         marginStart: 2,
         marginEnd: 2,
     },
@@ -302,5 +358,31 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         marginStart: 8,
         marginEnd: 8,
+    },
+    breakContainer: {
+        flexDirection: 'row',
+        height: '5%',
+        marginStart: 24,
+        marginEnd: 16,
+        marginTop: 12,
+        marginBottom: 12,
+    },
+    breakLabel: {
+        marginEnd: 'auto',
+        color: 'white',
+        alignSelf: 'center',
+        fontSize: 16,
+        fontFamily: 'Myriad_Regular',
+        textShadowColor: 'rgba(0, 0, 0, 1)',
+        textShadowOffset: {width: 1, height: 1},
+        textShadowRadius: 5,
+    },
+    breakButton: {},
+    breakButtonImage: {
+        marginStart: 2,
+        marginEnd: 8,
+        aspectRatio: 1.25,
+        height: '100%',
+        width: undefined,
     },
 });

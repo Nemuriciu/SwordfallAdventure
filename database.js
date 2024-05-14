@@ -3,6 +3,11 @@ import {marshall} from '@aws-sdk/util-dynamodb';
 import {MISSIONS_AMOUNT} from './screens/townTab/missions/missions';
 import {generateMission} from './parsers/questParser';
 import {getCreature} from './parsers/creatureParser';
+import {rand} from './parsers/itemParser';
+import {
+    CREATURE_COUNT_MAX,
+    CREATURE_COUNT_MIN,
+} from './screens/adventureTab/hunting/hunting';
 //import "react-native-get-random-values";
 //import 'react-native-url-polyfill/auto';
 //import {ReadableStream} from 'web-streams-polyfill/ponyfill';
@@ -141,8 +146,11 @@ function createUserEntry(userID, username) {
             hunting: {
                 depth: 0,
                 killCount: 0,
-                //TODO: creature_count hardcoded
-                creatureList: [...Array(4).keys()].map(_ => getCreature(1, 0)),
+                creatureList: [
+                    ...Array(
+                        rand(CREATURE_COUNT_MIN, CREATURE_COUNT_MAX),
+                    ).keys(),
+                ].map(_ => getCreature(1, 0)),
             },
             inventory: {
                 //TODO:

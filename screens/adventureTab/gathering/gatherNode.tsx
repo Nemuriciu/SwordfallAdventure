@@ -91,6 +91,7 @@ export function GatherNode({node, index}: props) {
                     }),
                 );
             } else {
+                //TODO: localization
                 Toast.show('Not enough stamina.', Toast.SHORT);
             }
 

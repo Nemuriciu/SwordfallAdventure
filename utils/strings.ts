@@ -73,4 +73,5 @@ export const strings = {
     intelligence: 'Intelligence',
     charisma: 'Charisma',
     exploring_level: 'Exploring Level',
+    item_received: 'Item received',
 };
