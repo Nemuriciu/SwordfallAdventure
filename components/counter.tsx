@@ -13,10 +13,13 @@ import {getImage} from '../assets/images/_index';
 interface props {
     amount: string;
     setAmount: (val: string) => void;
+    editable: boolean;
+    min: number;
+    max: number;
     style?: ViewStyle;
 }
 
-export function Counter({amount, setAmount, style}: props) {
+export function Counter({amount, setAmount, editable, min, max, style}: props) {
     function updateAmount(val: string) {
         const filteredText = val.replace(/[- #*;,.<>{}[\]\\/]/gi, '');
         setAmount(filteredText);
@@ -24,7 +27,7 @@ export function Counter({amount, setAmount, style}: props) {
 
     function increaseCraftAmount() {
         if (amount !== '') {
-            if (parseInt(amount, 10) < 99) {
+            if (parseInt(amount, 10) < max) {
                 setAmount((1 + parseInt(amount, 10)).toString());
             }
         } else {
@@ -34,7 +37,7 @@ export function Counter({amount, setAmount, style}: props) {
 
     function decreaseCraftAmount() {
         if (amount !== '') {
-            if (parseInt(amount, 10) > 1) {
+            if (parseInt(amount, 10) > min) {
                 setAmount((parseInt(amount, 10) - 1).toString());
             }
         } else {
@@ -66,7 +69,8 @@ export function Counter({amount, setAmount, style}: props) {
                         value={amount}
                         onChangeText={val => updateAmount(val)}
                         keyboardType={'numeric'}
-                        maxLength={2}
+                        editable={editable}
+                        maxLength={max.toString().length}
                     />
                     <TouchableOpacity
                         style={styles.arrowContainer}

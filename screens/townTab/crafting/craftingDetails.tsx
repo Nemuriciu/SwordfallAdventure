@@ -313,6 +313,9 @@ export function CraftingDetails() {
                                     <Counter
                                         amount={amount}
                                         setAmount={handlerSetAmount}
+                                        editable={true}
+                                        min={1}
+                                        max={99}
                                         style={styles.craftAmount}
                                     />
                                 </View>

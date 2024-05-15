@@ -10,6 +10,8 @@ import {huntingSlice} from './slices/huntingSlice.tsx';
 import {combatSlice} from './slices/combatSlice.tsx';
 import {missionsSlice} from './slices/missionsSlice.tsx';
 import {craftingDetailsSlice} from './slices/craftingDetailsSlice.tsx';
+import {skillsSlice} from './slices/skillsSlice.tsx';
+import {skillsDetailsSlice} from './slices/skillsDetailsSlice.tsx';
 
 export const store = configureStore({
     reducer: {
@@ -17,11 +19,13 @@ export const store = configureStore({
         equipment: equipmentSlice.reducer,
         inventory: inventorySlice.reducer,
         attributes: attributesSlice.reducer,
+        skills: skillsSlice.reducer,
         hunting: huntingSlice.reducer,
         combat: combatSlice.reducer,
         gatherInfo: gatherInfoSlice.reducer,
         itemDetails: itemDetailsSlice.reducer,
         craftingDetails: craftingDetailsSlice.reducer,
+        skillsDetails: skillsDetailsSlice.reducer,
         rewardsModal: rewardsModalSlice.reducer,
         missions: missionsSlice.reducer,
     },

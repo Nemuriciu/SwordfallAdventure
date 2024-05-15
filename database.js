@@ -8,6 +8,7 @@ import {
     CREATURE_COUNT_MAX,
     CREATURE_COUNT_MIN,
 } from './screens/adventureTab/hunting/hunting';
+import {generateSkillsList} from './parsers/skillParser';
 //import "react-native-get-random-values";
 //import 'react-native-url-polyfill/auto';
 //import {ReadableStream} from 'web-streams-polyfill/ponyfill';
@@ -163,7 +164,7 @@ function createUserEntry(userID, username) {
                 refreshTimestamp: new Date().toISOString(),
             },
             quests: [],
-            skills: [],
+            skills: generateSkillsList(),
         }),
         TableName: 'users',
     };

@@ -56,7 +56,7 @@ export const strings = {
     defense: 'Defense',
     next_rank: 'Next Rank',
     apply: 'Apply',
-    available_points: 'Available Points:',
+    points: 'Points',
     cooldown: 'Cooldown:',
     active_spells: 'Active Spells',
     active_buffs: 'Active Buffs',
