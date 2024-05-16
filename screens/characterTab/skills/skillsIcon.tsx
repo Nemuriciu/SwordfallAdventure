@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, {useState} from 'react';
 import {
     TouchableOpacity,
@@ -12,6 +13,7 @@ import {Skill} from '../../../types/skill.ts';
 import {getSkillImg, getSkillMaxPoints} from '../../../parsers/skillParser.tsx';
 import {useDispatch} from 'react-redux';
 import {skillsDetailsShow} from '../../../redux/slices/skillsDetailsSlice.tsx';
+import {colors} from '../../../utils/colors.ts';
 
 interface props {
     style?: ViewStyle;
@@ -43,9 +45,14 @@ export function SkillsIcon({style, skill}: props) {
                 style={style}>
                 <ImageBackground
                     source={getImage('skills_frame_background')}
-                    resizeMode={'contain'}
+                    resizeMode={'stretch'}
                     fadeDuration={0}
-                    style={styles.frame}>
+                    style={[
+                        styles.frame,
+                        {
+                            borderColor: skill.points ? 'green' : 'transparent',
+                        },
+                    ]}>
                     <Image
                         source={getImage(getSkillImg(skill.id))}
                         resizeMode={'stretch'}
@@ -57,7 +64,15 @@ export function SkillsIcon({style, skill}: props) {
                         resizeMode={'stretch'}
                         fadeDuration={0}
                         style={styles.textFrame}>
-                        <Text style={styles.text}>
+                        <Text
+                            style={[
+                                styles.text,
+                                {
+                                    color: skill.points
+                                        ? colors.uncommon
+                                        : 'white',
+                                },
+                            ]}>
                             {skill.points + '/' + getSkillMaxPoints(skill.id)}
                         </Text>
                     </ImageBackground>
@@ -71,6 +86,7 @@ export function SkillsIcon({style, skill}: props) {
 
 const styles = StyleSheet.create({
     frame: {
+        borderWidth: 1,
         padding: 6,
     },
     image: {
@@ -87,8 +103,7 @@ const styles = StyleSheet.create({
     text: {
         fontSize: 13,
         textAlign: 'center',
-        color: 'white',
-        fontFamily: 'Myriad_Regular',
+        fontFamily: 'Myriad',
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,

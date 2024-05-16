@@ -110,7 +110,6 @@ export function Crafting() {
                 fadeDuration={0}>
                 <FlatList
                     style={styles.craftingList}
-                    initialNumToRender={1}
                     data={
                         selectedIndex === 0
                             ? resourcesList[0]
@@ -159,13 +158,5 @@ const styles = StyleSheet.create({
     craftingList: {
         marginTop: 5,
         marginBottom: 6,
-    },
-    itemBackground: {},
-    image: {
-        aspectRatio: 1,
-        width: '13.5%',
-        marginTop: 8,
-        marginBottom: 8,
-        marginStart: 18,
     },
 });

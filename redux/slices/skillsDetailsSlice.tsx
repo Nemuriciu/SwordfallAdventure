@@ -23,8 +23,11 @@ export const skillsDetailsSlice = createSlice({
             state.modalVisible = false;
             state.skill = null;
         },
+        skillsDetailsUpdateSkill: (state, action: PayloadAction<Skill>) => {
+            state.skill = action.payload;
+        },
     },
 });
 
-export const {skillsDetailsShow, skillsDetailsHide} =
+export const {skillsDetailsShow, skillsDetailsHide, skillsDetailsUpdateSkill} =
     skillsDetailsSlice.actions;

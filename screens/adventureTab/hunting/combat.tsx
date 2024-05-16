@@ -42,6 +42,7 @@ import {
     isMissionComplete,
     sortMissions,
 } from '../../../parsers/questParser.tsx';
+import {getSkillImg} from '../../../parsers/skillParser.tsx';
 
 export function Combat() {
     const userInfo = useSelector((state: RootState) => state.userInfo);
@@ -49,6 +50,7 @@ export function Combat() {
     const missions = useSelector((state: RootState) => state.missions);
     const hunting = useSelector((state: RootState) => state.hunting);
     const combat = useSelector((state: RootState) => state.combat);
+    const skills = useSelector((state: RootState) => state.skills);
     const [combatComplete, setCombatComplete] = useState(false);
     const [disabled, setDisabled] = useState(false);
     const dispatch = useDispatch();
@@ -89,7 +91,7 @@ export function Combat() {
                         /* Show Victory Log */
                         setTimeout(() => {
                             dispatch(combatSetLog(combatLog));
-                        }, 400);
+                        }, 200);
                         /* Display Rewards */
                         setTimeout(() => {
                             dispatch(
@@ -109,7 +111,7 @@ export function Combat() {
                                     ),
                                 }),
                             );
-                        }, 500);
+                        }, 250);
 
                         setTimeout(() => {
                             setCombatComplete(true);
@@ -139,7 +141,7 @@ export function Combat() {
                         sortMissions(missionsList);
                         setTimeout(() => {
                             dispatch(missionsSetList(missionsList));
-                        }, 2000);
+                        }, 1500);
 
                         /* Remove Creature from list */
                         const creatureList = cloneDeep(hunting.creatureList);
@@ -954,12 +956,24 @@ export function Combat() {
                                                     )
                                                 }>
                                                 <ImageBackground
-                                                    style={styles.actionIcon}
+                                                    style={
+                                                        styles.actionIconFrame
+                                                    }
                                                     source={getImage(
-                                                        'skills_icon_basic_physical',
+                                                        'skills_frame_background',
                                                     )}
-                                                    resizeMode={'stretch'}
-                                                />
+                                                    resizeMode={'stretch'}>
+                                                    <Image
+                                                        style={
+                                                            styles.actionIcon
+                                                        }
+                                                        source={getImage(
+                                                            'skills_icon_basic_physical',
+                                                        )}
+                                                        resizeMode={'stretch'}
+                                                        fadeDuration={0}
+                                                    />
+                                                </ImageBackground>
                                             </TouchableOpacity>
                                             <TouchableOpacity
                                                 style={styles.actionButton}
@@ -972,12 +986,24 @@ export function Combat() {
                                                     )
                                                 }>
                                                 <ImageBackground
-                                                    style={styles.actionIcon}
+                                                    style={
+                                                        styles.actionIconFrame
+                                                    }
                                                     source={getImage(
-                                                        'skills_icon_basic_magical',
+                                                        'skills_frame_background',
                                                     )}
-                                                    resizeMode={'stretch'}
-                                                />
+                                                    resizeMode={'stretch'}>
+                                                    <Image
+                                                        style={
+                                                            styles.actionIcon
+                                                        }
+                                                        source={getImage(
+                                                            'skills_icon_basic_magical',
+                                                        )}
+                                                        resizeMode={'stretch'}
+                                                        fadeDuration={0}
+                                                    />
+                                                </ImageBackground>
                                             </TouchableOpacity>
                                         </View>
                                     </View>
@@ -993,51 +1019,123 @@ export function Combat() {
                                                 style={styles.actionButton}
                                                 disabled={disabled}>
                                                 <ImageBackground
-                                                    style={styles.actionIcon}
+                                                    style={
+                                                        styles.actionIconFrame
+                                                    }
                                                     source={getImage(
-                                                        'skills_icon_frame',
+                                                        'skills_frame_background',
                                                     )}
-                                                    resizeMode={'stretch'}>
+                                                    resizeMode={'stretch'}
+                                                    fadeDuration={0}>
+                                                    <Image
+                                                        style={
+                                                            styles.actionIcon
+                                                        }
+                                                        source={
+                                                            skills.spell_1
+                                                                ? getImage(
+                                                                      getSkillImg(
+                                                                          skills
+                                                                              .spell_1
+                                                                              .id,
+                                                                      ),
+                                                                  )
+                                                                : getImage(
+                                                                      'skills_frame_background',
+                                                                  )
+                                                        }
+                                                        resizeMode={'stretch'}
+                                                        fadeDuration={0}
+                                                    />
+                                                    {/*//TODO:
                                                     <Text
                                                         style={
                                                             styles.cooldownText
                                                         }>
                                                         1
-                                                    </Text>
+                                                    </Text>*/}
                                                 </ImageBackground>
                                             </TouchableOpacity>
                                             <TouchableOpacity
                                                 style={styles.actionButton}
                                                 disabled={disabled}>
                                                 <ImageBackground
-                                                    style={styles.actionIcon}
+                                                    style={
+                                                        styles.actionIconFrame
+                                                    }
                                                     source={getImage(
-                                                        'skills_icon_frame',
+                                                        'skills_frame_background',
                                                     )}
-                                                    resizeMode={'stretch'}>
+                                                    resizeMode={'stretch'}
+                                                    fadeDuration={0}>
+                                                    <Image
+                                                        style={
+                                                            styles.actionIcon
+                                                        }
+                                                        source={
+                                                            skills.spell_2
+                                                                ? getImage(
+                                                                      getSkillImg(
+                                                                          skills
+                                                                              .spell_2
+                                                                              .id,
+                                                                      ),
+                                                                  )
+                                                                : getImage(
+                                                                      'skills_frame_background',
+                                                                  )
+                                                        }
+                                                        resizeMode={'stretch'}
+                                                        fadeDuration={0}
+                                                    />
+                                                    {/*//TODO:
                                                     <Text
                                                         style={
                                                             styles.cooldownText
                                                         }>
                                                         1
-                                                    </Text>
+                                                    </Text>*/}
                                                 </ImageBackground>
                                             </TouchableOpacity>
                                             <TouchableOpacity
                                                 style={styles.actionButton}
                                                 disabled={disabled}>
                                                 <ImageBackground
-                                                    style={styles.actionIcon}
+                                                    style={
+                                                        styles.actionIconFrame
+                                                    }
                                                     source={getImage(
-                                                        'skills_icon_frame',
+                                                        'skills_frame_background',
                                                     )}
-                                                    resizeMode={'stretch'}>
+                                                    resizeMode={'stretch'}
+                                                    fadeDuration={0}>
+                                                    <Image
+                                                        style={
+                                                            styles.actionIcon
+                                                        }
+                                                        source={
+                                                            skills.spell_3
+                                                                ? getImage(
+                                                                      getSkillImg(
+                                                                          skills
+                                                                              .spell_3
+                                                                              .id,
+                                                                      ),
+                                                                  )
+                                                                : getImage(
+                                                                      'skills_frame_background',
+                                                                  )
+                                                        }
+                                                        resizeMode={'stretch'}
+                                                        fadeDuration={0}
+                                                    />
+                                                    {/*//TODO:
                                                     <Text
                                                         style={
                                                             styles.cooldownText
                                                         }>
                                                         1
-                                                    </Text>
+                                                    </Text>*/}
                                                 </ImageBackground>
                                             </TouchableOpacity>
                                         </View>
@@ -1363,10 +1461,15 @@ const styles = StyleSheet.create({
         marginTop: 4,
     },
     actionButton: {
-        width: '25%',
+        width: '28%',
+        aspectRatio: 1,
+    },
+    actionIconFrame: {
+        padding: 6,
     },
     actionIcon: {
-        aspectRatio: 1,
+        width: '100%',
+        height: '100%',
     },
     labelText: {
         color: colors.primary,
