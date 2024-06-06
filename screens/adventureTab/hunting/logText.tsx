@@ -24,7 +24,7 @@ export function LogText({log}: props) {
                     log.username + ' ',
                     log.turn ? colors.player_color : colors.enemy_color,
                 )
-                .append(' missed the attack. ')
+                .append('missed the attack. ')
                 .appendColored(' (Dodge)', colors.dodge_color)
                 .build();
         case 'Physical':
@@ -33,7 +33,7 @@ export function LogText({log}: props) {
                     log.username + ' ',
                     log.turn ? colors.player_color : colors.enemy_color,
                 )
-                .append(' deals ' + log.damage)
+                .append('deals ' + log.damage)
                 .appendColored(' physical ', colors.physicalAtk_color)
                 .append('damage.')
                 .build();
@@ -43,7 +43,7 @@ export function LogText({log}: props) {
                     log.username + ' ',
                     log.turn ? colors.player_color : colors.enemy_color,
                 )
-                .append(' deals ' + log.damage)
+                .append('deals ' + log.damage)
                 .appendColored(' magical ', colors.magicalAtk_color)
                 .append('damage.')
                 .build();
@@ -53,7 +53,7 @@ export function LogText({log}: props) {
                     log.username + ' ',
                     log.turn ? colors.player_color : colors.enemy_color,
                 )
-                .append(' deals ' + log.damage)
+                .append('deals ' + log.damage)
                 .appendColored(' physical ', colors.physicalAtk_color)
                 .append('damage. ')
                 .appendColored('(Critical)', colors.critical_color)
@@ -64,7 +64,88 @@ export function LogText({log}: props) {
                     log.username + ' ',
                     log.turn ? colors.player_color : colors.enemy_color,
                 )
-                .append(' deals ' + log.damage)
+                .append('deals ' + log.damage)
+                .appendColored(' magical ', colors.magicalAtk_color)
+                .append('damage. ')
+                .appendColored('(Critical)', colors.critical_color)
+                .build();
+        case 'SpellPhysicalDodge':
+            return SpannableBuilder.getInstance(styles.text)
+                .appendColored(
+                    log.username + ' ',
+                    log.turn ? colors.player_color : colors.enemy_color,
+                )
+                .append('cast ')
+                .appendColored(
+                    log.spellName as string,
+                    colors.physicalAtk_color,
+                )
+                .append(' and missed.')
+                .appendColored(' (Dodge)', colors.dodge_color)
+                .build();
+        case 'SpellMagicalDodge':
+            return SpannableBuilder.getInstance(styles.text)
+                .appendColored(
+                    log.username + ' ',
+                    log.turn ? colors.player_color : colors.enemy_color,
+                )
+                .append('cast ')
+                .appendColored(log.spellName as string, colors.magicalAtk_color)
+                .append(' and missed.')
+                .appendColored(' (Dodge)', colors.dodge_color)
+                .build();
+        case 'SpellPhysical':
+            return SpannableBuilder.getInstance(styles.text)
+                .appendColored(
+                    log.username + ' ',
+                    log.turn ? colors.player_color : colors.enemy_color,
+                )
+                .append('cast ')
+                .appendColored(
+                    log.spellName as string,
+                    colors.physicalAtk_color,
+                )
+                .append(' dealing ' + log.damage)
+                .appendColored(' physical ', colors.physicalAtk_color)
+                .append('damage.')
+                .build();
+        case 'SpellMagical':
+            return SpannableBuilder.getInstance(styles.text)
+                .appendColored(
+                    log.username + ' ',
+                    log.turn ? colors.player_color : colors.enemy_color,
+                )
+                .append('cast ')
+                .appendColored(log.spellName as string, colors.magicalAtk_color)
+                .append(' dealing ' + log.damage)
+                .appendColored(' magical ', colors.magicalAtk_color)
+                .append('damage.')
+                .build();
+        case 'SpellPhysicalCrit':
+            return SpannableBuilder.getInstance(styles.text)
+                .appendColored(
+                    log.username + ' ',
+                    log.turn ? colors.player_color : colors.enemy_color,
+                )
+                .append('cast ')
+                .appendColored(
+                    log.spellName as string,
+                    colors.physicalAtk_color,
+                )
+                .append(' dealing ' + log.damage)
+                .appendColored(' physical ', colors.physicalAtk_color)
+                .append('damage. ')
+                .appendColored('(Critical)', colors.critical_color)
+                .build();
+        case 'SpellMagicalCrit':
+            return SpannableBuilder.getInstance(styles.text)
+                .appendColored(
+                    log.username + ' ',
+                    log.turn ? colors.player_color : colors.enemy_color,
+                )
+                .append('cast ')
+                .appendColored(log.spellName as string, colors.magicalAtk_color)
+                .append(' dealing ' + log.damage)
                 .appendColored(' magical ', colors.magicalAtk_color)
                 .append('damage. ')
                 .appendColored('(Critical)', colors.critical_color)

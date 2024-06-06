@@ -42,7 +42,14 @@ import {
     isMissionComplete,
     sortMissions,
 } from '../../../parsers/questParser.tsx';
-import {getSkillImg} from '../../../parsers/skillParser.tsx';
+import {
+    getSkillCooldown,
+    getSkillElement,
+    getSkillImg,
+    getSkillName,
+    getSkillPrimaryEffect,
+} from '../../../parsers/skillParser.tsx';
+import {Skill} from '../../../types/skill.ts';
 
 export function Combat() {
     const userInfo = useSelector((state: RootState) => state.userInfo);
@@ -53,6 +60,9 @@ export function Combat() {
     const skills = useSelector((state: RootState) => state.skills);
     const [combatComplete, setCombatComplete] = useState(false);
     const [disabled, setDisabled] = useState(false);
+    const [cooldown_1, setCooldown_1] = useState(0);
+    const [cooldown_2, setCooldown_2] = useState(0);
+    const [cooldown_3, setCooldown_3] = useState(0);
     const dispatch = useDispatch();
     const didMount = useRef(1);
 
@@ -70,6 +80,13 @@ export function Combat() {
                             simulateAttack(combat.playerTurn, null, 'Physical'); //TODO:
                         }, 400);
                     } else {
+                        /* Reduce cooldowns */
+                        setTimeout(() => {
+                            setCooldown_1(Math.max(cooldown_1 - 1, 0));
+                            setCooldown_2(Math.max(cooldown_2 - 1, 0));
+                            setCooldown_3(Math.max(cooldown_3 - 1, 0));
+                        }, 50);
+                        /* Enable all action buttons */
                         setTimeout(() => {
                             setDisabled(false);
                         }, 400);
@@ -228,104 +245,102 @@ export function Combat() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [combat.playerTurn]);
 
-    function simulateAttack(turn: boolean, skill: null, atkType: string) {
+    function simulateAttack(
+        turn: boolean,
+        spell: Skill | null,
+        atkType: string,
+    ) {
         const statsPlayer = cloneDeep(combat.statsPlayer);
         const statsEnemy = cloneDeep(combat.statsEnemy);
         const combatLog = cloneDeep(combat.combatLog);
         const creature = combat.creature as Creature;
-        const r = Math.random();
 
         /* Player Turn */
         if (turn) {
             setDisabled(turn);
-            /* Skill Attack */
-            if (skill != null) {
-                /* Spell */
-                /*if (skill.type === SkillType.Spell) {
-                        /!* Miss Spell *!/
-                        if (rand <= this.dodgeEnemy) {
-                            log = this.addColoredSpan(
-                                this.pName,
-                                ` cast ${skill.name} and missed.`,
-                                'Dodge',
-                                true,
-                            );
-                            this.combatLog.push(log);
-                        } else {
-                            let damage: number = this.getSpellDamage(
-                                skill,
-                                this.levelEnemy,
-                                true,
-                            );
-                            /!* Check if critical hit *!/
-                            if (Math.random() <= this.critPlayer) {
-                                damage = Math.round(damage * 1.5);
-                                log = this.addColoredSpan(
-                                    this.pName,
-                                    ` cast ${skill.name} dealing ${damage}`,
-                                    skill.element === 'Physical'
-                                        ? 'PhysicalCrit'
-                                        : 'MagicalCrit',
-                                    true,
-                                );
-                                this.combatLog.push(log);
-                            } else {
-                                log = this.addColoredSpan(
-                                    this.pName,
-                                    ` cast ${skill.name} dealing ${damage}`,
-                                    skill.element,
-                                    true,
-                                );
-                                this.combatLog.push(log);
-                            }
+            /* Spell Attack */
+            if (spell != null) {
+                /* Miss Spell */
+                if (Math.random() <= statsEnemy.dodge) {
+                    combatLog.push({
+                        username: userInfo.username,
+                        opponent: getCreatureName(creature.id),
+                        turn: turn,
+                        atkType: 'Spell' + atkType + 'Dodge',
+                        damage: 0,
+                        spellName: getSkillName(spell.id),
+                    });
+                } else {
+                    let damage: number = getSpellDamage(
+                        spell,
+                        creature.level,
+                        turn,
+                    );
+                    /* Check if critical hit */
+                    if (Math.random() <= statsPlayer.critical) {
+                        damage = Math.round(damage * 1.5);
+                        combatLog.push({
+                            username: userInfo.username,
+                            opponent: getCreatureName(creature.id),
+                            turn: turn,
+                            atkType: 'Spell' + atkType + 'Crit',
+                            damage: damage,
+                            spellName: getSkillName(spell.id),
+                        });
+                    } else {
+                        combatLog.push({
+                            username: userInfo.username,
+                            opponent: getCreatureName(creature.id),
+                            turn: turn,
+                            atkType: 'Spell' + atkType,
+                            damage: damage,
+                            spellName: getSkillName(spell.id),
+                        });
+                    }
 
-                            this.currentHealthEnemy = Math.max(
-                                this.currentHealthEnemy - damage,
-                                0,
-                            );
-
-                            if (this.currentHealthEnemy > 0) {
-                                /!* Decrease Player Buffs *!/
-                                this.effectsPlayer = this.effectsPlayer.map(effect => {
-                                    if (effect.isBuff) {
-                                        if (effect.turns === 1)
-                                            this.removeEffect(
-                                                effect,
-                                                this.levelPlayer,
-                                                true,
-                                            );
-                                        effect.turns -= 1;
-                                    }
-                                    return effect;
-                                });
-                                /!* Decrease Enemy Debuffs *!/
-                                this.effectsEnemy = this.effectsEnemy.map(effect => {
-                                    if (!effect.isBuff && !effect.isDot) {
-                                        if (effect.turns === 1)
-                                            this.removeEffect(
-                                                effect,
-                                                this.levelEnemy,
-                                                true,
-                                            );
-                                        effect.turns -= 1;
-                                    }
-                                    return effect;
-                                });
-                                /!* Clear finished effects *!/
-                                this.effectsEnemy = this.effectsEnemy.filter(
-                                    effect => effect.turns > 0,
-                                );
-                                this.effectsPlayer = this.effectsPlayer.filter(
-                                    effect => effect.turns > 0,
-                                );
-                                /!* Apply Spell secondary effect *!/
-                                this.applySpellSecondary(skill, true);
+                    statsEnemy.health = Math.max(statsEnemy.health - damage, 0);
+                    /* Effects */
+                    if (statsEnemy.health > 0) {
+                        /*/!* Decrease Player Buffs *!/
+                        this.effectsPlayer = this.effectsPlayer.map(effect => {
+                            if (effect.isBuff) {
+                                if (effect.turns === 1)
+                                    this.removeEffect(
+                                        effect,
+                                        this.levelPlayer,
+                                        true,
+                                    );
+                                effect.turns -= 1;
                             }
-                        }
-                    }*/
+                            return effect;
+                        });
+                        /!* Decrease Enemy Debuffs *!/
+                        this.effectsEnemy = this.effectsEnemy.map(effect => {
+                            if (!effect.isBuff && !effect.isDot) {
+                                if (effect.turns === 1)
+                                    this.removeEffect(
+                                        effect,
+                                        this.levelEnemy,
+                                        true,
+                                    );
+                                effect.turns -= 1;
+                            }
+                            return effect;
+                        });
+                        /!* Clear finished effects *!/
+                        this.effectsEnemy = this.effectsEnemy.filter(
+                            effect => effect.turns > 0,
+                        );
+                        this.effectsPlayer = this.effectsPlayer.filter(
+                            effect => effect.turns > 0,
+                        );
+                        /!* Apply Spell secondary effect *!/
+                        this.applySpellSecondary(skill, true);*/
+                    }
+                }
             } else {
                 /* Basic Attack */
-                if (r <= statsEnemy.dodge) {
+                if (Math.random() <= statsEnemy.dodge) {
                     combatLog.push({
                         username: userInfo.username,
                         opponent: getCreatureName(creature.id),
@@ -440,8 +455,8 @@ export function Combat() {
             //this.effectsPlayerAdapter.notifyDataSetChanged();
             //this.effectsEnemyAdapter.notifyDataSetChanged();
         } else {
-            /* Skill Attack */
-            if (skill != null) {
+            /* Spell Attack */
+            if (spell != null) {
                 /* Spell */
                 /*if (skill.type === SkillType.Spell) {
                         /!* Miss Spell *!/
@@ -527,7 +542,7 @@ export function Combat() {
                     }*/
             } else {
                 /* Basic Attack */
-                if (r <= statsPlayer.dodge) {
+                if (Math.random() <= statsPlayer.dodge) {
                     combatLog.push({
                         username: getCreatureName(creature.id),
                         opponent: userInfo.username,
@@ -683,9 +698,51 @@ export function Combat() {
         return rand(Math.round(damage * 0.97), Math.round(damage * 1.03));
     }
 
+    function getSpellDamage(
+        spell: Skill,
+        level: number,
+        turn: boolean,
+    ): number {
+        let attack: number, resistance: number;
+        const element = getSkillElement(spell.id);
+        const primaryEffect = getSkillPrimaryEffect(spell.id) as number[];
+        /* Set attack type */
+        if (turn) {
+            attack =
+                element === 'Physical'
+                    ? combat.statsPlayer.physicalAtk
+                    : combat.statsPlayer.magicalAtk;
+            resistance =
+                element === 'Physical'
+                    ? combat.statsEnemy.physicalRes
+                    : combat.statsEnemy.magicalRes;
+        } else {
+            attack =
+                element === 'Physical'
+                    ? combat.statsEnemy.physicalAtk
+                    : combat.statsEnemy.magicalAtk;
+            resistance =
+                element === 'Physical'
+                    ? combat.statsPlayer.physicalRes
+                    : combat.statsPlayer.magicalRes;
+        }
+
+        let damage: number = Math.round(
+            primaryEffect[0] * attack -
+                primaryEffect[0] *
+                    attack *
+                    (getResistancePercent(resistance, level) / 100),
+        );
+
+        return rand(Math.round(damage * 0.97), Math.round(damage * 1.03));
+    }
+
     function leaveCombat() {
         dispatch(combatHide());
         setDisabled(false);
+        setCooldown_1(0);
+        setCooldown_2(0);
+        setCooldown_3(0);
         setTimeout(() => {
             setCombatComplete(false);
         }, 500);
@@ -1015,9 +1072,32 @@ export function Combat() {
                                         </Text>
                                         <View
                                             style={styles.actionIconContainer}>
+                                            {/* Spell Button 1 */}
                                             <TouchableOpacity
                                                 style={styles.actionButton}
-                                                disabled={disabled}>
+                                                disabled={
+                                                    disabled ||
+                                                    skills.spell_1 === null ||
+                                                    cooldown_1 > 0
+                                                }
+                                                onPress={() => {
+                                                    setCooldown_1(
+                                                        getSkillCooldown(
+                                                            (
+                                                                skills.spell_1 as Skill
+                                                            ).id,
+                                                        ) as number,
+                                                    );
+                                                    simulateAttack(
+                                                        true,
+                                                        skills.spell_1,
+                                                        getSkillElement(
+                                                            (
+                                                                skills.spell_1 as Skill
+                                                            ).id,
+                                                        ),
+                                                    );
+                                                }}>
                                                 <ImageBackground
                                                     style={
                                                         styles.actionIconFrame
@@ -1027,7 +1107,7 @@ export function Combat() {
                                                     )}
                                                     resizeMode={'stretch'}
                                                     fadeDuration={0}>
-                                                    <Image
+                                                    <ImageBackground
                                                         style={
                                                             styles.actionIcon
                                                         }
@@ -1045,20 +1125,44 @@ export function Combat() {
                                                                   )
                                                         }
                                                         resizeMode={'stretch'}
-                                                        fadeDuration={0}
-                                                    />
-                                                    {/*//TODO:
-                                                    <Text
-                                                        style={
-                                                            styles.cooldownText
-                                                        }>
-                                                        1
-                                                    </Text>*/}
+                                                        fadeDuration={0}>
+                                                        {cooldown_1 ? (
+                                                            <Text
+                                                                style={
+                                                                    styles.cooldownText
+                                                                }>
+                                                                {cooldown_1}
+                                                            </Text>
+                                                        ) : null}
+                                                    </ImageBackground>
                                                 </ImageBackground>
                                             </TouchableOpacity>
+                                            {/* Spell Button 2 */}
                                             <TouchableOpacity
                                                 style={styles.actionButton}
-                                                disabled={disabled}>
+                                                disabled={
+                                                    disabled ||
+                                                    skills.spell_2 === null ||
+                                                    cooldown_2 > 0
+                                                }
+                                                onPress={() => {
+                                                    setCooldown_2(
+                                                        getSkillCooldown(
+                                                            (
+                                                                skills.spell_2 as Skill
+                                                            ).id,
+                                                        ) as number,
+                                                    );
+                                                    simulateAttack(
+                                                        true,
+                                                        skills.spell_2,
+                                                        getSkillElement(
+                                                            (
+                                                                skills.spell_2 as Skill
+                                                            ).id,
+                                                        ),
+                                                    );
+                                                }}>
                                                 <ImageBackground
                                                     style={
                                                         styles.actionIconFrame
@@ -1068,7 +1172,7 @@ export function Combat() {
                                                     )}
                                                     resizeMode={'stretch'}
                                                     fadeDuration={0}>
-                                                    <Image
+                                                    <ImageBackground
                                                         style={
                                                             styles.actionIcon
                                                         }
@@ -1086,20 +1190,44 @@ export function Combat() {
                                                                   )
                                                         }
                                                         resizeMode={'stretch'}
-                                                        fadeDuration={0}
-                                                    />
-                                                    {/*//TODO:
-                                                    <Text
-                                                        style={
-                                                            styles.cooldownText
-                                                        }>
-                                                        1
-                                                    </Text>*/}
+                                                        fadeDuration={0}>
+                                                        {cooldown_2 ? (
+                                                            <Text
+                                                                style={
+                                                                    styles.cooldownText
+                                                                }>
+                                                                {cooldown_2}
+                                                            </Text>
+                                                        ) : null}
+                                                    </ImageBackground>
                                                 </ImageBackground>
                                             </TouchableOpacity>
+                                            {/* Spell Button 3 */}
                                             <TouchableOpacity
                                                 style={styles.actionButton}
-                                                disabled={disabled}>
+                                                disabled={
+                                                    disabled ||
+                                                    skills.spell_3 === null ||
+                                                    cooldown_3 > 0
+                                                }
+                                                onPress={() => {
+                                                    setCooldown_3(
+                                                        getSkillCooldown(
+                                                            (
+                                                                skills.spell_3 as Skill
+                                                            ).id,
+                                                        ) as number,
+                                                    );
+                                                    simulateAttack(
+                                                        true,
+                                                        skills.spell_3,
+                                                        getSkillElement(
+                                                            (
+                                                                skills.spell_3 as Skill
+                                                            ).id,
+                                                        ),
+                                                    );
+                                                }}>
                                                 <ImageBackground
                                                     style={
                                                         styles.actionIconFrame
@@ -1109,7 +1237,7 @@ export function Combat() {
                                                     )}
                                                     resizeMode={'stretch'}
                                                     fadeDuration={0}>
-                                                    <Image
+                                                    <ImageBackground
                                                         style={
                                                             styles.actionIcon
                                                         }
@@ -1127,15 +1255,16 @@ export function Combat() {
                                                                   )
                                                         }
                                                         resizeMode={'stretch'}
-                                                        fadeDuration={0}
-                                                    />
-                                                    {/*//TODO:
-                                                    <Text
-                                                        style={
-                                                            styles.cooldownText
-                                                        }>
-                                                        1
-                                                    </Text>*/}
+                                                        fadeDuration={0}>
+                                                        {cooldown_3 ? (
+                                                            <Text
+                                                                style={
+                                                                    styles.cooldownText
+                                                                }>
+                                                                {cooldown_3}
+                                                            </Text>
+                                                        ) : null}
+                                                    </ImageBackground>
                                                 </ImageBackground>
                                             </TouchableOpacity>
                                         </View>
@@ -1483,6 +1612,7 @@ const styles = StyleSheet.create({
     cooldownText: {
         width: '100%',
         height: '100%',
+        backgroundColor: 'rgba(0,0,0,0.75)',
         textAlign: 'center',
         textAlignVertical: 'center',
         color: 'white',

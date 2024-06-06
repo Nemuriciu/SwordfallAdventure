@@ -4,4 +4,5 @@ export interface Log {
     turn: boolean;
     atkType: string;
     damage: number;
+    spellName?: string;
 }
