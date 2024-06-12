@@ -44,12 +44,17 @@ import {
 } from '../../../parsers/questParser.tsx';
 import {
     getSkillCooldown,
+    getSkillEffectTurns,
+    getSkillEffectType,
     getSkillElement,
     getSkillImg,
     getSkillName,
     getSkillPrimaryEffect,
+    getSkillSecondaryEffect,
 } from '../../../parsers/skillParser.tsx';
 import {Skill} from '../../../types/skill.ts';
+import {Effect, EffectType} from '../../../types/effect.ts';
+import {Stats} from '../../../types/stats.ts';
 
 export function Combat() {
     const userInfo = useSelector((state: RootState) => state.userInfo);
@@ -252,6 +257,8 @@ export function Combat() {
     ) {
         const statsPlayer = cloneDeep(combat.statsPlayer);
         const statsEnemy = cloneDeep(combat.statsEnemy);
+        const effectsPlayer = cloneDeep(combat.effectsPlayer);
+        const effectsEnemy = cloneDeep(combat.effectsEnemy);
         const combatLog = cloneDeep(combat.combatLog);
         const creature = combat.creature as Creature;
 
@@ -334,8 +341,16 @@ export function Combat() {
                         this.effectsPlayer = this.effectsPlayer.filter(
                             effect => effect.turns > 0,
                         );
-                        /!* Apply Spell secondary effect *!/
-                        this.applySpellSecondary(skill, true);*/
+                        /* Apply Spell secondary effect */
+                        applySpellEffect(
+                            spell,
+                            statsPlayer,
+                            statsEnemy,
+                            effectsPlayer,
+                            effectsEnemy,
+                            creature,
+                            true,
+                        );
                     }
                 }
             } else {
@@ -661,7 +676,15 @@ export function Combat() {
             //this.effectsEnemyAdapter.notifyDataSetChanged();
         }
 
-        dispatch(combatUpdate([statsPlayer, statsEnemy, [], [], combatLog]));
+        dispatch(
+            combatUpdate([
+                statsPlayer,
+                statsEnemy,
+                effectsPlayer,
+                effectsEnemy,
+                combatLog,
+            ]),
+        );
     }
 
     function getBasicDamage(
@@ -674,21 +697,29 @@ export function Combat() {
         if (turn) {
             attack =
                 atkType === 'Physical'
-                    ? combat.statsPlayer.physicalAtk
-                    : combat.statsPlayer.magicalAtk;
+                    ? combat.statsPlayer.physicalAtk +
+                      combat.statsPlayer.bonusPhysicalAtk
+                    : combat.statsPlayer.magicalAtk +
+                      combat.statsPlayer.bonusMagicalAtk;
             resistance =
                 atkType === 'Physical'
-                    ? combat.statsEnemy.physicalRes
-                    : combat.statsEnemy.magicalRes;
+                    ? combat.statsEnemy.physicalRes +
+                      combat.statsEnemy.bonusPhysicalRes
+                    : combat.statsEnemy.magicalRes +
+                      combat.statsEnemy.bonusMagicalRes;
         } else {
             attack =
                 atkType === 'Physical'
-                    ? combat.statsEnemy.physicalAtk
-                    : combat.statsEnemy.magicalAtk;
+                    ? combat.statsEnemy.physicalAtk +
+                      combat.statsEnemy.bonusPhysicalAtk
+                    : combat.statsEnemy.magicalAtk +
+                      combat.statsEnemy.bonusMagicalAtk;
             resistance =
                 atkType === 'Physical'
-                    ? combat.statsPlayer.physicalRes
-                    : combat.statsPlayer.magicalRes;
+                    ? combat.statsPlayer.physicalRes +
+                      combat.statsPlayer.bonusPhysicalRes
+                    : combat.statsPlayer.magicalRes +
+                      combat.statsPlayer.bonusMagicalRes;
         }
 
         let damage: number = Math.round(
@@ -710,21 +741,29 @@ export function Combat() {
         if (turn) {
             attack =
                 element === 'Physical'
-                    ? combat.statsPlayer.physicalAtk
-                    : combat.statsPlayer.magicalAtk;
+                    ? combat.statsPlayer.physicalAtk +
+                      combat.statsPlayer.bonusPhysicalAtk
+                    : combat.statsPlayer.magicalAtk +
+                      combat.statsPlayer.bonusMagicalAtk;
             resistance =
                 element === 'Physical'
-                    ? combat.statsEnemy.physicalRes
-                    : combat.statsEnemy.magicalRes;
+                    ? combat.statsEnemy.physicalRes +
+                      combat.statsEnemy.bonusPhysicalRes
+                    : combat.statsEnemy.magicalRes +
+                      combat.statsEnemy.bonusMagicalRes;
         } else {
             attack =
                 element === 'Physical'
-                    ? combat.statsEnemy.physicalAtk
-                    : combat.statsEnemy.magicalAtk;
+                    ? combat.statsEnemy.physicalAtk +
+                      combat.statsEnemy.bonusPhysicalAtk
+                    : combat.statsEnemy.magicalAtk +
+                      combat.statsEnemy.bonusMagicalAtk;
             resistance =
                 element === 'Physical'
-                    ? combat.statsPlayer.physicalRes
-                    : combat.statsPlayer.magicalRes;
+                    ? combat.statsPlayer.physicalRes +
+                      combat.statsPlayer.bonusPhysicalRes
+                    : combat.statsPlayer.magicalRes +
+                      combat.statsPlayer.bonusMagicalRes;
         }
 
         let damage: number = Math.round(
@@ -735,6 +774,258 @@ export function Combat() {
         );
 
         return rand(Math.round(damage * 0.97), Math.round(damage * 1.03));
+    }
+
+    function applySpellEffect(
+        spell: Skill,
+        statsPlayer: Stats,
+        statsEnemy: Stats,
+        effectsPlayer: Effect[],
+        effectsEnemy: Effect[],
+        creature: Creature,
+        turn: boolean,
+    ) {
+        const skillSecondary = getSkillSecondaryEffect(spell.id);
+        let secondaryEffect, turns, effectType;
+        if (skillSecondary !== undefined && skillSecondary.length) {
+            secondaryEffect = skillSecondary[0];
+            turns = getSkillEffectTurns(spell.id);
+            effectType = getSkillEffectType(spell.id) as string;
+        } else {
+            return;
+        }
+
+        const effect: Effect = {
+            id: Math.random().toString(16).slice(2),
+            type: EffectType[effectType as keyof typeof EffectType],
+            turns: turns !== undefined ? turns : 0,
+            value: 0,
+        };
+
+        /* Handle Effect Types */
+        switch (effect.type) {
+            case EffectType.Bleeding:
+                if (turn) {
+                    effect.value =
+                        secondaryEffect *
+                        (combat.statsPlayer.physicalAtk +
+                            combat.statsPlayer.bonusPhysicalAtk);
+                    effectsEnemy.push(effect);
+                } else {
+                    effect.value =
+                        secondaryEffect *
+                        (combat.statsEnemy.physicalAtk +
+                            combat.statsEnemy.bonusPhysicalAtk);
+                    effectsPlayer.push(effect);
+                }
+                break;
+            case EffectType.Poison:
+                if (turn) {
+                    effect.value =
+                        secondaryEffect *
+                        (combat.statsPlayer.physicalAtk +
+                            combat.statsPlayer.bonusPhysicalAtk);
+                    effectsEnemy.push(effect);
+                } else {
+                    effect.value =
+                        secondaryEffect *
+                        (combat.statsEnemy.physicalAtk +
+                            combat.statsEnemy.bonusPhysicalAtk);
+                    effectsPlayer.push(effect);
+                }
+                break;
+            case EffectType.Burning:
+                if (turn) {
+                    effect.value =
+                        secondaryEffect *
+                        (combat.statsPlayer.magicalAtk +
+                            combat.statsPlayer.bonusMagicalAtk);
+                    effectsEnemy.push(effect);
+                } else {
+                    effect.value =
+                        secondaryEffect *
+                        (combat.statsEnemy.magicalAtk +
+                            combat.statsEnemy.bonusMagicalAtk);
+                    effectsPlayer.push(effect);
+                }
+                break;
+            case EffectType.Healing:
+                if (turn) {
+                    statsPlayer.health = Math.min(
+                        statsPlayer.health +
+                            Math.round(
+                                secondaryEffect * combat.statsPlayer.health,
+                            ),
+                        attributes.health + attributes.bonusHealth,
+                    );
+                    //TODO: Log healing effect.
+                } else {
+                    statsEnemy.health = Math.min(
+                        statsEnemy.health +
+                            Math.round(
+                                secondaryEffect * combat.statsEnemy.health,
+                            ),
+                        creature.stats.health + creature.stats.bonusHealth,
+                    );
+                    //TODO: Log healing effect.
+                }
+                break;
+            case EffectType.PhyAtkInc:
+                if (turn) {
+                    effect.value = Math.round(
+                        secondaryEffect *
+                            (combat.statsPlayer.physicalAtk +
+                                combat.statsPlayer.bonusPhysicalAtk),
+                    );
+                    statsPlayer.bonusPhysicalAtk += effect.value;
+                    effectsPlayer.push(effect);
+                } else {
+                    effect.value = Math.round(
+                        secondaryEffect *
+                            (combat.statsPlayer.physicalAtk +
+                                combat.statsPlayer.bonusPhysicalAtk),
+                    );
+                    statsEnemy.bonusPhysicalAtk += effect.value;
+                    effectsEnemy.push(effect);
+                }
+                break;
+            case EffectType.PhyAtkDec:
+                if (turn) {
+                    effect.value = Math.round(
+                        -secondaryEffect *
+                            (combat.statsEnemy.physicalAtk +
+                                combat.statsEnemy.bonusPhysicalAtk),
+                    );
+                    statsEnemy.bonusPhysicalAtk -= effect.value;
+                    effectsEnemy.push(effect);
+                } else {
+                    effect.value = Math.round(
+                        -secondaryEffect *
+                            (combat.statsPlayer.physicalAtk +
+                                combat.statsPlayer.bonusPhysicalAtk),
+                    );
+                    statsPlayer.bonusPhysicalAtk -= effect.value;
+                    effectsPlayer.push(effect);
+                }
+                break;
+            case EffectType.MagAtkInc:
+                if (turn) {
+                    effect.value = Math.round(
+                        secondaryEffect *
+                            (combat.statsPlayer.magicalAtk +
+                                combat.statsPlayer.bonusMagicalAtk),
+                    );
+                    statsPlayer.bonusMagicalAtk += effect.value;
+                    effectsPlayer.push(effect);
+                } else {
+                    effect.value = Math.round(
+                        secondaryEffect *
+                            (combat.statsPlayer.magicalAtk +
+                                combat.statsPlayer.bonusMagicalAtk),
+                    );
+                    statsEnemy.bonusMagicalAtk += effect.value;
+                    effectsEnemy.push(effect);
+                }
+                break;
+            case EffectType.MagAtkDec:
+                if (turn) {
+                    effect.value = Math.round(
+                        -secondaryEffect *
+                            (combat.statsEnemy.magicalAtk +
+                                combat.statsEnemy.bonusMagicalAtk),
+                    );
+                    statsEnemy.bonusMagicalAtk -= effect.value;
+                    effectsEnemy.push(effect);
+                } else {
+                    effect.value = Math.round(
+                        -secondaryEffect *
+                            (combat.statsPlayer.magicalAtk +
+                                combat.statsPlayer.bonusMagicalAtk),
+                    );
+                    statsPlayer.bonusMagicalAtk -= effect.value;
+                    effectsPlayer.push(effect);
+                }
+                break;
+            case EffectType.PhyResInc:
+                if (turn) {
+                    effect.value = Math.round(
+                        secondaryEffect *
+                            (combat.statsPlayer.physicalRes +
+                                combat.statsPlayer.bonusPhysicalRes),
+                    );
+                    statsPlayer.bonusPhysicalRes += effect.value;
+                    effectsPlayer.push(effect);
+                } else {
+                    effect.value = Math.round(
+                        secondaryEffect *
+                            (combat.statsPlayer.physicalRes +
+                                combat.statsPlayer.bonusPhysicalRes),
+                    );
+                    statsEnemy.bonusPhysicalRes += effect.value;
+                    effectsEnemy.push(effect);
+                }
+                break;
+            case EffectType.PhyResDec:
+                if (turn) {
+                    effect.value = Math.round(
+                        -secondaryEffect *
+                            (combat.statsEnemy.physicalRes +
+                                combat.statsEnemy.bonusPhysicalRes),
+                    );
+                    statsEnemy.bonusPhysicalRes -= effect.value;
+                    effectsEnemy.push(effect);
+                } else {
+                    effect.value = Math.round(
+                        -secondaryEffect *
+                            (combat.statsPlayer.physicalRes +
+                                combat.statsPlayer.bonusPhysicalRes),
+                    );
+                    statsPlayer.bonusPhysicalRes -= effect.value;
+                    effectsPlayer.push(effect);
+                }
+                break;
+            case EffectType.MagResInc:
+                if (turn) {
+                    effect.value = Math.round(
+                        secondaryEffect *
+                            (combat.statsPlayer.magicalRes +
+                                combat.statsPlayer.bonusMagicalRes),
+                    );
+                    statsPlayer.bonusMagicalRes += effect.value;
+                    effectsPlayer.push(effect);
+                } else {
+                    effect.value = Math.round(
+                        secondaryEffect *
+                            (combat.statsPlayer.magicalRes +
+                                combat.statsPlayer.bonusMagicalRes),
+                    );
+                    statsEnemy.bonusMagicalRes += effect.value;
+                    effectsEnemy.push(effect);
+                }
+                break;
+            case EffectType.MagResDec:
+                if (turn) {
+                    effect.value = Math.round(
+                        -secondaryEffect *
+                            (combat.statsEnemy.magicalRes +
+                                combat.statsEnemy.bonusMagicalRes),
+                    );
+                    statsEnemy.bonusMagicalRes -= effect.value;
+                    effectsEnemy.push(effect);
+                } else {
+                    effect.value = Math.round(
+                        -secondaryEffect *
+                            (combat.statsPlayer.magicalRes +
+                                combat.statsPlayer.bonusMagicalRes),
+                    );
+                    statsPlayer.bonusMagicalRes -= effect.value;
+                    effectsPlayer.push(effect);
+                }
+                break;
+            //TODO: CRIT/DODGE
+            default:
+                throw new Error(`Unknown effect: ${effect}`);
+        }
     }
 
     function leaveCombat() {
@@ -797,12 +1088,9 @@ export function Combat() {
                                         <Text
                                             style={styles.phyAtkValue}
                                             numberOfLines={1}>
-                                            {combat.creature.stats.physicalAtk
-                                                ? combat.creature.stats
-                                                      .physicalAtk +
-                                                  combat.creature.stats
-                                                      .bonusPhysicalAtk
-                                                : ''}
+                                            {combat.statsEnemy.physicalAtk +
+                                                combat.statsEnemy
+                                                    .bonusPhysicalAtk}
                                         </Text>
                                         <Image
                                             style={styles.statsIcon}
@@ -813,15 +1101,12 @@ export function Combat() {
                                         <Text
                                             style={styles.phyResValue}
                                             numberOfLines={1}>
-                                            {combat.creature.stats.physicalRes
-                                                ? getResistancePercent(
-                                                      combat.creature.stats
-                                                          .physicalRes +
-                                                          combat.creature.stats
-                                                              .bonusPhysicalRes,
-                                                      combat.creature.level,
-                                                  ).toFixed(1) + '%'
-                                                : ''}
+                                            {getResistancePercent(
+                                                combat.statsEnemy.physicalRes +
+                                                    combat.statsEnemy
+                                                        .bonusPhysicalRes,
+                                                combat.creature.level,
+                                            ).toFixed(1) + '%'}
                                         </Text>
                                         <Image
                                             style={styles.statsIcon}
@@ -830,15 +1115,12 @@ export function Combat() {
                                         <Text
                                             style={styles.criticalValue}
                                             numberOfLines={1}>
-                                            {combat.creature.stats.critical
-                                                ? (
-                                                      (combat.creature.stats
-                                                          .critical +
-                                                          combat.creature.stats
-                                                              .bonusCritical) *
-                                                      100
-                                                  ).toFixed(1) + '%'
-                                                : ''}
+                                            {(
+                                                (combat.statsEnemy.critical +
+                                                    combat.statsEnemy
+                                                        .bonusCritical) *
+                                                100
+                                            ).toFixed(1) + '%'}
                                         </Text>
                                     </View>
                                     <View style={styles.attributesRow_2}>
@@ -851,12 +1133,9 @@ export function Combat() {
                                         <Text
                                             style={styles.magAtkValue}
                                             numberOfLines={1}>
-                                            {combat.creature.stats.magicalAtk
-                                                ? combat.creature.stats
-                                                      .magicalAtk +
-                                                  combat.creature.stats
-                                                      .bonusMagicalAtk
-                                                : ''}
+                                            {combat.statsEnemy.magicalAtk +
+                                                combat.statsEnemy
+                                                    .bonusMagicalAtk}
                                         </Text>
                                         <Image
                                             style={styles.statsIcon}
@@ -867,15 +1146,12 @@ export function Combat() {
                                         <Text
                                             style={styles.magResValue}
                                             numberOfLines={1}>
-                                            {combat.creature.stats.magicalRes
-                                                ? getResistancePercent(
-                                                      combat.creature.stats
-                                                          .magicalRes +
-                                                          combat.creature.stats
-                                                              .bonusMagicalRes,
-                                                      combat.creature.level,
-                                                  ).toFixed(1) + '%'
-                                                : ''}
+                                            {getResistancePercent(
+                                                combat.statsEnemy.magicalRes +
+                                                    combat.statsEnemy
+                                                        .bonusMagicalRes,
+                                                combat.creature.level,
+                                            ).toFixed(1) + '%'}
                                         </Text>
                                         <Image
                                             style={styles.statsIcon}
@@ -884,15 +1160,12 @@ export function Combat() {
                                         <Text
                                             style={styles.dodgeValue}
                                             numberOfLines={1}>
-                                            {combat.creature.stats.dodge
-                                                ? (
-                                                      (combat.creature.stats
-                                                          .dodge +
-                                                          combat.creature.stats
-                                                              .bonusDodge) *
-                                                      100
-                                                  ).toFixed(1) + '%'
-                                                : ''}
+                                            {(
+                                                (combat.statsEnemy.dodge +
+                                                    combat.statsEnemy
+                                                        .bonusDodge) *
+                                                100
+                                            ).toFixed(1) + '%'}
                                         </Text>
                                     </View>
                                     <View style={styles.healthContainer}>
@@ -930,15 +1203,16 @@ export function Combat() {
                                         <FlatList
                                             horizontal
                                             scrollEnabled={false}
-                                            data={[]}
+                                            data={combat.effectsEnemy}
                                             keyExtractor={(_item, index) =>
                                                 index.toString()
                                             }
-                                            renderItem={() => (
+                                            renderItem={({item}) => (
                                                 <Image
                                                     style={styles.effectIcon}
                                                     source={getImage(
-                                                        'icon_slot',
+                                                        'effect_icon_' +
+                                                            item.type.toLowerCase(),
                                                     )}
                                                     resizeMode={'stretch'}
                                                 />
@@ -1303,7 +1577,9 @@ export function Combat() {
                                         <Text
                                             style={styles.phyAtkValue}
                                             numberOfLines={1}>
-                                            {attributes.physicalAtk}
+                                            {combat.statsPlayer.physicalAtk +
+                                                combat.statsPlayer
+                                                    .bonusPhysicalAtk}
                                         </Text>
                                         <Image
                                             style={styles.statsIcon}
@@ -1315,7 +1591,9 @@ export function Combat() {
                                             style={styles.phyResValue}
                                             numberOfLines={1}>
                                             {getResistancePercent(
-                                                attributes.physicalRes,
+                                                combat.statsPlayer.physicalRes +
+                                                    combat.statsPlayer
+                                                        .bonusPhysicalRes,
                                                 userInfo.level,
                                             ).toFixed(1) + '%'}
                                         </Text>
@@ -1327,7 +1605,10 @@ export function Combat() {
                                             style={styles.criticalValue}
                                             numberOfLines={1}>
                                             {(
-                                                attributes.critical * 100
+                                                (combat.statsPlayer.critical +
+                                                    combat.statsPlayer
+                                                        .bonusCritical) *
+                                                100
                                             ).toFixed(1) + '%'}
                                         </Text>
                                     </View>
@@ -1341,7 +1622,9 @@ export function Combat() {
                                         <Text
                                             style={styles.magAtkValue}
                                             numberOfLines={1}>
-                                            {attributes.magicalAtk}
+                                            {combat.statsPlayer.magicalAtk +
+                                                combat.statsPlayer
+                                                    .bonusMagicalAtk}
                                         </Text>
                                         <Image
                                             style={styles.statsIcon}
@@ -1353,7 +1636,9 @@ export function Combat() {
                                             style={styles.magResValue}
                                             numberOfLines={1}>
                                             {getResistancePercent(
-                                                attributes.magicalRes,
+                                                combat.statsPlayer.magicalRes +
+                                                    combat.statsPlayer
+                                                        .bonusMagicalRes,
                                                 userInfo.level,
                                             ).toFixed(1) + '%'}
                                         </Text>
@@ -1364,9 +1649,12 @@ export function Combat() {
                                         <Text
                                             style={styles.dodgeValue}
                                             numberOfLines={1}>
-                                            {(attributes.dodge * 100).toFixed(
-                                                1,
-                                            ) + '%'}
+                                            {(
+                                                (combat.statsPlayer.dodge +
+                                                    combat.statsPlayer
+                                                        .bonusDodge) *
+                                                100
+                                            ).toFixed(1) + '%'}
                                         </Text>
                                     </View>
                                     <View style={styles.healthContainer}>
@@ -1398,15 +1686,16 @@ export function Combat() {
                                         <FlatList
                                             horizontal
                                             scrollEnabled={false}
-                                            data={[]}
+                                            data={combat.effectsPlayer}
                                             keyExtractor={(_item, index) =>
                                                 index.toString()
                                             }
-                                            renderItem={() => (
+                                            renderItem={({item}) => (
                                                 <Image
                                                     style={styles.effectIcon}
                                                     source={getImage(
-                                                        'icon_slot',
+                                                        'effect_icon_' +
+                                                            item.type.toLowerCase(),
                                                     )}
                                                     resizeMode={'stretch'}
                                                 />
@@ -1573,7 +1862,7 @@ const styles = StyleSheet.create({
     },
     effectIcon: {
         aspectRatio: 1,
-        height: Dimensions.get('screen').height / 26,
+        height: Dimensions.get('screen').height / 30,
         width: undefined,
         marginStart: 1,
         marginEnd: 1,

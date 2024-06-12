@@ -29,7 +29,8 @@
     "primaryEffect": [1.3],
     "secondaryEffect": [0.6],
     "cooldown": 4,
-    "effectTurns": 1
+    "effectTurns": 1,
+    "effectType": "Bleeding"
   },
   "103": {
     "name": "Bashing Blow",
@@ -41,7 +42,8 @@
     "primaryEffect": [1.35],
     "secondaryEffect": [0.5],
     "cooldown": 4,
-    "effectTurns": 1
+    "effectTurns": 1,
+    "effectType": "PhyResDec"
   },
   "104": {
     "name": "Firestorm",
@@ -53,7 +55,8 @@
     "primaryEffect": [1.25],
     "secondaryEffect": [0.35],
     "cooldown": 4,
-    "effectTurns": 2
+    "effectTurns": 2,
+    "effectType": "Burning"
   },
   "105": {
     "name": "Arcane Shock",
@@ -65,7 +68,8 @@
     "primaryEffect": [1.5],
     "secondaryEffect": [0.2],
     "cooldown": 4,
-    "effectTurns": 1
+    "effectTurns": 1,
+    "effectType": "MagAtkInc"
   },
 
 
@@ -99,7 +103,8 @@
     "primaryEffect": [1.3],
     "secondaryEffect": [0.4],
     "cooldown": 5,
-    "effectTurns": 2
+    "effectTurns": 2,
+    "effectType": "PhyResInc"
   },
   "503": {
     "name": "Forest Gift",
@@ -110,7 +115,8 @@
     "description": "Deal {PE}% Magical ATK damage and heal for {SE}% of maximum health.",
     "primaryEffect": [1.2],
     "secondaryEffect": [0.1],
-    "cooldown": 6
+    "cooldown": 6,
+    "effectType": "Healing"
   },
   "504": {
     "name": "Frost Wall",
@@ -122,6 +128,7 @@
     "primaryEffect": [1.3],
     "secondaryEffect": [0.4],
     "cooldown": 5,
-    "effectTurns": 2
+    "effectTurns": 2,
+    "effectType": "MagResInc"
   }
 }

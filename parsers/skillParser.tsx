@@ -53,6 +53,13 @@ export function getSkillEffectTurns(id: string): number | undefined {
           skillsJson[id].effectTurns
         : undefined;
 }
+export function getSkillEffectType(id: string): string | undefined {
+    // @ts-ignore
+    return 'effectType' in skillsJson[id]
+        ? // @ts-ignore
+          skillsJson[id].effectType
+        : undefined;
+}
 
 export function generateSkillsList(): {[key: string]: Skill} {
     const skillsList: {[key: string]: Skill} = {};

@@ -3,6 +3,7 @@ import {Creature} from '../../types/creature.ts';
 import {emptyStats, Stats} from '../../types/stats.ts';
 import cloneDeep from 'lodash.clonedeep';
 import {Log} from '../../types/log.ts';
+import {Effect} from '../../types/effect.ts';
 
 export interface CombatState {
     modalVisible: boolean;
@@ -10,8 +11,8 @@ export interface CombatState {
     index: number;
     statsPlayer: Stats;
     statsEnemy: Stats;
-    effectsPlayer: [];
-    effectsEnemy: [];
+    effectsPlayer: Effect[];
+    effectsEnemy: Effect[];
     combatLog: Log[];
     playerTurn: boolean;
 }
@@ -63,7 +64,7 @@ export const combatSlice = createSlice({
         },
         combatUpdate: (
             state,
-            action: PayloadAction<[Stats, Stats, [], [], Log[]]>,
+            action: PayloadAction<[Stats, Stats, Effect[], Effect[], Log[]]>,
         ) => {
             state.statsPlayer = action.payload[0];
             state.statsEnemy = action.payload[1];
