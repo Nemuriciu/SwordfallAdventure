@@ -53,7 +53,7 @@ import {
     getSkillSecondaryEffect,
 } from '../../../parsers/skillParser.tsx';
 import {Skill} from '../../../types/skill.ts';
-import {Effect, EffectType} from '../../../types/effect.ts';
+import {Effect, EffectType, isBuff, isDOT} from '../../../types/effect.ts';
 import {Stats} from '../../../types/stats.ts';
 
 export function Combat() {
@@ -99,14 +99,14 @@ export function Combat() {
                     /* End Combat */
                 } else {
                     const combatLog = cloneDeep(combat.combatLog);
-                    if (!combat.playerTurn) {
+                    if (combat.statsEnemy.health <= 0) {
                         /* Player Win */
                         combatLog.push({
                             username: userInfo.username,
                             opponent: getCreatureName(
                                 (combat.creature as Creature).id,
                             ),
-                            turn: combat.playerTurn,
+                            turn: false,
                             atkType: 'Win',
                             damage: 0,
                         });
@@ -194,14 +194,14 @@ export function Combat() {
                                 }),
                             );
                         }, 1000);
-                    } else {
+                    } else if (combat.statsPlayer.health <= 0) {
                         /* Enemy Win */
                         combatLog.push({
                             username: getCreatureName(
                                 (combat.creature as Creature).id,
                             ),
                             opponent: userInfo.username,
-                            turn: combat.playerTurn,
+                            turn: true,
                             atkType: 'Win',
                             damage: 0,
                         });
@@ -257,10 +257,10 @@ export function Combat() {
     ) {
         const statsPlayer = cloneDeep(combat.statsPlayer);
         const statsEnemy = cloneDeep(combat.statsEnemy);
-        const effectsPlayer = cloneDeep(combat.effectsPlayer);
-        const effectsEnemy = cloneDeep(combat.effectsEnemy);
         const combatLog = cloneDeep(combat.combatLog);
         const creature = combat.creature as Creature;
+        let effectsPlayer = cloneDeep(combat.effectsPlayer);
+        let effectsEnemy = cloneDeep(combat.effectsEnemy);
 
         /* Player Turn */
         if (turn) {
@@ -308,38 +308,33 @@ export function Combat() {
                     statsEnemy.health = Math.max(statsEnemy.health - damage, 0);
                     /* Effects */
                     if (statsEnemy.health > 0) {
-                        /*/!* Decrease Player Buffs *!/
-                        this.effectsPlayer = this.effectsPlayer.map(effect => {
-                            if (effect.isBuff) {
-                                if (effect.turns === 1)
-                                    this.removeEffect(
-                                        effect,
-                                        this.levelPlayer,
-                                        true,
-                                    );
+                        /* Decrease/Remove Player Buffs */
+                        for (let i = 0; i < effectsPlayer.length; i++) {
+                            const effect = effectsPlayer[i];
+
+                            if (isBuff(effect)) {
+                                if (effect.turns === 1) {
+                                    removeEffect(effect, statsPlayer);
+                                }
                                 effect.turns -= 1;
                             }
-                            return effect;
-                        });
-                        /!* Decrease Enemy Debuffs *!/
-                        this.effectsEnemy = this.effectsEnemy.map(effect => {
-                            if (!effect.isBuff && !effect.isDot) {
-                                if (effect.turns === 1)
-                                    this.removeEffect(
-                                        effect,
-                                        this.levelEnemy,
-                                        true,
-                                    );
-                                effect.turns -= 1;
-                            }
-                            return effect;
-                        });
-                        /!* Clear finished effects *!/
-                        this.effectsEnemy = this.effectsEnemy.filter(
-                            effect => effect.turns > 0,
+                        }
+                        effectsPlayer = effectsPlayer.filter(
+                            effect => effect.turns,
                         );
-                        this.effectsPlayer = this.effectsPlayer.filter(
-                            effect => effect.turns > 0,
+                        /* Decrease/Remove Enemy Debuffs */
+                        for (let i = 0; i < effectsEnemy.length; i++) {
+                            const effect = effectsEnemy[i];
+
+                            if (!isBuff(effect) && !isDOT(effect)) {
+                                if (effect.turns === 1) {
+                                    removeEffect(effect, statsEnemy);
+                                }
+                                effect.turns -= 1;
+                            }
+                        }
+                        effectsEnemy = effectsEnemy.filter(
+                            effect => effect.turns,
                         );
                         /* Apply Spell secondary effect */
                         applySpellEffect(
@@ -349,7 +344,7 @@ export function Combat() {
                             effectsPlayer,
                             effectsEnemy,
                             creature,
-                            true,
+                            turn,
                         );
                     }
                 }
@@ -392,83 +387,65 @@ export function Combat() {
                     statsEnemy.health = Math.max(statsEnemy.health - damage, 0);
                     /* Effects */
                     if (statsEnemy.health > 0) {
-                        /* Decrease Player Buffs */
-                        /*this.effectsPlayer = this.effectsPlayer.map(effect => {
-                            if (effect.isBuff) {
-                                if (effect.turns === 1)
-                                    this.removeEffect(
-                                        effect,
-                                        this.levelPlayer,
-                                        true,
-                                    );
+                        /* Decrease/Remove Player Buffs */
+                        for (let i = 0; i < effectsPlayer.length; i++) {
+                            const effect = effectsPlayer[i];
+
+                            if (isBuff(effect)) {
+                                if (effect.turns === 1) {
+                                    removeEffect(effect, statsPlayer);
+                                }
                                 effect.turns -= 1;
                             }
-                            return effect;
-                        });*/
-                        /* Decrease Enemy Debuffs */
-                        /*this.effectsEnemy = this.effectsEnemy.map(effect => {
-                            if (!effect.isBuff && !effect.isDot) {
-                                if (effect.turns === 1)
-                                    this.removeEffect(
-                                        effect,
-                                        this.levelEnemy,
-                                        true,
-                                    );
+                        }
+                        effectsPlayer = effectsPlayer.filter(
+                            effect => effect.turns,
+                        );
+                        /* Decrease/Remove Enemy Debuffs */
+                        for (let i = 0; i < effectsEnemy.length; i++) {
+                            const effect = effectsEnemy[i];
+
+                            if (!isBuff(effect) && !isDOT(effect)) {
+                                if (effect.turns === 1) {
+                                    removeEffect(effect, statsEnemy);
+                                }
                                 effect.turns -= 1;
                             }
-                            return effect;
-                        });*/
-                        /* Clear finished effects */
-                        /*this.effectsEnemy = this.effectsEnemy.filter(
-                            effect => effect.turns > 0,
-                        );*/
-                        /*this.effectsPlayer = this.effectsPlayer.filter(
-                            effect => effect.turns > 0,
-                        );*/
+                        }
+                        effectsEnemy = effectsEnemy.filter(
+                            effect => effect.turns,
+                        );
                     }
                 }
             }
-            /* Apply DoT + Update Adapters */
-            /*if (this.currentHealthEnemy > 0) {
-                for (const effect of this.effectsPlayer) {
-                    /!* Apply DoTs *!/
-                    if (effect.isDot) {
-                        let damage: number = this.getDebuffDamage(
-                            effect,
-                            this.levelEnemy,
-                            true,
+            /* Apply DOT damage on Player */
+            if (statsEnemy.health > 0) {
+                for (let i = 0; i < effectsPlayer.length; i++) {
+                    const effect = effectsPlayer[i];
+
+                    if (isDOT(effect)) {
+                        const damage = getDOTDamage(
+                            effect.value,
+                            effect.type,
+                            userInfo.level,
+                            turn,
                         );
-                        this.currentHealthPlayer = Math.max(
-                            this.currentHealthPlayer - damage,
+                        statsPlayer.health = Math.max(
+                            statsPlayer.health - damage,
                             0,
                         );
-
-                        combatLog = this.addColoredSpan(
-                            this.pName,
-                            ` took ${damage}`,
-                            effect.effectType.name(),
-                            false,
-                        );
-                        this.combatLog.push(combatLog);
+                        combatLog.push({
+                            username: userInfo.username,
+                            opponent: getCreatureName(creature.id),
+                            turn: turn,
+                            atkType: effect.type,
+                            damage: damage,
+                        });
                         effect.turns -= 1;
-
-                        if (this.currentHealthPlayer <= 0)
-                            return new SimulationResult(
-                                100,
-                                100,
-                                this.currentHealthPlayer,
-                                this.currentHealthEnemy,
-                                this.combatLog,
-                            );
                     }
-                }*/
-            /* Clear finished effects */
-            /*this.effectsPlayer = this.effectsPlayer.filter(
-                    effect => effect.turns > 0,
-                );*/
-            /* Update Effects List */
-            //this.effectsPlayerAdapter.notifyDataSetChanged();
-            //this.effectsEnemyAdapter.notifyDataSetChanged();
+                }
+            }
+            effectsPlayer = effectsPlayer.filter(effect => effect.turns);
         } else {
             /* Spell Attack */
             if (spell != null) {
@@ -597,83 +574,69 @@ export function Combat() {
                     );
                     /* Effects */
                     if (statsPlayer.health > 0) {
-                        /* Decrease Player Buffs */
-                        /*this.effectsPlayer = this.effectsPlayer.map(effect => {
-                            if (effect.isBuff) {
-                                if (effect.turns === 1)
-                                    this.removeEffect(
-                                        effect,
-                                        this.levelPlayer,
-                                        true,
-                                    );
+                        /* Decrease/Remove Enemy Buffs */
+                        for (let i = 0; i < effectsEnemy.length; i++) {
+                            const effect = effectsEnemy[i];
+
+                            if (isBuff(effect)) {
+                                if (effect.turns === 1) {
+                                    removeEffect(effect, statsEnemy);
+                                }
                                 effect.turns -= 1;
                             }
-                            return effect;
-                        });*/
-                        /* Decrease Enemy Debuffs */
-                        /*this.effectsEnemy = this.effectsEnemy.map(effect => {
-                            if (!effect.isBuff && !effect.isDot) {
-                                if (effect.turns === 1)
-                                    this.removeEffect(
-                                        effect,
-                                        this.levelEnemy,
-                                        true,
-                                    );
+                        }
+                        effectsEnemy = effectsEnemy.filter(
+                            effect => effect.turns,
+                        );
+                        /* Decrease/Remove Player Debuffs */
+                        for (let i = 0; i < effectsPlayer.length; i++) {
+                            const effect = effectsPlayer[i];
+
+                            if (!isBuff(effect) && !isDOT(effect)) {
+                                if (effect.turns === 1) {
+                                    removeEffect(effect, statsPlayer);
+                                }
                                 effect.turns -= 1;
                             }
-                            return effect;
-                        });*/
-                        /* Clear finished effects */
-                        /*this.effectsEnemy = this.effectsEnemy.filter(
-                            effect => effect.turns > 0,
-                        );*/
-                        /*this.effectsPlayer = this.effectsPlayer.filter(
-                            effect => effect.turns > 0,
-                        );*/
+                        }
+                        effectsPlayer = effectsPlayer.filter(
+                            effect => effect.turns,
+                        );
                     }
                 }
             }
-            /* Apply DoT + Update Adapters */
-            /*if (this.currentHealthEnemy > 0) {
-                for (const effect of this.effectsPlayer) {
-                    /!* Apply DoTs *!/
-                    if (effect.isDot) {
-                        let damage: number = this.getDebuffDamage(
-                            effect,
-                            this.levelEnemy,
-                            true,
+            /* Apply DOT damage on Enemy */
+            if (statsPlayer.health > 0) {
+                for (let i = 0; i < effectsEnemy.length; i++) {
+                    const effect = effectsEnemy[i];
+
+                    if (isDOT(effect)) {
+                        const damage = getDOTDamage(
+                            effect.value,
+                            effect.type,
+                            (combat.creature as Creature).level,
+                            turn,
                         );
-                        this.currentHealthPlayer = Math.max(
-                            this.currentHealthPlayer - damage,
+                        statsEnemy.health = Math.max(
+                            statsEnemy.health - damage,
                             0,
                         );
-
-                        combatLog = this.addColoredSpan(
-                            this.pName,
-                            ` took ${damage}`,
-                            effect.effectType.name(),
-                            false,
-                        );
-                        this.combatLog.push(combatLog);
+                        combatLog.push({
+                            username: getCreatureName(creature.id),
+                            opponent: userInfo.username,
+                            turn: turn,
+                            atkType: effect.type,
+                            damage: damage,
+                        });
                         effect.turns -= 1;
 
-                        if (this.currentHealthPlayer <= 0)
-                            return new SimulationResult(
-                                100,
-                                100,
-                                this.currentHealthPlayer,
-                                this.currentHealthEnemy,
-                                this.combatLog,
-                            );
+                        if (statsEnemy.health <= 0) {
+                            break;
+                        }
                     }
-                }*/
-            /* Clear finished effects */
-            /*this.effectsPlayer = this.effectsPlayer.filter(
-                    effect => effect.turns > 0,
-                );*/
-            /* Update Effects List */
-            //this.effectsPlayerAdapter.notifyDataSetChanged();
-            //this.effectsEnemyAdapter.notifyDataSetChanged();
+                }
+            }
+            effectsEnemy = effectsEnemy.filter(effect => effect.turns);
         }
 
         dispatch(
@@ -727,6 +690,37 @@ export function Combat() {
         );
 
         return rand(Math.round(damage * 0.97), Math.round(damage * 1.03));
+    }
+
+    function getDOTDamage(
+        value: number,
+        effectType: EffectType,
+        level: number,
+        turn: boolean,
+    ): number {
+        let resistance: number;
+        /* Set attack type */
+        if (turn) {
+            resistance =
+                effectType === EffectType.Bleeding ||
+                effectType === EffectType.Poison
+                    ? combat.statsPlayer.physicalRes +
+                      combat.statsPlayer.bonusPhysicalRes
+                    : combat.statsPlayer.magicalRes +
+                      combat.statsPlayer.bonusMagicalRes;
+        } else {
+            resistance =
+                effectType === EffectType.Bleeding ||
+                effectType === EffectType.Poison
+                    ? combat.statsEnemy.physicalRes +
+                      combat.statsEnemy.bonusPhysicalRes
+                    : combat.statsEnemy.magicalRes +
+                      combat.statsEnemy.bonusMagicalRes;
+        }
+
+        return Math.round(
+            value - value * (getResistancePercent(resistance, level) / 100),
+        );
     }
 
     function getSpellDamage(
@@ -892,7 +886,7 @@ export function Combat() {
             case EffectType.PhyAtkDec:
                 if (turn) {
                     effect.value = Math.round(
-                        -secondaryEffect *
+                        secondaryEffect *
                             (combat.statsEnemy.physicalAtk +
                                 combat.statsEnemy.bonusPhysicalAtk),
                     );
@@ -900,7 +894,7 @@ export function Combat() {
                     effectsEnemy.push(effect);
                 } else {
                     effect.value = Math.round(
-                        -secondaryEffect *
+                        secondaryEffect *
                             (combat.statsPlayer.physicalAtk +
                                 combat.statsPlayer.bonusPhysicalAtk),
                     );
@@ -930,7 +924,7 @@ export function Combat() {
             case EffectType.MagAtkDec:
                 if (turn) {
                     effect.value = Math.round(
-                        -secondaryEffect *
+                        secondaryEffect *
                             (combat.statsEnemy.magicalAtk +
                                 combat.statsEnemy.bonusMagicalAtk),
                     );
@@ -938,7 +932,7 @@ export function Combat() {
                     effectsEnemy.push(effect);
                 } else {
                     effect.value = Math.round(
-                        -secondaryEffect *
+                        secondaryEffect *
                             (combat.statsPlayer.magicalAtk +
                                 combat.statsPlayer.bonusMagicalAtk),
                     );
@@ -968,7 +962,7 @@ export function Combat() {
             case EffectType.PhyResDec:
                 if (turn) {
                     effect.value = Math.round(
-                        -secondaryEffect *
+                        secondaryEffect *
                             (combat.statsEnemy.physicalRes +
                                 combat.statsEnemy.bonusPhysicalRes),
                     );
@@ -976,7 +970,7 @@ export function Combat() {
                     effectsEnemy.push(effect);
                 } else {
                     effect.value = Math.round(
-                        -secondaryEffect *
+                        secondaryEffect *
                             (combat.statsPlayer.physicalRes +
                                 combat.statsPlayer.bonusPhysicalRes),
                     );
@@ -1006,7 +1000,7 @@ export function Combat() {
             case EffectType.MagResDec:
                 if (turn) {
                     effect.value = Math.round(
-                        -secondaryEffect *
+                        secondaryEffect *
                             (combat.statsEnemy.magicalRes +
                                 combat.statsEnemy.bonusMagicalRes),
                     );
@@ -1014,13 +1008,46 @@ export function Combat() {
                     effectsEnemy.push(effect);
                 } else {
                     effect.value = Math.round(
-                        -secondaryEffect *
+                        secondaryEffect *
                             (combat.statsPlayer.magicalRes +
                                 combat.statsPlayer.bonusMagicalRes),
                     );
                     statsPlayer.bonusMagicalRes -= effect.value;
                     effectsPlayer.push(effect);
                 }
+                break;
+            //TODO: CRIT/DODGE
+            default:
+                throw new Error(`Unknown effect: ${effect}`);
+        }
+    }
+
+    function removeEffect(effect: Effect, stats: Stats) {
+        /* Handle Effect Types */
+        switch (effect.type) {
+            case EffectType.PhyAtkInc:
+                stats.bonusPhysicalAtk -= effect.value;
+                break;
+            case EffectType.PhyAtkDec:
+                stats.bonusPhysicalAtk += effect.value;
+                break;
+            case EffectType.MagAtkInc:
+                stats.bonusMagicalAtk -= effect.value;
+                break;
+            case EffectType.MagAtkDec:
+                stats.bonusMagicalAtk += effect.value;
+                break;
+            case EffectType.PhyResInc:
+                stats.bonusPhysicalRes -= effect.value;
+                break;
+            case EffectType.PhyResDec:
+                stats.bonusPhysicalRes += effect.value;
+                break;
+            case EffectType.MagResInc:
+                stats.bonusMagicalRes -= effect.value;
+                break;
+            case EffectType.MagResDec:
+                stats.bonusMagicalRes += effect.value;
                 break;
             //TODO: CRIT/DODGE
             default:
@@ -1208,14 +1235,21 @@ export function Combat() {
                                                 index.toString()
                                             }
                                             renderItem={({item}) => (
-                                                <Image
+                                                <ImageBackground
                                                     style={styles.effectIcon}
                                                     source={getImage(
                                                         'effect_icon_' +
                                                             item.type.toLowerCase(),
                                                     )}
                                                     resizeMode={'stretch'}
-                                                />
+                                                    fadeDuration={0}>
+                                                    <Text
+                                                        style={
+                                                            styles.effectTurns
+                                                        }>
+                                                        {item.turns}
+                                                    </Text>
+                                                </ImageBackground>
                                             )}
                                             overScrollMode={'never'}
                                         />
@@ -1691,14 +1725,21 @@ export function Combat() {
                                                 index.toString()
                                             }
                                             renderItem={({item}) => (
-                                                <Image
+                                                <ImageBackground
                                                     style={styles.effectIcon}
                                                     source={getImage(
                                                         'effect_icon_' +
                                                             item.type.toLowerCase(),
                                                     )}
                                                     resizeMode={'stretch'}
-                                                />
+                                                    fadeDuration={0}>
+                                                    <Text
+                                                        style={
+                                                            styles.effectTurns
+                                                        }>
+                                                        {item.turns}
+                                                    </Text>
+                                                </ImageBackground>
                                             )}
                                             overScrollMode={'never'}
                                         />
@@ -1862,10 +1903,20 @@ const styles = StyleSheet.create({
     },
     effectIcon: {
         aspectRatio: 1,
-        height: Dimensions.get('screen').height / 30,
+        height: Dimensions.get('screen').height / 28,
         width: undefined,
         marginStart: 1,
         marginEnd: 1,
+    },
+    effectTurns: {
+        position: 'absolute',
+        bottom: 0,
+        right: 2,
+        color: 'white',
+        fontFamily: 'Myriad',
+        textShadowColor: 'rgba(0, 0, 0, 1)',
+        textShadowOffset: {width: 1, height: 1},
+        textShadowRadius: 5,
     },
     logList: {
         margin: 20,

@@ -24,6 +24,21 @@ export enum EffectType {
     DodgeDec = 'DodgeDec',
 }
 
-export function getEffectImage(type: EffectType): string {
-    return 'effect_icon_' + type.toLowerCase();
+export function isBuff(effect: Effect): boolean {
+    return (
+        effect.type === EffectType.PhyAtkInc ||
+        effect.type === EffectType.MagAtkInc ||
+        effect.type === EffectType.PhyResInc ||
+        effect.type === EffectType.MagResInc ||
+        effect.type === EffectType.CritInc ||
+        effect.type === EffectType.DodgeInc
+    );
+}
+
+export function isDOT(effect: Effect): boolean {
+    return (
+        effect.type === EffectType.Bleeding ||
+        effect.type === EffectType.Poison ||
+        effect.type === EffectType.Burning
+    );
 }

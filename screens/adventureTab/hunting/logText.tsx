@@ -151,9 +151,38 @@ export function LogText({log}: props) {
                 .appendColored('(Critical)', colors.critical_color)
                 .build();
         case 'Bleeding':
+            return SpannableBuilder.getInstance(styles.text)
+                .appendColored(
+                    log.username + ' ',
+                    log.turn ? colors.player_color : colors.enemy_color,
+                )
+                .append('took ' + log.damage)
+                .appendColored(' physical ', colors.physicalAtk_color)
+                .append('damage.')
+                .appendColored(' (Bleeding)', colors.bleeding_color)
+                .build();
         case 'Poison':
+            return SpannableBuilder.getInstance(styles.text)
+                .appendColored(
+                    log.username + ' ',
+                    log.turn ? colors.player_color : colors.enemy_color,
+                )
+                .append('took ' + log.damage)
+                .appendColored(' physical ', colors.physicalAtk_color)
+                .append('damage.')
+                .appendColored(' (Poison)', colors.poison_color)
+                .build();
         case 'Burning':
-            return;
+            return SpannableBuilder.getInstance(styles.text)
+                .appendColored(
+                    log.username + ' ',
+                    log.turn ? colors.player_color : colors.enemy_color,
+                )
+                .append('took ' + log.damage)
+                .appendColored(' magical ', colors.magicalAtk_color)
+                .append('damage.')
+                .appendColored(' (Burning)', colors.burning_color)
+                .build();
     }
 }
 
