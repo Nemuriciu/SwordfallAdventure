@@ -2,6 +2,7 @@ export interface Effect {
     id: string;
     type: EffectType;
     value: number;
+    percent?: number;
     turns: number;
 }
 

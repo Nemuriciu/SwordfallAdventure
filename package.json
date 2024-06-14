@@ -32,6 +32,7 @@
     "react-native-screens": "^3.29.0",
     "react-native-simple-toast": "^3.3.0",
     "react-native-tab-view": "^3.5.2",
+    "react-native-walkthrough-tooltip": "^1.6.0",
     "react-redux": "^9.1.0",
     "redux": "^5.0.1"
   },

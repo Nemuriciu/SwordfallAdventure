@@ -10,6 +10,7 @@ import {
     TouchableOpacity,
 } from 'react-native';
 import Modal from 'react-native-modal';
+import Tooltip from 'react-native-walkthrough-tooltip';
 import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '../../../redux/store.tsx';
 import {getImage} from '../../../assets/images/_index';
@@ -55,6 +56,7 @@ import {
 import {Skill} from '../../../types/skill.ts';
 import {Effect, EffectType, isBuff, isDOT} from '../../../types/effect.ts';
 import {Stats} from '../../../types/stats.ts';
+import {EffectTooltip} from './effectTooltip.tsx';
 
 export function Combat() {
     const userInfo = useSelector((state: RootState) => state.userInfo);
@@ -65,6 +67,7 @@ export function Combat() {
     const skills = useSelector((state: RootState) => state.skills);
     const [combatComplete, setCombatComplete] = useState(false);
     const [disabled, setDisabled] = useState(false);
+    const [showTooltip, setShowTooltip] = useState('');
     const [cooldown_1, setCooldown_1] = useState(0);
     const [cooldown_2, setCooldown_2] = useState(0);
     const [cooldown_3, setCooldown_3] = useState(0);
@@ -792,8 +795,9 @@ export function Combat() {
         const effect: Effect = {
             id: Math.random().toString(16).slice(2),
             type: EffectType[effectType as keyof typeof EffectType],
-            turns: turns !== undefined ? turns : 0,
             value: 0,
+            percent: secondaryEffect,
+            turns: turns !== undefined ? turns : 0,
         };
 
         /* Handle Effect Types */
@@ -1235,21 +1239,57 @@ export function Combat() {
                                                 index.toString()
                                             }
                                             renderItem={({item}) => (
-                                                <ImageBackground
-                                                    style={styles.effectIcon}
-                                                    source={getImage(
-                                                        'effect_icon_' +
-                                                            item.type.toLowerCase(),
-                                                    )}
-                                                    resizeMode={'stretch'}
-                                                    fadeDuration={0}>
-                                                    <Text
-                                                        style={
-                                                            styles.effectTurns
-                                                        }>
-                                                        {item.turns}
-                                                    </Text>
-                                                </ImageBackground>
+                                                <Tooltip
+                                                    isVisible={
+                                                        showTooltip === item.id
+                                                    }
+                                                    contentStyle={
+                                                        styles.tooltipContainer
+                                                    }
+                                                    childContentSpacing={1}
+                                                    content={
+                                                        //@ts-ignore
+                                                        <EffectTooltip
+                                                            type={item.type}
+                                                            percent={
+                                                                item.percent
+                                                            }
+                                                        />
+                                                    }
+                                                    onClose={() =>
+                                                        setShowTooltip('')
+                                                    }
+                                                    backgroundColor={
+                                                        'rgba(0,0,0,0)'
+                                                    }>
+                                                    <TouchableOpacity
+                                                        onPress={() =>
+                                                            setShowTooltip(
+                                                                item.id,
+                                                            )
+                                                        }
+                                                        activeOpacity={1}>
+                                                        <ImageBackground
+                                                            style={
+                                                                styles.effectIcon
+                                                            }
+                                                            source={getImage(
+                                                                'effect_icon_' +
+                                                                    item.type.toLowerCase(),
+                                                            )}
+                                                            resizeMode={
+                                                                'stretch'
+                                                            }
+                                                            fadeDuration={0}>
+                                                            <Text
+                                                                style={
+                                                                    styles.effectTurns
+                                                                }>
+                                                                {item.turns}
+                                                            </Text>
+                                                        </ImageBackground>
+                                                    </TouchableOpacity>
+                                                </Tooltip>
                                             )}
                                             overScrollMode={'never'}
                                         />
@@ -1294,6 +1334,7 @@ export function Combat() {
                             source={getImage('background_actionbar')}
                             resizeMode={'stretch'}>
                             <View style={styles.actionbarContainer}>
+                                {/* Leave Combat */}
                                 {combatComplete && (
                                     <CustomButton
                                         type={ButtonType.Orange}
@@ -1302,6 +1343,7 @@ export function Combat() {
                                         onPress={() => leaveCombat()}
                                     />
                                 )}
+                                {/* Basic Attack */}
                                 {!combatComplete && (
                                     <View style={styles.actionContainer}>
                                         <Text style={styles.labelText}>
@@ -1312,7 +1354,7 @@ export function Combat() {
                                             <TouchableOpacity
                                                 style={styles.actionButton}
                                                 disabled={disabled}
-                                                activeOpacity={0.1}
+                                                activeOpacity={1}
                                                 onPress={() =>
                                                     simulateAttack(
                                                         true,
@@ -1328,7 +1370,7 @@ export function Combat() {
                                                         'skills_frame_background',
                                                     )}
                                                     resizeMode={'stretch'}>
-                                                    <Image
+                                                    <ImageBackground
                                                         style={
                                                             styles.actionIcon
                                                         }
@@ -1336,13 +1378,21 @@ export function Combat() {
                                                             'skills_icon_basic_physical',
                                                         )}
                                                         resizeMode={'stretch'}
-                                                        fadeDuration={0}
-                                                    />
+                                                        fadeDuration={0}>
+                                                        {disabled ? (
+                                                            <View
+                                                                style={
+                                                                    styles.actionIconDisabled
+                                                                }
+                                                            />
+                                                        ) : null}
+                                                    </ImageBackground>
                                                 </ImageBackground>
                                             </TouchableOpacity>
                                             <TouchableOpacity
                                                 style={styles.actionButton}
                                                 disabled={disabled}
+                                                activeOpacity={1}
                                                 onPress={() =>
                                                     simulateAttack(
                                                         true,
@@ -1358,7 +1408,7 @@ export function Combat() {
                                                         'skills_frame_background',
                                                     )}
                                                     resizeMode={'stretch'}>
-                                                    <Image
+                                                    <ImageBackground
                                                         style={
                                                             styles.actionIcon
                                                         }
@@ -1366,13 +1416,21 @@ export function Combat() {
                                                             'skills_icon_basic_magical',
                                                         )}
                                                         resizeMode={'stretch'}
-                                                        fadeDuration={0}
-                                                    />
+                                                        fadeDuration={0}>
+                                                        {disabled ? (
+                                                            <View
+                                                                style={
+                                                                    styles.actionIconDisabled
+                                                                }
+                                                            />
+                                                        ) : null}
+                                                    </ImageBackground>
                                                 </ImageBackground>
                                             </TouchableOpacity>
                                         </View>
                                     </View>
                                 )}
+                                {/* Spells */}
                                 {!combatComplete && (
                                     <View style={styles.actionContainer}>
                                         <Text style={styles.labelText}>
@@ -1383,6 +1441,7 @@ export function Combat() {
                                             {/* Spell Button 1 */}
                                             <TouchableOpacity
                                                 style={styles.actionButton}
+                                                activeOpacity={1}
                                                 disabled={
                                                     disabled ||
                                                     skills.spell_1 === null ||
@@ -1441,6 +1500,12 @@ export function Combat() {
                                                                 }>
                                                                 {cooldown_1}
                                                             </Text>
+                                                        ) : disabled ? (
+                                                            <View
+                                                                style={
+                                                                    styles.actionIconDisabled
+                                                                }
+                                                            />
                                                         ) : null}
                                                     </ImageBackground>
                                                 </ImageBackground>
@@ -1448,6 +1513,7 @@ export function Combat() {
                                             {/* Spell Button 2 */}
                                             <TouchableOpacity
                                                 style={styles.actionButton}
+                                                activeOpacity={1}
                                                 disabled={
                                                     disabled ||
                                                     skills.spell_2 === null ||
@@ -1506,6 +1572,12 @@ export function Combat() {
                                                                 }>
                                                                 {cooldown_2}
                                                             </Text>
+                                                        ) : disabled ? (
+                                                            <View
+                                                                style={
+                                                                    styles.actionIconDisabled
+                                                                }
+                                                            />
                                                         ) : null}
                                                     </ImageBackground>
                                                 </ImageBackground>
@@ -1513,6 +1585,7 @@ export function Combat() {
                                             {/* Spell Button 3 */}
                                             <TouchableOpacity
                                                 style={styles.actionButton}
+                                                activeOpacity={1}
                                                 disabled={
                                                     disabled ||
                                                     skills.spell_3 === null ||
@@ -1571,6 +1644,12 @@ export function Combat() {
                                                                 }>
                                                                 {cooldown_3}
                                                             </Text>
+                                                        ) : disabled ? (
+                                                            <View
+                                                                style={
+                                                                    styles.actionIconDisabled
+                                                                }
+                                                            />
                                                         ) : null}
                                                     </ImageBackground>
                                                 </ImageBackground>
@@ -1725,21 +1804,57 @@ export function Combat() {
                                                 index.toString()
                                             }
                                             renderItem={({item}) => (
-                                                <ImageBackground
-                                                    style={styles.effectIcon}
-                                                    source={getImage(
-                                                        'effect_icon_' +
-                                                            item.type.toLowerCase(),
-                                                    )}
-                                                    resizeMode={'stretch'}
-                                                    fadeDuration={0}>
-                                                    <Text
-                                                        style={
-                                                            styles.effectTurns
-                                                        }>
-                                                        {item.turns}
-                                                    </Text>
-                                                </ImageBackground>
+                                                <Tooltip
+                                                    isVisible={
+                                                        showTooltip === item.id
+                                                    }
+                                                    contentStyle={
+                                                        styles.tooltipContainer
+                                                    }
+                                                    childContentSpacing={1}
+                                                    content={
+                                                        //@ts-ignore
+                                                        <EffectTooltip
+                                                            type={item.type}
+                                                            percent={
+                                                                item.percent
+                                                            }
+                                                        />
+                                                    }
+                                                    onClose={() =>
+                                                        setShowTooltip('')
+                                                    }
+                                                    backgroundColor={
+                                                        'rgba(0,0,0,0)'
+                                                    }>
+                                                    <TouchableOpacity
+                                                        onPress={() =>
+                                                            setShowTooltip(
+                                                                item.id,
+                                                            )
+                                                        }
+                                                        activeOpacity={1}>
+                                                        <ImageBackground
+                                                            style={
+                                                                styles.effectIcon
+                                                            }
+                                                            source={getImage(
+                                                                'effect_icon_' +
+                                                                    item.type.toLowerCase(),
+                                                            )}
+                                                            resizeMode={
+                                                                'stretch'
+                                                            }
+                                                            fadeDuration={0}>
+                                                            <Text
+                                                                style={
+                                                                    styles.effectTurns
+                                                                }>
+                                                                {item.turns}
+                                                            </Text>
+                                                        </ImageBackground>
+                                                    </TouchableOpacity>
+                                                </Tooltip>
                                             )}
                                             overScrollMode={'never'}
                                         />
@@ -1918,6 +2033,9 @@ const styles = StyleSheet.create({
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
     },
+    tooltipContainer: {
+        backgroundColor: '#2a2a2a',
+    },
     logList: {
         margin: 20,
     },
@@ -1940,6 +2058,11 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
     },
+    actionIconDisabled: {
+        width: '100%',
+        height: '100%',
+        backgroundColor: 'rgba(0, 0, 0, 0.75)',
+    },
     labelText: {
         color: colors.primary,
         textAlign: 'center',
@@ -1952,7 +2075,7 @@ const styles = StyleSheet.create({
     cooldownText: {
         width: '100%',
         height: '100%',
-        backgroundColor: 'rgba(0,0,0,0.75)',
+        backgroundColor: 'rgba(0, 0, 0, 0.75)',
         textAlign: 'center',
         textAlignVertical: 'center',
         color: 'white',

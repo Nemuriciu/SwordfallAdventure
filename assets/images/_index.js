@@ -396,6 +396,7 @@ export const images = {
         background_details: require('./shared/background_details.png'),
         background_inner: require('./shared/background_inner.png'),
         background_outer: require('./shared/background_outer.png'),
+        background_tooltip: require('./shared/background_tooltip.png'),
         button_close: require('./shared/button_close.png'),
         button_close_pressed: require('./shared/button_close_pressed.png'),
         button_green: require('./shared/button_green.png'),
