@@ -2,14 +2,12 @@ import React from 'react';
 import {StyleSheet, Text, useWindowDimensions} from 'react-native';
 import {SceneMap, TabBar, TabView} from 'react-native-tab-view';
 import {Hunting} from './hunting/hunting';
-import {Exploring} from './exploring/exploring';
 import {Gathering} from './gathering/gathering';
 import {colors} from '../../utils/colors.ts';
 
 const renderScene = SceneMap({
     1: Hunting,
-    2: Exploring,
-    3: Gathering,
+    2: Gathering,
 });
 
 export function AdventureTab() {
@@ -18,8 +16,7 @@ export function AdventureTab() {
     const [index, setIndex] = React.useState(0);
     const [routes] = React.useState([
         {key: '1', title: 'Hunting'},
-        {key: '2', title: 'Exploring'},
-        {key: '3', title: 'Gathering'},
+        {key: '2', title: 'Gathering'},
     ]);
 
     // @ts-ignore
@@ -32,6 +29,7 @@ export function AdventureTab() {
                         <Text
                             style={[
                                 styles.tabText,
+                                // eslint-disable-next-line react-native/no-inline-styles
                                 {color: focused ? colors.primary : 'white'},
                             ]}>
                             {route.title + ' '}

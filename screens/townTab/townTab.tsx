@@ -4,12 +4,13 @@ import {TabView, SceneMap, TabBar} from 'react-native-tab-view';
 import {Missions} from './missions/missions.tsx';
 import {Crafting} from './crafting/crafting.tsx';
 import {colors} from '../../utils/colors.ts';
+import {Shop} from './shop/shop.tsx';
 
 const renderScene = SceneMap({
     1: Crafting,
     2: Missions,
     //3: DailyQuests,
-    //4: Shop,
+    3: Shop,
 });
 
 export function TownTab() {
@@ -20,7 +21,7 @@ export function TownTab() {
         {key: '1', title: 'Crafting'},
         {key: '2', title: 'Missions'},
         //{key: '3', title: 'Daily Quests'},
-        //{key: '4', title: 'Shop'},
+        {key: '3', title: 'Shop'},
     ]);
 
     // @ts-ignore
