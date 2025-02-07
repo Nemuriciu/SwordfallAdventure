@@ -20,6 +20,7 @@ import {isFull} from '../utils/arrayUtils.ts';
 import {inventoryAddItems} from '../redux/slices/inventorySlice.tsx';
 import {updateExp, updateShards} from '../redux/slices/userInfoSlice.tsx';
 import {colors} from '../utils/colors.ts';
+import Animated, {BounceIn, BounceOut} from 'react-native-reanimated';
 
 export function RewardsModal() {
     const userInfo = useSelector((state: RootState) => state.userInfo);
@@ -66,6 +67,21 @@ export function RewardsModal() {
             isVisible={rewardsModal.modalVisible}
             backdropTransitionOutTiming={0}
             useNativeDriver={true}>
+            {/* Level Up Icon */}
+            {userInfo.levelUp && (
+                <Animated.View
+                    style={styles.level_up}
+                    entering={BounceIn.duration(500)}
+                    exiting={BounceOut.duration(500)}>
+                    <View style={styles.level_up}>
+                        <Image
+                            style={styles.level_up_icon}
+                            source={getImage('icon_level_up')}
+                        />
+                    </View>
+                </Animated.View>
+            )}
+            {/* Modal Container */}
             <View style={styles.modalAlpha}>
                 <View style={styles.container}>
                     <ImageBackground
@@ -251,5 +267,20 @@ const styles = StyleSheet.create({
         width: '11%',
         aspectRatio: 1,
         alignSelf: 'center',
+    },
+    level_up: {
+        position: 'absolute',
+        zIndex: 100,
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    level_up_icon: {
+        aspectRatio: 1.07,
+        width: '75%',
+        height: undefined,
     },
 });

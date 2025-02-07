@@ -1,3 +1,4 @@
+import experienceJson from '../assets/json/experience.json';
 import creaturesJson from '../assets/json/creatures.json';
 import statsJson from '../assets/json/stats.json';
 import {Creature} from '../types/creature.ts';
@@ -487,7 +488,8 @@ export function getCombatRewards(
 }
 
 export function getCombatExperience(rarity: string, level: number): number {
-    let exp = Math.round(5 * Math.pow(level, 1.7) + Math.pow(level, 3.2));
+    let exp = experienceJson.huntingExp[level - 1];
+    // let exp = Math.round(5 * Math.pow(level, 1.7) + Math.pow(level, 3.2));
 
     /* Green +100% / Blue +150% / Purple +250% */
     switch (rarity) {

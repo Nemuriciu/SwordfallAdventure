@@ -13,6 +13,7 @@ import {
 } from '../redux/slices/userInfoSlice.tsx';
 import {colors} from '../utils/colors.ts';
 import ProgressBar from '../components/progressBar.tsx';
+import experienceJson from '../assets/json/experience.json';
 
 export function TopStatus() {
     const userInfo = useSelector((state: RootState) => state.userInfo);
@@ -61,6 +62,12 @@ export function TopStatus() {
             if (staminaTimer <= 1 && userInfo.stamina < userInfo.staminaMax) {
                 dispatch(updateTimestampStamina(new Date().toISOString()));
                 startTimer(fiveMin);
+            } else if (
+                staminaTimer > 1 &&
+                userInfo.stamina >= userInfo.staminaMax
+            ) {
+                clearInterval(timer);
+                setStaminaTimer(1);
             }
         } else {
             didMount_3.current -= 1;
@@ -240,8 +247,10 @@ export function TopStatus() {
                         style={styles.experience}
                         adjustsFontSizeToFit={true}
                         numberOfLines={1}>
-                        {userInfo.expMax
-                            ? userInfo.exp + '/' + userInfo.expMax
+                        {experienceJson.maxExp[userInfo.level - 1]
+                            ? userInfo.exp +
+                              '/' +
+                              experienceJson.maxExp[userInfo.level - 1]
                             : ''}
                     </Text>
                     <Text
@@ -282,7 +291,10 @@ export function TopStatus() {
             <View style={styles.progressBarContainer}>
                 <View style={styles.experienceBarContainer}>
                     <ProgressBar
-                        progress={userInfo.exp / userInfo.expMax}
+                        progress={
+                            userInfo.exp /
+                            experienceJson.maxExp[userInfo.level - 1]
+                        }
                         image={'progress_bar_orange'}
                         style={styles.experienceBar}
                     />

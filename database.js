@@ -120,9 +120,8 @@ function createUserEntry(userID, username) {
                 username: 'Username', //TODO:
                 level: 1,
                 exp: 0,
-                expMax: 750,
                 stamina: 300,
-                staminaMax: 300,
+                staminaMax: 300, //TODO: Removed and calculate in json + maxstamslots
                 shards: 500,
                 diamonds: 50,
                 skillPoints: 5,

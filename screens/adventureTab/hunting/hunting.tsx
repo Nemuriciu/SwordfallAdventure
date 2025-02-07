@@ -6,7 +6,7 @@ import {
     Text,
     View,
 } from 'react-native';
-import React, {useEffect, useRef} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {getImage} from '../../../assets/images/_index';
 import {colors} from '../../../utils/colors.ts';
 import {CreatureCard} from './creatureCard.tsx';
@@ -21,6 +21,8 @@ import {USER_ID} from '../../../App';
 import {dynamoDb} from '../../../database';
 import {strings} from '../../../utils/strings.ts';
 import {rand} from '../../../parsers/itemParser.tsx';
+import {Slider} from '@miblanchard/react-native-slider';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const CREATURE_COUNT_MIN = 5;
 export const CREATURE_COUNT_MAX = 7;
@@ -28,11 +30,15 @@ export const CREATURE_COUNT_MAX = 7;
 export function Hunting() {
     const userInfo = useSelector((state: RootState) => state.userInfo);
     const hunting = useSelector((state: RootState) => state.hunting);
+    const [creatureLevel, setCreatureLevel] = useState(0);
     const dispatch = useDispatch();
     const didMount = useRef(1);
+    const didMount_1 = useRef(1);
 
     useEffect(() => {
         fetchHuntingDB();
+        // noinspection JSIgnoredPromiseFromCall
+        fetchAsyncStorage();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     useEffect(() => {
@@ -43,6 +49,37 @@ export function Hunting() {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [hunting]);
+    useEffect(() => {
+        if (!didMount_1.current) {
+            if (creatureLevel <= 0) {
+                setCreatureLevel(userInfo.level);
+                // noinspection JSIgnoredPromiseFromCall
+                setStorageCreatureLevel(userInfo.level);
+            }
+        } else {
+            didMount_1.current -= 1;
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [userInfo.level]);
+
+    async function fetchAsyncStorage() {
+        try {
+            const level = await AsyncStorage.getItem('creatureLevelSlider');
+            if (level !== null) {
+                setCreatureLevel(parseInt(level as string, 10));
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    async function setStorageCreatureLevel(level: number) {
+        try {
+            await AsyncStorage.setItem('creatureLevelSlider', level.toString());
+        } catch (e) {
+            console.error(e);
+        }
+    }
 
     function fetchHuntingDB() {
         const params = {
@@ -79,7 +116,7 @@ export function Hunting() {
         const creatureList: Creature[] = [];
 
         for (let i = 0; i < rand(CREATURE_COUNT_MIN, CREATURE_COUNT_MAX); i++) {
-            creatureList.push(getCreature(userInfo.level, depth));
+            creatureList.push(getCreature(creatureLevel, depth));
         }
 
         dispatch(
@@ -96,8 +133,7 @@ export function Hunting() {
         let creatureList: Creature[] = [];
 
         for (let i = 0; i < rand(CREATURE_COUNT_MIN, CREATURE_COUNT_MAX); i++) {
-            //TODO:
-            creatureList.push(getCreature(userInfo.level, depth));
+            creatureList.push(getCreature(creatureLevel, depth));
         }
 
         dispatch(
@@ -114,7 +150,8 @@ export function Hunting() {
             style={styles.container}
             source={getImage('background_outer')}
             resizeMode={'stretch'}>
-            <View style={styles.topContainer}>
+            {/* Depth */}
+            <View style={styles.depthContainer}>
                 <Text style={styles.depthText}>{'Depth ' + hunting.depth}</Text>
                 <Image
                     style={styles.infoIcon}
@@ -122,6 +159,30 @@ export function Hunting() {
                     resizeMode={'stretch'}
                 />
             </View>
+            {/* Creature Level Slider */}
+            {userInfo.level > 1 && (
+                <View style={styles.creatureLevelContainer}>
+                    <Text style={styles.creatureLevelText}>
+                        Creature Level: {creatureLevel}
+                    </Text>
+                    <Slider
+                        value={creatureLevel}
+                        step={1}
+                        minimumValue={1}
+                        maximumValue={userInfo.level ? userInfo.level : 1}
+                        minimumTrackTintColor={colors.primary}
+                        onValueChange={level => {
+                            setCreatureLevel(level[0]);
+                        }}
+                        onSlidingComplete={level => {
+                            // noinspection JSIgnoredPromiseFromCall
+                            setStorageCreatureLevel(level[0]);
+                        }}
+                        containerStyle={styles.creatureSliderContainer}
+                        thumbStyle={styles.sliderThumb}
+                    />
+                </View>
+            )}
             <ImageBackground
                 style={styles.innerContainer}
                 source={getImage('background_inner')}
@@ -150,6 +211,7 @@ export function Hunting() {
                     disabled={hunting.killCount < 3}
                     onPress={goDeeper}
                 />
+                {/* TODO: disable button on depth 0 */}
                 <CustomButton
                     type={ButtonType.Orange}
                     style={styles.button}
@@ -165,10 +227,11 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
-    topContainer: {
+    depthContainer: {
         flexDirection: 'row',
         justifyContent: 'center',
-        marginTop: 6,
+        marginTop: 8,
+        marginBottom: 4,
     },
     depthText: {
         width: '100%',
@@ -186,6 +249,37 @@ const styles = StyleSheet.create({
         aspectRatio: 1,
         width: '7.5%',
         height: undefined,
+    },
+    creatureLevelContainer: {
+        flexDirection: 'row',
+        marginStart: 12,
+        marginEnd: 12,
+    },
+    creatureLevelText: {
+        width: '35%',
+        textAlign: 'center',
+        alignSelf: 'center',
+        color: colors.primary,
+        fontSize: 16,
+        fontFamily: 'Myriad',
+        textShadowColor: 'rgba(0, 0, 0, 1)',
+        textShadowOffset: {width: 1, height: 1},
+        textShadowRadius: 5,
+    },
+    creatureSliderContainer: {
+        flex: 1,
+        marginStart: 12,
+    },
+    sliderThumb: {
+        backgroundColor: 'white',
+    },
+    thumbValue: {
+        color: colors.primary,
+        fontSize: 16,
+        fontFamily: 'Myriad_Bold',
+        textShadowColor: 'rgba(0, 0, 0, 1)',
+        textShadowOffset: {width: 1, height: 1},
+        textShadowRadius: 5,
     },
     innerContainer: {
         flex: 1,

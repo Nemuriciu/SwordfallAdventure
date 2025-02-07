@@ -1,5 +1,6 @@
-//import missionsJson from '../assets/json/missions.json';
 import creatureJson from '../assets/json/creatures.json';
+import experienceJson from '../assets/json/experience.json';
+import missionsJson from '../assets/json/missions.json';
 import {Mission} from '../types/mission.ts';
 import {getChest, getKey, getRandomEquip, rand} from './itemParser.tsx';
 import {getCreatureName} from './creatureParser.tsx';
@@ -22,9 +23,13 @@ export function generateMission(level: number): Mission {
 
     /* Create Mission by type */
     let amount: number;
+    let minAmount: number, maxAmount: number;
+
     switch (type) {
         case 'hunt':
-            amount = rand(4, 8);
+            minAmount = missionsJson.hunting.minAmount;
+            maxAmount = missionsJson.hunting.maxAmount;
+            amount = rand(minAmount, maxAmount);
             const creatureId =
                 Object.keys(creatureJson)[
                     rand(0, Object.keys(creatureJson).length - 1)
@@ -36,14 +41,14 @@ export function generateMission(level: number): Mission {
                 description: `Hunt ${amount} ${getCreatureName(creatureId)}`,
                 progress: 0,
                 maxProgress: amount,
-                shards: 250,
-                exp: 58,
                 rewards: getMissionRewards('common', level),
                 isActive: false,
             };
         case 'craft':
         case 'gather':
-            amount = Math.round(rand(30, 90) / 10) * 10;
+            minAmount = missionsJson.gathering.minAmount;
+            maxAmount = missionsJson.gathering.maxAmount;
+            amount = Math.round(rand(minAmount, maxAmount) / 10) * 10;
             /* Get random resource type */
             const gatherType = ['ore', 'wood', 'herb'][rand(0, 2)];
 
@@ -53,8 +58,6 @@ export function generateMission(level: number): Mission {
                 description: `Gather ${gatherType} for ${amount} min`,
                 progress: 0,
                 maxProgress: amount,
-                shards: 250,
-                exp: 58,
                 rewards: getMissionRewards('common', level),
                 isActive: false,
             };
@@ -87,6 +90,37 @@ export function sortMissions(list: Mission[]) {
         }
         return 0;
     });
+}
+
+export function getMissionShards(mission: Mission, level: number): number {
+    const shards = 250; //TODO:
+
+    return shards;
+}
+
+export function getMissionExp(mission: Mission, level: number): number {
+    let exp: number;
+    let multiplier: number;
+
+    switch (mission.type) {
+        case 'hunt':
+            multiplier = mission.maxProgress / missionsJson.hunting.minAmount;
+            exp = Math.round(
+                experienceJson.missionExp.hunting[level - 1] * multiplier,
+            );
+            break;
+        case 'craft':
+        case 'gather':
+            multiplier = mission.maxProgress / missionsJson.gathering.minAmount;
+            exp = Math.round(
+                experienceJson.missionExp.gathering[level - 1] * multiplier,
+            );
+            break;
+        default:
+            throw new Error('Unexpected value: ' + mission.type);
+    }
+
+    return exp;
 }
 
 function getMissionRewards(missionRarity: string, level: number): Item[] {

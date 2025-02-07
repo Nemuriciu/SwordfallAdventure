@@ -408,6 +408,7 @@ export const images = {
         icon_left_arrow: require('./shared/icon_left_arrow.png'),
         icon_left_arrow_disabled: require('./shared/icon_left_arrow_disabled.png'),
         icon_left_arrow_pressed: require('./shared/icon_left_arrow_pressed.png'),
+        icon_level_up: require('./shared/icon_level_up.png'),
         icon_right_arrow: require('./shared/icon_right_arrow.png'),
         icon_right_arrow_disabled: require('./shared/icon_right_arrow_disabled.png'),
         icon_right_arrow_pressed: require('./shared/icon_right_arrow_pressed.png'),

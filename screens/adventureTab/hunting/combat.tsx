@@ -58,6 +58,7 @@ import {Effect, EffectType, isBuff, isDOT} from '../../../types/effect.ts';
 import {Stats} from '../../../types/stats.ts';
 import {EffectTooltip} from './effectTooltip.tsx';
 
+// TODO: Remove creature from list after starting combat (not after ending it)
 export function Combat() {
     const userInfo = useSelector((state: RootState) => state.userInfo);
     const attributes = useSelector((state: RootState) => state.attributes);

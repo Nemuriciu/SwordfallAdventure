@@ -13,6 +13,8 @@ import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '../../../redux/store.tsx';
 import {
     generateMission,
+    getMissionExp,
+    getMissionShards,
     isMissionComplete,
     sortMissions,
 } from '../../../parsers/questParser.tsx';
@@ -153,8 +155,8 @@ export function Missions() {
         dispatch(
             rewardsModalInit({
                 rewards: missionsList[index].rewards,
-                experience: missionsList[index].exp,
-                shards: missionsList[index].shards,
+                experience: getMissionExp(missionsList[index], userInfo.level),
+                shards: getMissionShards(missionsList[index], userInfo.level),
             }),
         );
         /* Remove mission */
@@ -267,7 +269,7 @@ export function Missions() {
                     {/* Shards & Exp */}
                     <View style={styles.shardsExpContainer}>
                         <View style={styles.shardsContainer}>
-                            {item.shards ? (
+                            {userInfo.level ? (
                                 <Image
                                     style={styles.shardsIcon}
                                     source={getImage('icon_shards')}
@@ -275,17 +277,17 @@ export function Missions() {
                                     fadeDuration={0}
                                 />
                             ) : null}
-                            {item.shards ? (
+                            {userInfo.level ? (
                                 <Text
                                     style={styles.shardsText}
                                     adjustsFontSizeToFit={true}
                                     numberOfLines={1}>
-                                    {item.shards}
+                                    {getMissionShards(item, userInfo.level)}
                                 </Text>
                             ) : null}
                         </View>
                         <View style={styles.expContainer}>
-                            {item.exp ? (
+                            {userInfo.level ? (
                                 <Text
                                     style={styles.expIcon}
                                     adjustsFontSizeToFit={true}
@@ -293,12 +295,12 @@ export function Missions() {
                                     {strings.xp}
                                 </Text>
                             ) : null}
-                            {item.exp ? (
+                            {userInfo.level ? (
                                 <Text
                                     style={styles.expText}
                                     adjustsFontSizeToFit={true}
                                     numberOfLines={1}>
-                                    {item.exp}
+                                    {getMissionExp(item, userInfo.level)}
                                 </Text>
                             ) : null}
                         </View>

@@ -1,6 +1,7 @@
 // noinspection DuplicatedCode
 
 import nodesJson from '../assets/json/nodes.json';
+import experienceJson from '../assets/json/experience.json';
 import {Item} from '../types/item.ts';
 import {getHerb, getOre, getWood, rand} from './itemParser.tsx';
 
@@ -74,7 +75,7 @@ export function getNodeRewards(node: Node, level: number): Item[] {
 
 export function getNodeExperience(node: Node, level: number): number {
     const timeMultiplier = node.time / 5;
-    const exp = Math.round(4 * Math.pow(level, 2.5) * timeMultiplier);
+    const exp = experienceJson.gatheringExp[level - 1] * timeMultiplier;
 
     /* Variation ~2% of Exp */
     const expMin = Math.round(exp * 0.98);

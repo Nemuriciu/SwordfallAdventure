@@ -6,8 +6,6 @@ export interface Mission {
     description: string;
     progress: number;
     maxProgress: number;
-    shards: number;
-    exp: number;
     isActive: boolean;
     rewards: Item[];
 }
