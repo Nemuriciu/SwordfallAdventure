@@ -8,7 +8,7 @@ import {createUser} from './database';
 const USERNAME = 'vlad.megaboy@gmail.com';
 // eslint-disable-next-line no-unused-vars
 const PASSWORD = '12345678';
-export const USER_ID = 'e3e408f2-0061-7050-cc66-5c04d5540e9f';
+export const USER_ID = '33b49812-d0f1-7019-44e6-3ad9b23c4e71';
 
 /*const UpdateExpression = "set equipment.boots=:1";
 const ExpressionAttributeValues = {

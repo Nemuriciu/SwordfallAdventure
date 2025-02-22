@@ -9,6 +9,7 @@ import {
 } from '../redux/slices/itemDetailsSlice.tsx';
 import {isItem, Item} from '../types/item.ts';
 import {
+    canConvert,
     getItemCategory,
     getItemColor,
     getItemImg,
@@ -52,7 +53,7 @@ import {rewardsModalInit} from '../redux/slices/rewardsModalSlice.tsx';
 import {DiscardModal} from '../screens/characterTab/inventory/discardModal.tsx';
 
 export function ItemDetails() {
-    //const userInfo = useSelector((state: RootState) => state.userInfo);
+    const userInfo = useSelector((state: RootState) => state.userInfo);
     const itemDetails = useSelector((state: RootState) => state.itemDetails);
     const inventory = useSelector((state: RootState) => state.inventory);
     const equipment = useSelector((state: RootState) => state.equipment);
@@ -312,6 +313,7 @@ export function ItemDetails() {
             {isItem(itemDetails.item) && (
                 <View style={styles.modalAlpha}>
                     <View style={styles.container}>
+                        {/* Equipped Item */}
                         {isItem(equippedItem) ? (
                             <ImageBackground
                                 style={styles.background}
@@ -493,6 +495,7 @@ export function ItemDetails() {
                                 </View>
                             </ImageBackground>
                         ) : null}
+                        {/* Selected Item */}
                         <ImageBackground
                             style={styles.background}
                             source={getImage('background_details')}
@@ -694,7 +697,7 @@ export function ItemDetails() {
                                             style={styles.actionButton}
                                         />
                                     )}
-                                    {/* Use/Equip Button */}
+                                    {/* Use/Equip/Open Button */}
                                     {getItemCategory(itemDetails.item.id) !==
                                         'resource' &&
                                         getItemCategory(itemDetails.item.id) !==
@@ -770,6 +773,20 @@ export function ItemDetails() {
                                                                 .level,
                                                         ))
                                                 }
+                                                style={styles.actionButton}
+                                            />
+                                        )}
+                                    {/* Convert Button */}
+                                    {itemDetails.index !== -1 &&
+                                        canConvert(
+                                            itemDetails.item,
+                                            userInfo.level,
+                                        ) && (
+                                            <CustomButton
+                                                type={ButtonType.Orange}
+                                                title={strings.convert}
+                                                onPress={() => {}}
+                                                disabled={disabled}
                                                 style={styles.actionButton}
                                             />
                                         )}

@@ -17,11 +17,11 @@
       "bonusDodge": 0
     },
     "2": {
-      "health": 244,
-      "physicalRes": 40,
-      "magicalRes": 40,
-      "physicalAtk": 50,
-      "magicalAtk": 50,
+      "health": 180,
+      "physicalRes": 16,
+      "magicalRes": 16,
+      "physicalAtk": 18,
+      "magicalAtk": 18,
       "critical": 0.05,
       "dodge": 0.05,
       "bonusHealth": 0,
@@ -33,11 +33,11 @@
       "bonusDodge": 0
     },
     "3": {
-      "health": 634,
-      "physicalAtk": 104,
-      "magicalAtk": 104,
-      "physicalRes": 86,
-      "magicalRes": 86,
+      "health": 765,
+      "physicalRes": 105,
+      "magicalRes": 105,
+      "physicalAtk": 82,
+      "magicalAtk": 82,
       "critical": 0.05,
       "dodge": 0.05,
       "bonusHealth": 0,
@@ -48,7 +48,10 @@
       "bonusCritical": 0,
       "bonusDodge": 0
     }
+  },
+  "depthBonus": {
+    "bonusHealth": [0.4, 0.4, 0.2],
+    "bonusRes": [0.4, 0.4, 0.2],
+    "bonusAtk": [0.3, 0.3, 0.15]
   }
-
-
 }

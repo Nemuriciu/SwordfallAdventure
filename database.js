@@ -137,6 +137,8 @@ function createUserEntry(userID, username) {
                 weapon: {},
             },
             gatherInfo: {
+                level: 1,
+                experience: 0,
                 isGathering: false,
                 nodeIndex: -1,
                 timestamp: null,
@@ -163,7 +165,12 @@ function createUserEntry(userID, username) {
                 refreshTimestamp: new Date().toISOString(),
             },
             quests: [],
-            skills: generateSkillsList(),
+            skills: {
+                list: generateSkillsList(),
+                spell_1: null,
+                spell_2: null,
+                spell_3: null,
+            },
         }),
         TableName: 'users',
     };

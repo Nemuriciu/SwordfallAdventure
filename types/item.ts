@@ -31,3 +31,13 @@ export function isItem(obj: any): obj is Item {
         'upgrade' in obj
     );
 }
+
+export function isItemIdentical(obj: Item, obj2: Item): boolean {
+    return (
+        obj.id === obj2.id &&
+        obj.level === obj2.level &&
+        obj.quantity === obj2.quantity &&
+        obj.variant === obj2.variant &&
+        obj.upgrade === obj2.upgrade
+    );
+}

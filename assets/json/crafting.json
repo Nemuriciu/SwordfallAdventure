@@ -1,165 +1,24 @@
 {
-  "resources": [
-    {
-      "id": "1235",
-      "materials": [ "1203" ],
-      "materialsCount": [ 5 ]
-    },
-    {
-      "id": "1236",
-      "materials": [ "1204" ],
-      "materialsCount": [ 3 ]
-    },
-    {
-      "id": "1237",
-      "materials": [ "1205" ],
-      "materialsCount": [ 2 ]
-    },
-    {
-      "id": "1238",
-      "materials": [ "1206" ],
-      "materialsCount": [ 2 ]
-    }
-  ],
   "equipment": [
     {
       "id": "1239",
-      "materials": [ "1235", "1223" ],
-      "materialsCount": [ 3, 6 ]
+      "materials": [ "1203", "1223", "1231" ],
+      "materialsCount": [ 8, 8, 12 ]
     },
     {
       "id": "1240",
-      "materials": [ "1235", "1223" ],
-      "materialsCount": [ 2, 11 ]
+      "materials": [ "1204", "1224", "1232" ],
+      "materialsCount": [ 5, 5, 5 ]
     },
     {
       "id": "1241",
-      "materials": [ "1235", "1231", "1227" ],
-      "materialsCount": [ 2, 16, 16 ]
+      "materials": [ "1205", "1225", "1233" ],
+      "materialsCount": [ 5, 5, 5 ]
     },
     {
       "id": "1242",
-      "materials": [ "1235", "1231", "1227" ],
-      "materialsCount": [ 1, 6, 10 ]
-    },
-    {
-      "id": "1243",
-      "materials": [ "1235", "1231", "1227" ],
-      "materialsCount": [ 1, 10, 6 ]
-    },
-    {
-      "id": "1244",
-      "materials": [ "1235", "1231", "1227" ],
-      "materialsCount": [ 1, 10, 10 ]
-    },
-    {
-      "id": "1245",
-      "materials": [ "1235", "1231", "1227" ],
-      "materialsCount": [ 1, 10, 10 ]
-    },
-    {
-      "id": "1246",
-      "materials": [ "1236", "1224" ],
-      "materialsCount": [ 3, 4]
-    },
-    {
-      "id": "1247",
-      "materials": [ "1236", "1224" ],
-      "materialsCount": [ 1, 6 ]
-    },
-    {
-      "id": "1248",
-      "materials": [ "1236", "1232", "1228" ],
-      "materialsCount": [ 1, 9, 9 ]
-    },
-    {
-      "id": "1249",
-      "materials": [ "1236", "1232", "1228" ],
-      "materialsCount": [ 1, 4, 6 ]
-    },
-    {
-      "id": "1250",
-      "materials": [ "1236", "1232", "1228" ],
-      "materialsCount": [ 1, 6, 4 ]
-    },
-    {
-      "id": "1251",
-      "materials": [ "1236", "1232", "1228" ],
-      "materialsCount": [ 1, 6, 6 ]
-    },
-    {
-      "id": "1252",
-      "materials": [ "1236", "1232", "1228" ],
-      "materialsCount": [ 1, 6, 6 ]
-    },
-    {
-      "id": "1253",
-      "materials": [ "1237", "1225" ],
-      "materialsCount": [ 3, 2 ]
-    },
-    {
-      "id": "1254",
-      "materials": [ "1237", "1225" ],
-      "materialsCount": [ 2, 3 ]
-    },
-    {
-      "id": "1255",
-      "materials": [ "1237", "1233", "1229" ],
-      "materialsCount": [ 2, 3, 3 ]
-    },{
-      "id": "1256",
-      "materials": [ "1237", "1233", "1229" ],
-      "materialsCount": [ 2, 4, 6 ]
-    },
-    {
-      "id": "1257",
-      "materials": [ "1237", "1233", "1229" ],
-      "materialsCount": [ 2, 6, 4 ]
-    },
-    {
-      "id": "1258",
-      "materials": [ "1237", "1233", "1229" ],
-      "materialsCount": [ 2, 6, 6 ]
-    },
-    {
-      "id": "1259",
-      "materials": [ "1237", "1233", "1229" ],
-      "materialsCount": [ 2, 6, 6 ]
-    },
-    {
-      "id": "1260",
-      "materials": [ "1238", "1226" ],
-      "materialsCount": [ 3, 2 ]
-    },
-    {
-      "id": "1261",
-      "materials": [ "1238", "1226" ],
-      "materialsCount": [ 2, 3 ]
-    },
-    {
-      "id": "1262",
-      "materials": [ "1238", "1234", "1230" ],
-      "materialsCount": [ 2, 3, 3 ]
-    },
-    {
-      "id": "1263",
-      "materials": [ "1238", "1234", "1230" ],
-      "materialsCount": [ 2, 3, 5 ]
-    },
-    {
-      "id": "1264",
-      "materials": [ "1238", "1234", "1230" ],
-      "materialsCount": [ 2, 5, 3 ]
-    },
-    {
-      "id": "1265",
-      "materials": [ "1238", "1234", "1230" ],
-      "materialsCount": [ 2, 5, 5 ]
-    },
-    {
-      "id": "1266",
-      "materials": [ "1238", "1234", "1230" ],
-      "materialsCount": [ 2, 5, 5 ]
+      "materials": [ "1206", "1226", "1234" ],
+      "materialsCount": [ 5, 5, 5 ]
     }
   ],
   "consumables": [

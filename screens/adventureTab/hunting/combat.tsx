@@ -57,6 +57,7 @@ import {Skill} from '../../../types/skill.ts';
 import {Effect, EffectType, isBuff, isDOT} from '../../../types/effect.ts';
 import {Stats} from '../../../types/stats.ts';
 import {EffectTooltip} from './effectTooltip.tsx';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // TODO: Remove creature from list after starting combat (not after ending it)
 export function Combat() {
@@ -72,8 +73,14 @@ export function Combat() {
     const [cooldown_1, setCooldown_1] = useState(0);
     const [cooldown_2, setCooldown_2] = useState(0);
     const [cooldown_3, setCooldown_3] = useState(0);
+    const [creatureLevel, setCreatureLevel] = useState(0);
     const dispatch = useDispatch();
     const didMount = useRef(1);
+
+    useEffect(() => {
+        // noinspection JSIgnoredPromiseFromCall
+        fetchCreatureLevel();
+    }, [combat.modalVisible]);
 
     useEffect(() => {
         if (!didMount.current) {
@@ -179,13 +186,13 @@ export function Combat() {
                         if (r <= 0.2) {
                             /* 20% chance to add 2 creatures */
                             creatureList.unshift(
-                                getCreature(userInfo.level, hunting.depth),
-                                getCreature(userInfo.level, hunting.depth),
+                                getCreature(creatureLevel, hunting.depth),
+                                getCreature(creatureLevel, hunting.depth),
                             );
                         } else if (r > 0.2 && r <= 0.9) {
                             /* 70% chance to add 1 creature */
                             creatureList.unshift(
-                                getCreature(userInfo.level, hunting.depth),
+                                getCreature(creatureLevel, hunting.depth),
                             );
                         }
 
@@ -253,6 +260,17 @@ export function Combat() {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [combat.playerTurn]);
+
+    async function fetchCreatureLevel() {
+        try {
+            const level = await AsyncStorage.getItem('creatureLevelSlider');
+            if (level !== null) {
+                setCreatureLevel(parseInt(level as string, 10));
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
 
     function simulateAttack(
         turn: boolean,

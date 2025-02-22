@@ -94,76 +94,78 @@ export function Skills() {
                 selectedButtonStyle={styles.selectedButton}
                 textStyle={styles.buttonText}
             />
-            <ImageBackground
-                style={styles.outerContainer}
-                source={getImage('background_inner')}
-                resizeMode={'stretch'}
-                fadeDuration={0}>
-                {selectedIndex === 0 && (
-                    <ScrollView style={styles.innerContainer}>
-                        <View style={styles.skillsRowContainer}>
-                            <SkillsIcon
-                                style={styles.skillsIconContainer}
-                                skill={skills.list['100']}
-                            />
-                            <SkillsIcon
-                                style={styles.skillsIconContainer}
-                                skill={skills.list['101']}
-                            />
-                        </View>
-                        <View style={styles.skillsRowContainer}>
-                            <SkillsIcon
-                                style={styles.skillsIconContainer}
-                                skill={skills.list['102']}
-                            />
-                            <SkillsIcon
-                                style={styles.skillsIconContainer}
-                                skill={skills.list['103']}
-                            />
-                            <SkillsIcon
-                                style={styles.skillsIconContainer}
-                                skill={skills.list['104']}
-                            />
-                            <SkillsIcon
-                                style={styles.skillsIconContainer}
-                                skill={skills.list['105']}
-                            />
-                        </View>
-                    </ScrollView>
-                )}
-                {selectedIndex === 1 && (
-                    <ScrollView style={styles.innerContainer}>
-                        <View style={styles.skillsRowContainer}>
-                            <SkillsIcon
-                                style={styles.skillsIconContainer}
-                                skill={skills.list['500']}
-                            />
-                            <SkillsIcon
-                                style={styles.skillsIconContainer}
-                                skill={skills.list['501']}
-                            />
-                        </View>
-                        <View style={styles.skillsRowContainer}>
-                            <SkillsIcon
-                                style={styles.skillsIconContainer}
-                                skill={skills.list['502']}
-                            />
-                            <SkillsIcon
-                                style={styles.skillsIconContainer}
-                                skill={skills.list['503']}
-                            />
-                            <SkillsIcon
-                                style={styles.skillsIconContainer}
-                                skill={skills.list['504']}
-                            />
-                            <SkillsIcon
-                                style={styles.skillsIconContainer}
-                                skill={skills.list['505']}
-                            />
-                        </View>
-                    </ScrollView>
-                )}
-            </ImageBackground>
+            {skills.list && (
+                <ImageBackground
+                    style={styles.outerContainer}
+                    source={getImage('background_inner')}
+                    resizeMode={'stretch'}
+                    fadeDuration={0}>
+                    {selectedIndex === 0 && (
+                        <ScrollView style={styles.innerContainer}>
+                            <View style={styles.skillsRowContainer}>
+                                <SkillsIcon
+                                    style={styles.skillsIconContainer}
+                                    skill={skills.list['100']}
+                                />
+                                <SkillsIcon
+                                    style={styles.skillsIconContainer}
+                                    skill={skills.list['101']}
+                                />
+                            </View>
+                            <View style={styles.skillsRowContainer}>
+                                <SkillsIcon
+                                    style={styles.skillsIconContainer}
+                                    skill={skills.list['102']}
+                                />
+                                <SkillsIcon
+                                    style={styles.skillsIconContainer}
+                                    skill={skills.list['103']}
+                                />
+                                <SkillsIcon
+                                    style={styles.skillsIconContainer}
+                                    skill={skills.list['104']}
+                                />
+                                <SkillsIcon
+                                    style={styles.skillsIconContainer}
+                                    skill={skills.list['105']}
+                                />
+                            </View>
+                        </ScrollView>
+                    )}
+                    {selectedIndex === 1 && (
+                        <ScrollView style={styles.innerContainer}>
+                            <View style={styles.skillsRowContainer}>
+                                <SkillsIcon
+                                    style={styles.skillsIconContainer}
+                                    skill={skills.list['500']}
+                                />
+                                <SkillsIcon
+                                    style={styles.skillsIconContainer}
+                                    skill={skills.list['501']}
+                                />
+                            </View>
+                            <View style={styles.skillsRowContainer}>
+                                <SkillsIcon
+                                    style={styles.skillsIconContainer}
+                                    skill={skills.list['502']}
+                                />
+                                <SkillsIcon
+                                    style={styles.skillsIconContainer}
+                                    skill={skills.list['503']}
+                                />
+                                <SkillsIcon
+                                    style={styles.skillsIconContainer}
+                                    skill={skills.list['504']}
+                                />
+                                <SkillsIcon
+                                    style={styles.skillsIconContainer}
+                                    skill={skills.list['505']}
+                                />
+                            </View>
+                        </ScrollView>
+                    )}
+                </ImageBackground>
+            )}
             <View style={styles.activeSpellsContainer}>
                 <Text style={styles.activeSpellsLabel}>
                     {strings.active_spells + ':'}

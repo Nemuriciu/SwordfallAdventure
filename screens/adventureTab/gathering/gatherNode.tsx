@@ -9,6 +9,7 @@ import {
     Node,
     getNodeExperience,
     getNodeShards,
+    getNodeGatheringExp,
 } from '../../../parsers/nodeParser.tsx';
 import {colors} from '../../../utils/colors.ts';
 import {getItemColor} from '../../../parsers/itemParser.tsx';
@@ -84,6 +85,8 @@ export function GatherNode({node, index}: props) {
                 dispatch(updateStamina(userInfo.stamina - staminaCost));
                 dispatch(
                     setGatherInfo({
+                        level: gatherInfo.level,
+                        experience: gatherInfo.experience,
                         isGathering: true,
                         nodeIndex: index,
                         timestamp: new Date().toISOString(),
@@ -112,6 +115,10 @@ export function GatherNode({node, index}: props) {
                         userInfo.level,
                     ),
                     experience: getNodeExperience(
+                        gatherInfo.nodes[gatherInfo.nodeIndex],
+                        userInfo.level,
+                    ),
+                    gatheringExp: getNodeGatheringExp(
                         gatherInfo.nodes[gatherInfo.nodeIndex],
                         userInfo.level,
                     ),
@@ -149,6 +156,8 @@ export function GatherNode({node, index}: props) {
 
             dispatch(
                 setGatherInfo({
+                    level: gatherInfo.level,
+                    experience: gatherInfo.experience,
                     isGathering: false,
                     nodeIndex: -1,
                     timestamp: new Date().toISOString(),

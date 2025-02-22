@@ -22,26 +22,36 @@ export function getNodeImg(id: string): string {
     return nodesJson[id].img;
 }
 
-export function getNode(type: string): Node {
-    /* Roll for Rarity */
+export function getNode(type: string, gatherLevel: number): Node {
     const r = Math.random();
-    let rarity: string;
-    /* Purple - 0.02% */ //TODO: && level > 1
-    if (r <= 0.0002) {
+    const gatherLevelMultiplier =
+        gatherLevel > 1 ? 1 + getGatherLevelBonus(gatherLevel) : 1;
+    let epicBase = 0.0001,
+        rareBase = 0.001,
+        uncommonBase = 0.005;
+    let rarity = 'common';
+
+    /* Node Rarity */
+    // TODO: disable rarity by level
+    if (r <= epicBase * gatherLevelMultiplier) {
         rarity = 'epic';
-    } else if (r <= 0.0012) {
-        /* Blue - 0.1% */
+    } else if (
+        r <=
+        epicBase * gatherLevelMultiplier + rareBase * gatherLevelMultiplier
+    ) {
         rarity = 'rare';
-    } else if (r <= 0.0112) {
-        /* Green - 1% */
+    } else if (
+        r <=
+        epicBase * gatherLevelMultiplier +
+            rareBase * gatherLevelMultiplier +
+            uncommonBase * gatherLevelMultiplier
+    ) {
         rarity = 'uncommon';
-    } else {
-        rarity = 'common';
     }
 
     // @ts-ignore
     const nodeID = nodesJson[type][rarity];
-    const time = getRandomTime(rarity);
+    const time = getRandomTime();
 
     return {
         id: nodeID,
@@ -49,6 +59,16 @@ export function getNode(type: string): Node {
         type: type,
         time: time,
     };
+}
+
+export function getGatherLevelBonus(gatherLevel: number): number {
+    let bonusGatherLevel: number = 0;
+
+    for (let i = 0; i < gatherLevel - 1; i++) {
+        bonusGatherLevel += nodesJson.gatherBonus[i];
+    }
+
+    return bonusGatherLevel;
 }
 
 export function getNodeRewards(node: Node, level: number): Item[] {
@@ -75,6 +95,16 @@ export function getNodeRewards(node: Node, level: number): Item[] {
 
 export function getNodeExperience(node: Node, level: number): number {
     const timeMultiplier = node.time / 5;
+    const exp = experienceJson.userGatheringExp[level - 1] * timeMultiplier;
+
+    /* Variation ~2% of Exp */
+    const expMin = Math.round(exp * 0.98);
+
+    return rand(expMin, exp);
+}
+
+export function getNodeGatheringExp(node: Node, level: number): number {
+    const timeMultiplier = node.time / 5;
     const exp = experienceJson.gatheringExp[level - 1] * timeMultiplier;
 
     /* Variation ~2% of Exp */
@@ -96,46 +126,36 @@ export function getNodeShards(node: Node, level: number): number {
     return rand(shardsMin, shards);
 }
 
-function getRandomTime(rarity: string): number {
+function getRandomTime(): number {
     const r = Math.random();
-    /* 10 - 30%
-       15 - 35%
-       30 - 35% */
-    if (rarity === 'common') {
-        if (r <= 0.3) {
-            return 10;
-        } else if (r <= 0.65) {
-            return 15;
-        } else {
-            return 30;
-        }
+    /* 10 - 35%
+       15 - 25%
+       30 - 20%
+       60 - 20% */
+    if (r <= 0.35) {
+        return 10;
+    } else if (r <= 0.6) {
+        return 15;
+    } else if (r <= 0.8) {
+        return 30;
     } else {
-        /* 60 - 35%
-       90 - 35%
-       120 - 30% */
-        if (r <= 0.35) {
-            return 60;
-        } else if (r <= 0.7) {
-            return 90;
-        } else {
-            return 120;
-        }
+        return 60;
     }
 }
 
 function getOreQuantity(node: Node): number {
     /* Values defined in Sheet */
-    const grayMin: number = 5,
+    const grayMin: number = 6,
         greenMin: number = 3,
         blueMin: number = 2,
         purpleMin: number = 2;
-    const grayMax: number = 7,
+    const grayMax: number = 8,
         greenMax: number = 5,
         blueMax: number = 3,
         purpleMax: number = 3;
     let quantity: number = 0;
 
-    const timeMultiplier: number = getTimeMultiplier(node.time, node.rarity);
+    const timeMultiplier: number = getTimeMultiplier(node.time);
 
     switch (node.rarity) {
         case 'common':
@@ -157,17 +177,17 @@ function getOreQuantity(node: Node): number {
 
 function getWoodQuantity(node: Node): number {
     /* Values defined in Sheet */
-    const grayMin: number = 3,
+    const grayMin: number = 6,
         greenMin: number = 2,
         blueMin: number = 1,
         purpleMin: number = 1;
-    const grayMax: number = 5,
+    const grayMax: number = 8,
         greenMax: number = 4,
         blueMax: number = 2,
         purpleMax: number = 2;
     let quantity: number = 0;
 
-    const timeMultiplier: number = getTimeMultiplier(node.time, node.rarity);
+    const timeMultiplier: number = getTimeMultiplier(node.time);
 
     switch (node.rarity) {
         case 'common':
@@ -199,7 +219,7 @@ function getHerbQuantity(node: Node): number {
         purpleMax: number = 2;
     let quantity: number = 0;
 
-    const timeMultiplier: number = getTimeMultiplier(node.time, node.rarity);
+    const timeMultiplier: number = getTimeMultiplier(node.time);
 
     switch (node.rarity) {
         case 'common':
@@ -219,34 +239,23 @@ function getHerbQuantity(node: Node): number {
     return quantity;
 }
 
-function getTimeMultiplier(time: number, rarity: string): number {
+function getTimeMultiplier(time: number): number {
     let multiplier: number = 0;
 
     /* Set time multiplier */
-    if (rarity === 'common') {
-        switch (time) {
-            case 10:
-                multiplier = 1;
-                break;
-            case 15:
-                multiplier = 1.5;
-                break;
-            case 30:
-                multiplier = 2.75;
-                break;
-        }
-    } else {
-        switch (time) {
-            case 60:
-                multiplier = 1;
-                break;
-            case 90:
-                multiplier = 1.25;
-                break;
-            case 120:
-                multiplier = 1.5;
-                break;
-        }
+    switch (time) {
+        case 10:
+            multiplier = 1;
+            break;
+        case 15:
+            multiplier = 1.5;
+            break;
+        case 30:
+            multiplier = 2.8;
+            break;
+        case 60:
+            multiplier = 5;
+            break;
     }
 
     return multiplier;

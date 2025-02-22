@@ -28,39 +28,34 @@ export function getCreature(level: number, depth: number): Creature {
     // @ts-ignore
     const stats = cloneDeep(statsJson.creatures[level.toString()]);
 
+    /* Rarity Chances */
     let rarity = 'common';
     const r = Math.random();
-    let epicBase = 0.0005,
-        rareBase = 0.0025,
-        uncommonBase = 0.01;
-    let epicChance = epicBase,
-        rareChance = rareBase,
-        uncommonChance = uncommonBase;
+    let epicBaseChance = 0.0001,
+        rareBaseChance = 0.001,
+        uncommonBaseChance = 0.005;
+    let epicBonusChance = epicBaseChance,
+        rareBonusChance = rareBaseChance,
+        uncommonBonusChance = uncommonBaseChance;
 
-    epicChance +=
-        depth <= 10
-            ? epicBase * (0.1 * depth)
-            : epicBase + epicBase * (0.2 * (depth - 10));
-    rareChance +=
-        depth <= 10
-            ? rareBase * (0.1 * depth)
-            : rareBase + rareBase * (0.2 * (depth - 10));
-    uncommonChance +=
-        depth <= 10
-            ? uncommonBase * (0.1 * depth)
-            : uncommonBase + uncommonBase * (0.2 * (depth - 10));
+    /* Depth Rarity Chance Bonus */
+    epicBonusChance += epicBaseChance * (1.2 * depth);
+    rareBonusChance += rareBaseChance * (1.2 * depth);
+    uncommonBonusChance += uncommonBaseChance * (1.2 * depth);
+    // console.log('Uncommon Bonus Chance: ' + uncommonBonusChance * 100.0 + '%');
+    // console.log('Rare Bonus Chance: ' + rareBonusChance * 100.0 + '%');
+    // console.log('Epic Bonus Chance: ' + epicBonusChance * 100.0 + '%');
+    // console.log('');
 
-    /* Purple - 0.05% */
-    if (r <= epicChance) {
+    if (r <= epicBonusChance) {
         rarity = 'epic';
-        /* Blue - 0.25% */
-    } else if (r <= epicChance + rareChance) {
+    } else if (r <= epicBonusChance + rareBonusChance) {
         rarity = 'rare';
-        /* Green - 1% */
-    } else if (r <= epicChance + rareChance + uncommonChance) {
+    } else if (r <= epicBonusChance + rareBonusChance + uncommonBonusChance) {
         rarity = 'uncommon';
     }
 
+    /* Randomize stats between 80% and 120% of base value */
     stats.health = rand(
         Math.round(stats.health * 0.9),
         Math.round(stats.health * 1.1),
@@ -82,41 +77,22 @@ export function getCreature(level: number, depth: number): Creature {
         Math.round(stats.magicalRes * 1.2),
     );
 
-    stats.bonusHealth =
-        depth <= 10
-            ? Math.round(stats.health * (0.15 * depth))
-            : Math.round(
-                  stats.health * (0.15 * 10) +
-                      stats.health * (0.2 * (depth - 10)),
-              );
-    stats.bonusPhysicalRes =
-        depth <= 10
-            ? Math.round(stats.physicalRes * (0.15 * depth))
-            : Math.round(
-                  stats.physicalRes * (0.15 * 10) +
-                      stats.physicalRes * (0.2 * (depth - 10)),
-              );
-    stats.bonusMagicalRes =
-        depth <= 10
-            ? Math.round(stats.magicalRes * (0.15 * depth))
-            : Math.round(
-                  stats.magicalRes * (0.15 * 10) +
-                      stats.magicalRes * (0.2 * (depth - 10)),
-              );
-    stats.bonusPhysicalAtk =
-        depth <= 10
-            ? Math.round(stats.physicalAtk * (0.1 * depth))
-            : Math.round(
-                  stats.physicalAtk * (0.1 * 10) +
-                      stats.physicalAtk * (0.15 * (depth - 10)),
-              );
-    stats.bonusMagicalAtk =
-        depth <= 10
-            ? Math.round(stats.magicalAtk * (0.1 * depth))
-            : Math.round(
-                  stats.magicalAtk * (0.1 * 10) +
-                      stats.magicalAtk * (0.15 * (depth - 10)),
-              );
+    /* Depth Bonus Stats */
+    stats.bonusHealth = Math.round(
+        stats.health * (statsJson.depthBonus.bonusHealth[level - 1] * depth),
+    );
+    stats.bonusPhysicalRes = Math.round(
+        stats.physicalRes * (statsJson.depthBonus.bonusRes[level - 1] * depth),
+    );
+    stats.bonusMagicalRes = Math.round(
+        stats.magicalRes * (statsJson.depthBonus.bonusRes[level - 1] * depth),
+    );
+    stats.bonusPhysicalAtk = Math.round(
+        stats.physicalAtk * (statsJson.depthBonus.bonusAtk[level - 1] * depth),
+    );
+    stats.bonusMagicalAtk = Math.round(
+        stats.magicalAtk * (statsJson.depthBonus.bonusAtk[level - 1] * depth),
+    );
 
     switch (rarity) {
         case 'uncommon':
@@ -168,94 +144,98 @@ export function getCombatRewards(
 
     switch (rarity) {
         case 'common':
-            equipBase = 0.25;
-            if (r <= equipBase + getDepthDropBonus(equipBase, depth)) {
-                equipDrop = true;
-            }
-            r = Math.random();
-
-            keyBase = 0.05;
-            if (r <= keyBase + getDepthDropBonus(keyBase, depth)) {
-                keyDrop = true;
-            }
-            r = Math.random();
-
-            chestBase = 0.075;
-            if (r <= chestBase + getDepthDropBonus(chestBase, depth)) {
-                chestDrop = true;
-            }
-            r = Math.random();
-
-            clothBase = 0.4;
-            if (r <= clothBase + getDepthDropBonus(clothBase, depth)) {
-                clothDrop = true;
-            }
-            break;
-        case 'uncommon':
             equipBase = 0.35;
-            if (r <= equipBase + getDepthDropBonus(equipBase, depth)) {
-                equipDrop = true;
-            }
-            r = Math.random();
-
-            keyBase = 0.15;
-            if (r <= keyBase + getDepthDropBonus(keyBase, depth)) {
-                keyDrop = true;
-            }
-            r = Math.random();
-
-            chestBase = 0.2;
-            if (r <= chestBase + getDepthDropBonus(chestBase, depth)) {
-                chestDrop = true;
-            }
-            r = Math.random();
-
-            clothBase = 0.6;
-            if (r <= clothBase + getDepthDropBonus(clothBase, depth)) {
-                clothDrop = true;
-            }
-            break;
-        case 'rare':
-            equipBase = 0.6;
-            if (r <= equipBase + getDepthDropBonus(equipBase, depth)) {
+            if (r <= equipBase) {
                 equipDrop = true;
             }
             r = Math.random();
 
             keyBase = 0.25;
-            if (r <= keyBase + getDepthDropBonus(keyBase, depth)) {
+            if (r <= keyBase) {
                 keyDrop = true;
             }
             r = Math.random();
 
-            chestBase = 0.3;
-            if (r <= chestBase + getDepthDropBonus(chestBase, depth)) {
+            chestBase = 0.2;
+            if (r <= chestBase) {
                 chestDrop = true;
             }
             r = Math.random();
 
-            clothBase = 0.75;
-            if (r <= clothBase + getDepthDropBonus(clothBase, depth)) {
+            clothBase = 0.5;
+            if (r <= clothBase) {
+                clothDrop = true;
+            }
+            break;
+        case 'uncommon':
+            equipBase = 0.95;
+            if (r <= equipBase) {
+                equipDrop = true;
+            }
+            r = Math.random();
+
+            keyBase = 0.4;
+            if (r <= keyBase) {
+                keyDrop = true;
+            }
+            r = Math.random();
+
+            chestBase = 0.35;
+            if (r <= chestBase) {
+                chestDrop = true;
+            }
+            r = Math.random();
+
+            clothBase = 0.8;
+            if (r <= clothBase) {
+                clothDrop = true;
+            }
+            break;
+        case 'rare':
+            equipBase = 0.95;
+            if (r <= equipBase) {
+                equipDrop = true;
+            }
+            r = Math.random();
+
+            keyBase = 0.4;
+            if (r <= keyBase) {
+                keyDrop = true;
+            }
+            r = Math.random();
+
+            chestBase = 0.35;
+            if (r <= chestBase) {
+                chestDrop = true;
+            }
+            r = Math.random();
+
+            clothBase = 0.8;
+            if (r <= clothBase) {
                 clothDrop = true;
             }
             break;
         case 'epic':
-            equipDrop = true;
+            equipBase = 0.95;
+            if (r <= equipBase) {
+                equipDrop = true;
+            }
+            r = Math.random();
 
-            keyBase = 0.35;
-            if (r <= keyBase + getDepthDropBonus(keyBase, depth)) {
+            keyBase = 0.4;
+            if (r <= keyBase) {
                 keyDrop = true;
             }
             r = Math.random();
 
-            chestBase = 0.45;
-            if (r <= chestBase + getDepthDropBonus(chestBase, depth)) {
+            chestBase = 0.35;
+            if (r <= chestBase) {
                 chestDrop = true;
             }
             r = Math.random();
 
-            clothBase = 0.85;
-            if (r <= clothBase + getDepthDropBonus(clothBase, depth)) {
+            clothBase = 0.8;
+            if (r <= clothBase) {
                 clothDrop = true;
             }
             break;
@@ -263,53 +243,25 @@ export function getCombatRewards(
 
     let itemRarity = 'common';
     if (equipDrop) {
-        let equipBasePurple, equipBaseBlue, equipBaseGreen;
+        let epicChance, rareChance, uncommonChance;
         r = Math.random();
         switch (rarity) {
             case 'common':
-                equipBaseGreen = 0.02;
-                if (
-                    r <=
-                    equipBaseGreen + getDepthRarityBonus(equipBaseGreen, depth)
-                ) {
+                uncommonChance = 0.01;
+                if (r <= uncommonChance) {
                     itemRarity = 'uncommon';
                 }
                 break;
             case 'uncommon':
-                equipBaseBlue = 0.01;
-                equipBaseGreen = 0.8;
-                equipBaseBlue += getDepthRarityBonus(equipBaseBlue, depth);
-                equipBaseGreen += getDepthRarityBonus(equipBaseGreen, depth);
-                if (r <= equipBaseBlue) {
-                    itemRarity = 'rare';
-                } else if (r <= equipBaseBlue + equipBaseGreen) {
-                    itemRarity = 'uncommon';
-                }
+                rareChance = 0.01;
+                itemRarity = r <= rareChance ? 'rare' : 'uncommon';
                 break;
             case 'rare':
-                equipBasePurple = 0.01;
-                equipBaseBlue = 0.64;
-                equipBasePurple += getDepthRarityBonus(equipBasePurple, depth);
-                equipBaseBlue += getDepthRarityBonus(equipBaseBlue, depth);
-                if (r <= equipBasePurple) {
-                    itemRarity = 'epic';
-                } else if (r <= equipBasePurple + equipBaseBlue) {
-                    itemRarity = 'rare';
-                } else {
-                    itemRarity = 'uncommon';
-                }
+                epicChance = 0.01;
+                itemRarity = r <= epicChance ? 'epic' : 'rare';
                 break;
             case 'epic':
-                equipBasePurple = 0.35;
-                if (
-                    r <=
-                    equipBasePurple +
-                        getDepthRarityBonus(equipBasePurple, depth)
-                ) {
-                    itemRarity = 'epic';
-                } else {
-                    itemRarity = 'rare';
-                }
+                itemRarity = 'epic';
                 break;
         }
 
@@ -318,55 +270,25 @@ export function getCombatRewards(
 
     itemRarity = 'common';
     if (keyDrop) {
-        let keyBasePurple, keyBaseBlue, keyBaseGreen;
+        let epicChance, rareChance, uncommonChance;
         r = Math.random();
         switch (rarity) {
             case 'common':
-                /* Green - 10% */
-                keyBaseGreen = 0.1;
-                if (
-                    r <=
-                    keyBaseGreen + getDepthRarityBonus(keyBaseGreen, depth)
-                ) {
+                uncommonChance = 0.01;
+                if (r <= uncommonChance) {
                     itemRarity = 'uncommon';
                 }
                 break;
             case 'uncommon':
-                /* Blue - 5% */
-                /* Green - 90% */
-                keyBaseBlue = 0.05;
-                keyBaseGreen = 0.9;
-                keyBaseBlue += getDepthRarityBonus(keyBaseBlue, depth);
-                keyBaseGreen += getDepthRarityBonus(keyBaseGreen, depth);
-                if (r <= keyBaseBlue) {
-                    itemRarity = 'rare';
-                } else if (r <= keyBaseBlue + keyBaseGreen) {
-                    itemRarity = 'uncommon';
-                }
+                rareChance = 0.01;
+                itemRarity = r <= rareChance ? 'rare' : 'uncommon';
                 break;
             case 'rare':
-                keyBasePurple = 0.025;
-                keyBaseBlue = 0.9;
-                keyBasePurple += getDepthRarityBonus(keyBasePurple, depth);
-                keyBaseBlue += getDepthRarityBonus(keyBaseBlue, depth);
-                if (r <= keyBasePurple) {
-                    itemRarity = 'epic';
-                } else if (r <= keyBasePurple + keyBaseBlue) {
-                    itemRarity = 'rare';
-                } else {
-                    itemRarity = 'uncommon';
-                }
+                epicChance = 0.01;
+                itemRarity = r <= epicChance ? 'epic' : 'rare';
                 break;
             case 'epic':
-                keyBasePurple = 0.7;
-                if (
-                    r <=
-                    keyBasePurple + getDepthRarityBonus(keyBasePurple, depth)
-                ) {
-                    itemRarity = 'epic';
-                } else {
-                    itemRarity = 'rare';
-                }
+                itemRarity = 'epic';
                 break;
         }
 
@@ -375,53 +297,25 @@ export function getCombatRewards(
 
     itemRarity = 'common';
     if (chestDrop) {
-        let chestBasePurple, chestBaseBlue, chestBaseGreen;
+        let epicChance, rareChance, uncommonChance;
         r = Math.random();
         switch (rarity) {
             case 'common':
-                chestBaseGreen = 0.1;
-                if (
-                    r <=
-                    chestBaseGreen + getDepthRarityBonus(chestBaseGreen, depth)
-                ) {
+                uncommonChance = 0.01;
+                if (r <= uncommonChance) {
                     itemRarity = 'uncommon';
                 }
                 break;
             case 'uncommon':
-                chestBaseBlue = 0.05;
-                chestBaseGreen = 0.9;
-                chestBaseBlue += getDepthRarityBonus(chestBaseBlue, depth);
-                chestBaseGreen += getDepthRarityBonus(chestBaseGreen, depth);
-                if (r <= chestBaseBlue) {
-                    itemRarity = 'rare';
-                } else if (r <= chestBaseBlue + chestBaseGreen) {
-                    itemRarity = 'uncommon';
-                }
+                rareChance = 0.01;
+                itemRarity = r <= rareChance ? 'rare' : 'uncommon';
                 break;
             case 'rare':
-                chestBasePurple = 0.025;
-                chestBaseBlue = 0.9;
-                chestBasePurple += getDepthRarityBonus(chestBasePurple, depth);
-                chestBaseBlue += getDepthRarityBonus(chestBaseBlue, depth);
-                if (r <= chestBasePurple) {
-                    itemRarity = 'epic';
-                } else if (r <= chestBasePurple + chestBaseBlue) {
-                    itemRarity = 'rare';
-                } else {
-                    itemRarity = 'uncommon';
-                }
+                epicChance = 0.01;
+                itemRarity = r <= epicChance ? 'epic' : 'rare';
                 break;
             case 'epic':
-                chestBasePurple = 0.7;
-                if (
-                    r <=
-                    chestBasePurple +
-                        getDepthRarityBonus(chestBasePurple, depth)
-                ) {
-                    itemRarity = 'epic';
-                } else {
-                    itemRarity = 'rare';
-                }
+                itemRarity = 'epic';
                 break;
         }
 
@@ -430,58 +324,29 @@ export function getCombatRewards(
 
     itemRarity = 'common';
     if (clothDrop) {
-        let clothBasePurple, clothBaseBlue, clothBaseGreen;
+        let epicChance, rareChance, uncommonChance;
         r = Math.random();
         switch (rarity) {
             case 'common':
-                clothBaseGreen = 0.02;
-                if (
-                    r <=
-                    clothBaseGreen + getDepthRarityBonus(clothBaseGreen, depth)
-                ) {
+                uncommonChance = 0.01;
+                if (r <= uncommonChance) {
                     itemRarity = 'uncommon';
                 }
                 break;
             case 'uncommon':
-                clothBaseBlue = 0.01;
-                clothBaseGreen = 0.8;
-                clothBaseBlue += getDepthRarityBonus(clothBaseBlue, depth);
-                clothBaseGreen += getDepthRarityBonus(clothBaseGreen, depth);
-                if (r <= clothBaseBlue) {
-                    itemRarity = 'rare';
-                } else if (r <= clothBaseBlue + clothBaseGreen) {
-                    itemRarity = 'uncommon';
-                }
+                rareChance = 0.01;
+                itemRarity = r <= rareChance ? 'rare' : 'uncommon';
                 break;
             case 'rare':
-                clothBasePurple = 0.01;
-                clothBaseBlue = 0.8;
-                clothBasePurple += getDepthRarityBonus(clothBasePurple, depth);
-                clothBaseBlue += getDepthRarityBonus(clothBaseBlue, depth);
-                if (r <= clothBasePurple) {
-                    itemRarity = 'epic';
-                } else if (r <= clothBasePurple + clothBaseBlue) {
-                    itemRarity = 'rare';
-                } else {
-                    itemRarity = 'uncommon';
-                }
+                epicChance = 0.01;
+                itemRarity = r <= epicChance ? 'epic' : 'rare';
                 break;
             case 'epic':
-                clothBasePurple = 0.7;
-                if (
-                    r <=
-                    clothBasePurple +
-                        getDepthRarityBonus(clothBasePurple, depth)
-                ) {
-                    itemRarity = 'epic';
-                } else {
-                    itemRarity = 'rare';
-                }
+                itemRarity = 'epic';
                 break;
         }
 
-        //TODO: Cloth or Fur depending on creature type
-        rewards.push(getCloth(itemRarity, level, getClothFurQuantity(rarity)));
+        rewards.push(getCloth(itemRarity, level, getClothQuantity(rarity)));
     }
 
     return rewards;
@@ -539,29 +404,29 @@ export function getCombatShards(rarity: string, level: number): number {
     return rand(shardsMin, shardsValue);
 }
 
-function getDepthDropBonus(value: number, depth: number): number {
-    /* 5% Drop bonus (1->10)
-     * 10% Drop bonus (11->20)*/
-    return depth <= 10
-        ? value * (0.05 * depth)
-        : value * (0.05 * 10) + value * (0.1 * (depth - 10));
-}
+// function getDepthDropBonus(value: number, depth: number): number {
+//     /* 5% Drop bonus (1->10)
+//      * 10% Drop bonus (11->20)*/
+//     return depth <= 10
+//         ? value * (0.05 * depth)
+//         : value * (0.05 * 10) + value * (0.1 * (depth - 10));
+// }
 
-function getDepthRarityBonus(value: number, depth: number): number {
-    /* 5% Rarity bonus (1->10)
-     * 10% Rarity bonus (11->20)*/
-    return depth <= 10
-        ? value * (0.05 * depth)
-        : value * (0.05 * 10) + value * (0.1 * (depth - 10));
-}
+// function getDepthRarityBonus(value: number, depth: number): number {
+//     /* 5% Rarity bonus (1->10)
+//      * 10% Rarity bonus (11->20)*/
+//     return depth <= 10
+//         ? value * (0.05 * depth)
+//         : value * (0.05 * 10) + value * (0.1 * (depth - 10));
+// }
 
-function getClothFurQuantity(rarity: string): number {
+function getClothQuantity(rarity: string): number {
     /* Values defined in Sheet */
     const grayMin: number = 3,
         greenMin: number = 2,
         blueMin: number = 1,
         purpleMin: number = 1;
-    const grayMax: number = 5,
+    const grayMax: number = 4,
         greenMax: number = 4,
         blueMax: number = 2,
         purpleMax: number = 2;

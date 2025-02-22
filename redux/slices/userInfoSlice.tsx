@@ -10,7 +10,6 @@ export interface UserInfo {
     shards: number;
     diamonds: number;
     staminaTimestamp: string;
-    levelUp: boolean;
 }
 
 const initialState: UserInfo = {
@@ -23,7 +22,6 @@ const initialState: UserInfo = {
     shards: 0,
     diamonds: 0,
     staminaTimestamp: '',
-    levelUp: false,
 };
 
 export const userInfoSlice = createSlice({
@@ -68,9 +66,6 @@ export const userInfoSlice = createSlice({
         updateDiamonds: (state, action: PayloadAction<number>) => {
             state.diamonds = action.payload;
         },
-        setLevelUpDisplay: (state, action: PayloadAction<boolean>) => {
-            state.levelUp = action.payload;
-        },
         increaseLevel: (state, action: PayloadAction<number>) => {
             state.level += 1;
             state.exp = action.payload;
@@ -93,6 +88,5 @@ export const {
     updateSkillPoints,
     updateShards,
     updateDiamonds,
-    setLevelUpDisplay,
     increaseLevel,
 } = userInfoSlice.actions;

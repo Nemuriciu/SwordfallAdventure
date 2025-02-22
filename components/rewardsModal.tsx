@@ -21,11 +21,14 @@ import {inventoryAddItems} from '../redux/slices/inventorySlice.tsx';
 import {updateExp, updateShards} from '../redux/slices/userInfoSlice.tsx';
 import {colors} from '../utils/colors.ts';
 import Animated, {BounceIn, BounceOut} from 'react-native-reanimated';
+import {updateGatherExp} from '../redux/slices/gatherInfoSlice.tsx';
 
 export function RewardsModal() {
     const userInfo = useSelector((state: RootState) => state.userInfo);
+    const gatherInfo = useSelector((state: RootState) => state.gatherInfo);
     const inventory = useSelector((state: RootState) => state.inventory);
     const rewardsModal = useSelector((state: RootState) => state.rewardsModal);
+    const levelUp = useSelector((state: RootState) => state.levelUp);
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -40,6 +43,13 @@ export function RewardsModal() {
                 if (rewardsModal.shards) {
                     dispatch(
                         updateShards(userInfo.shards + rewardsModal.shards),
+                    );
+                }
+                if (rewardsModal.gatheringExp) {
+                    dispatch(
+                        updateGatherExp(
+                            gatherInfo.experience + rewardsModal.gatheringExp,
+                        ),
                     );
                 }
             }
@@ -68,7 +78,7 @@ export function RewardsModal() {
             backdropTransitionOutTiming={0}
             useNativeDriver={true}>
             {/* Level Up Icon */}
-            {userInfo.levelUp && (
+            {levelUp.iconVisibility && (
                 <Animated.View
                     style={styles.level_up}
                     entering={BounceIn.duration(500)}
@@ -117,28 +127,40 @@ export function RewardsModal() {
                                 fadeDuration={0}
                             />
                             <View style={styles.bottomContainer}>
-                                {rewardsModal.shards ? (
-                                    <Image
-                                        style={styles.shardsIcon}
-                                        source={getImage('icon_shards')}
-                                        fadeDuration={0}
-                                    />
+                                {rewardsModal.gatheringExp ? (
+                                    <View style={styles.gatheringExpContainer}>
+                                        <Text style={styles.gatheringExpLabel}>
+                                            Gathering Experience:
+                                        </Text>
+                                        <Text style={styles.gatheringExpText}>
+                                            {rewardsModal.gatheringExp}
+                                        </Text>
+                                    </View>
                                 ) : null}
-                                {rewardsModal.shards ? (
-                                    <Text style={styles.shardsText}>
-                                        {rewardsModal.shards}
-                                    </Text>
-                                ) : null}
-                                {rewardsModal.experience ? (
-                                    <Text style={styles.expIcon}>
-                                        {strings.xp}
-                                    </Text>
-                                ) : null}
-                                {rewardsModal.experience ? (
-                                    <Text style={styles.expText}>
-                                        {rewardsModal.experience}
-                                    </Text>
-                                ) : null}
+                                <View style={styles.shardsExpContainer}>
+                                    {rewardsModal.shards ? (
+                                        <Image
+                                            style={styles.shardsIcon}
+                                            source={getImage('icon_shards')}
+                                            fadeDuration={0}
+                                        />
+                                    ) : null}
+                                    {rewardsModal.shards ? (
+                                        <Text style={styles.shardsText}>
+                                            {rewardsModal.shards}
+                                        </Text>
+                                    ) : null}
+                                    {rewardsModal.experience ? (
+                                        <Text style={styles.expIcon}>
+                                            {strings.xp}
+                                        </Text>
+                                    ) : null}
+                                    {rewardsModal.experience ? (
+                                        <Text style={styles.expText}>
+                                            {rewardsModal.experience}
+                                        </Text>
+                                    ) : null}
+                                </View>
                             </View>
                         </View>
 
@@ -217,12 +239,18 @@ const styles = StyleSheet.create({
     separator: {
         width: '100%',
     },
-    bottomContainer: {
+    bottomContainer: {},
+    gatheringExpContainer: {
         flexDirection: 'row',
-        alignContent: 'center',
-        justifyContent: 'space-evenly',
-        marginTop: 24,
-        marginBottom: 24,
+        width: '100%',
+        marginTop: 12,
+        marginBottom: -4,
+    },
+    shardsExpContainer: {
+        flexDirection: 'row',
+        width: '100%',
+        marginTop: 20,
+        marginBottom: 20,
     },
     shardsIcon: {
         aspectRatio: 1,
@@ -232,7 +260,6 @@ const styles = StyleSheet.create({
     },
     shardsText: {
         marginStart: 6,
-        marginEnd: 'auto',
         alignSelf: 'center',
         fontSize: 16,
         color: 'white',
@@ -256,6 +283,24 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         fontSize: 16,
         color: 'white',
+        fontFamily: 'Myriad',
+        textShadowColor: 'rgba(0, 0, 0, 1)',
+        textShadowOffset: {width: 1, height: 1},
+        textShadowRadius: 5,
+    },
+    gatheringExpLabel: {
+        marginEnd: 16,
+        alignSelf: 'center',
+        color: colors.experience_color,
+        fontFamily: 'Myriad_Regular',
+        textShadowColor: 'rgba(0, 0, 0, 1)',
+        textShadowOffset: {width: 1, height: 1},
+        textShadowRadius: 5,
+    },
+    gatheringExpText: {
+        alignSelf: 'center',
+        fontSize: 16,
+        color: colors.experience_color,
         fontFamily: 'Myriad',
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},

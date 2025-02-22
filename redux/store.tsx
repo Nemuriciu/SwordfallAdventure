@@ -12,6 +12,7 @@ import {missionsSlice} from './slices/missionsSlice.tsx';
 import {craftingDetailsSlice} from './slices/craftingDetailsSlice.tsx';
 import {skillsSlice} from './slices/skillsSlice.tsx';
 import {skillsDetailsSlice} from './slices/skillsDetailsSlice.tsx';
+import {levelUpSlice} from './slices/levelUpSlice.tsx';
 
 export const store = configureStore({
     reducer: {
@@ -28,6 +29,7 @@ export const store = configureStore({
         skillsDetails: skillsDetailsSlice.reducer,
         rewardsModal: rewardsModalSlice.reducer,
         missions: missionsSlice.reducer,
+        levelUp: levelUpSlice.reducer,
     },
 });
 

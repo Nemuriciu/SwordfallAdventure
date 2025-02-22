@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import {
+    canConvert,
     getItemCategory,
     getItemImg,
     getItemRarity,
@@ -31,10 +32,17 @@ import {itemDetailsShow} from '../../../redux/slices/itemDetailsSlice.tsx';
 import {strings} from '../../../utils/strings.ts';
 import {BreakAllModal} from './breakAllModal.tsx';
 import Toast from 'react-native-simple-toast';
+import cloneDeep from 'lodash.clonedeep';
+import {
+    areListsIdentical,
+    clearInventory,
+    sortInventoryList,
+} from '../../../utils/arrayUtils.ts';
 
 const COLUMN_NR = 6;
 
 export function Inventory() {
+    const userInfo = useSelector((state: RootState) => state.userInfo);
     const inventory = useSelector((state: RootState) => state.inventory);
     const [usedSlots, setUsedSlots] = useState<number>(
         inventory.list.filter(item => isItem(item)).length,
@@ -90,17 +98,26 @@ export function Inventory() {
     }
 
     function addItemOnPress() {
-        const items = [getRandomEquip('common', 1)];
+        const items = [getRandomEquip('common', 3)];
         if (inventory.list.length - usedSlots > items.length) {
             dispatch(inventoryAddItems(items));
         }
     }
 
-    /*function clearInventoryList() {
+    function sortInventory() {
+        let inventoryClone = cloneDeep(inventory.list);
+        sortInventoryList(inventoryClone);
+
+        if (!areListsIdentical(inventoryClone, inventory.list)) {
+            dispatch(inventoryUpdate(inventoryClone));
+        }
+    }
+
+    function clearInventoryList() {
         if (usedSlots > 0) {
             dispatch(inventoryUpdate(clearInventory(inventory.list)));
         }
-    }*/
+    }
 
     function slotPress(item: {} | Item, index: number) {
         if (!disabled) {
@@ -189,7 +206,7 @@ export function Inventory() {
                     <CustomButton
                         type={ButtonType.Orange}
                         title={'Sort'}
-                        onPress={() => {}}
+                        onPress={sortInventory}
                         style={styles.sortButton}
                     />
                 </View>
@@ -211,6 +228,14 @@ export function Inventory() {
                                             : getImage('icon_slot')
                                     }
                                     fadeDuration={0}>
+                                    {isItem(item) &&
+                                    canConvert(item, userInfo.level) ? (
+                                        <Image
+                                            style={styles.inventorySlotConvert}
+                                            source={getImage('icon_convert')}
+                                            resizeMode={'stretch'}
+                                        />
+                                    ) : null}
                                     <Text style={styles.inventorySlotUpgrade}>
                                         {isItem(item) && item.upgrade
                                             ? '+' + item.upgrade
@@ -244,12 +269,12 @@ export function Inventory() {
                         style={styles.button}
                     />
                     {/* CLEAR INVENTORY */}
-                    {/*<CustomButton
+                    <CustomButton
                         type={ButtonType.Orange}
                         title={'CLEAR'}
                         onPress={clearInventoryList}
                         style={styles.clearButton}
-                    />*/}
+                    />
                 </View>
             </ImageBackground>
             <View style={styles.breakContainer}>
@@ -303,6 +328,14 @@ const styles = StyleSheet.create({
         height: undefined,
         aspectRatio: 1,
     },
+    inventorySlotConvert: {
+        position: 'absolute',
+        top: 2,
+        left: 4,
+        aspectRatio: 0.5,
+        width: undefined,
+        height: '60%',
+    },
     inventorySlotUpgrade: {
         position: 'absolute',
         top: 4,
@@ -320,7 +353,7 @@ const styles = StyleSheet.create({
         color: 'white',
         fontFamily: 'Myriad',
         textShadowColor: 'rgba(0, 0, 0, 1)',
-        textShadowOffset: {width: 1, height: 1},
+        textShadowOffset: {width: -1, height: 1},
         textShadowRadius: 5,
     },
     bagIcon: {

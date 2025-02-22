@@ -1397,24 +1397,28 @@
     "name": "Silver Key",
     "img": "item_key_silver_key",
     "category": "key",
+    "type": "key",
     "rarity": "common"
   },
   "1200": {
     "name": "Emerald Key",
     "img": "item_key_emerald_key",
     "category": "key",
+    "type": "key",
     "rarity": "uncommon"
   },
   "1201": {
     "name": "Sapphire Key",
     "img": "item_key_sapphire_key",
     "category": "key",
+    "type": "key",
     "rarity": "rare"
   },
   "1202": {
     "name": "Amethyst Key",
     "img": "item_key_amethyst_key",
     "category": "key",
+    "type": "key",
     "rarity": "epic"
   },
 
@@ -1682,33 +1686,38 @@
   },
 
   "1239": {
-    "name": "Common Weapon",
+    "name": "Common Equipment",
     "rarity": "common",
-    "img": "item_crafting_common_weapon",
-    "category": "equipment",
-    "type": "weapon"
-  },
-  "1240": {
-    "name": "Common Offhand",
-    "rarity": "common",
-    "img": "item_crafting_common_offhand",
-    "category": "equipment",
-    "type": "offhand"
-  },
-  "1241": {
-    "name": "Common Helmet",
-    "rarity": "common",
-    "img": "item_crafting_common_helmet",
-    "category": "equipment",
-    "type": "helmet"
-  },
-  "1242": {
-    "name": "Common Chest",
-    "rarity": "common",
-    "img": "item_crafting_common_chest",
+    "img": "item_crafting_common_equipment",
     "category": "equipment",
     "type": "chest"
   },
+  "1240": {
+    "name": "Uncommon Equipment",
+    "rarity": "uncommon",
+    "img": "item_crafting_uncommon_equipment",
+    "category": "equipment",
+    "type": "chest"
+  },
+  "1241": {
+    "name": "Rare Equipment",
+    "rarity": "rare",
+    "img": "item_crafting_rare_equipment",
+    "category": "equipment",
+    "type": "chest"
+  },
+  "1242": {
+    "name": "Epic Equipment",
+    "rarity": "epic",
+    "img": "item_crafting_epic_equipment",
+    "category": "equipment",
+    "type": "chest"
+  },
+
+
+
+
+
   "1243": {
     "name": "Common Pants",
     "rarity": "common",

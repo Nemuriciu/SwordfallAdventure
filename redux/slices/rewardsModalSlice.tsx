@@ -6,6 +6,7 @@ export interface RewardsModalState {
     title?: string;
     rewards: Item[];
     experience: number;
+    gatheringExp?: number;
     shards: number;
 }
 
@@ -29,6 +30,7 @@ export const rewardsModalSlice = createSlice({
                 title?: string;
                 rewards: Item[];
                 experience: number;
+                gatheringExp?: number;
                 shards: number;
             }>,
         ) => {
@@ -36,6 +38,7 @@ export const rewardsModalSlice = createSlice({
             state.title = action.payload.title;
             state.rewards = action.payload.rewards;
             state.experience = action.payload.experience;
+            state.gatheringExp = action.payload.gatheringExp;
             state.shards = action.payload.shards;
         },
     },

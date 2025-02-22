@@ -16,7 +16,6 @@ import {CraftingCard} from './craftingCard.tsx';
 import {
     getCraftingConsumablesList,
     getCraftingEquipmentList,
-    getCraftingResourcesList,
 } from '../../../parsers/craftingParser.tsx';
 import {CraftingDetails} from './craftingDetails.tsx';
 import {craftingDetailsShow} from '../../../redux/slices/craftingDetailsSlice.tsx';
@@ -24,10 +23,6 @@ import {craftingDetailsShow} from '../../../redux/slices/craftingDetailsSlice.ts
 export function Crafting() {
     const userInfo = useSelector((state: RootState) => state.userInfo);
     const [selectedIndex, setSelectedIndex] = useState(0);
-    const [resourcesList, setResourcesList] = useState<[Item[], Item[][]]>([
-        [],
-        [],
-    ]);
     const [equipmentList, setEquipmentList] = useState<[Item[], Item[][]]>([
         [],
         [],
@@ -40,7 +35,6 @@ export function Crafting() {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        setResourcesList(getCraftingResourcesList(userInfo.level));
         setEquipmentList(getCraftingEquipmentList(userInfo.level));
         setConsumablesList(getCraftingConsumablesList(userInfo.level));
     }, [userInfo.level]);
@@ -64,8 +58,6 @@ export function Crafting() {
                 onClick(
                     item,
                     selectedIndex === 0
-                        ? resourcesList[1][index]
-                        : selectedIndex === 1
                         ? equipmentList[1][index]
                         : consumablesList[1][index],
                     index,
@@ -76,8 +68,6 @@ export function Crafting() {
                 craftedItem={item}
                 materials={
                     selectedIndex === 0
-                        ? resourcesList[1][index]
-                        : selectedIndex === 1
                         ? equipmentList[1][index]
                         : consumablesList[1][index]
                 }
@@ -94,11 +84,7 @@ export function Crafting() {
             <ButtonGroup
                 onPress={value => setSelectedIndex(value)}
                 selectedIndex={selectedIndex}
-                buttons={[
-                    strings.resources,
-                    strings.equipment,
-                    strings.consumables,
-                ]}
+                buttons={[strings.equipment, strings.consumables]}
                 containerStyle={styles.buttonGroupContainer}
                 selectedButtonStyle={styles.selectedButton}
                 textStyle={styles.buttonText}
@@ -112,8 +98,6 @@ export function Crafting() {
                     style={styles.craftingList}
                     data={
                         selectedIndex === 0
-                            ? resourcesList[0]
-                            : selectedIndex === 1
                             ? equipmentList[0]
                             : consumablesList[0]
                     }

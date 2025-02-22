@@ -13,12 +13,10 @@ import {Combat} from './adventureTab/hunting/combat';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {useSelector} from 'react-redux';
 import {RootState} from '../redux/store.tsx';
-import {
-    setLevelUpDisplay,
-    increaseLevel,
-} from '../redux/slices/userInfoSlice.tsx';
+import {increaseLevel} from '../redux/slices/userInfoSlice.tsx';
 import {store} from '../redux/store.tsx';
 import experienceJson from '../assets/json/experience.json';
+import {setLevelUpVisibility} from '../redux/slices/levelUpSlice.tsx';
 
 const Tab = createBottomTabNavigator();
 
@@ -26,7 +24,7 @@ export function MainComponent() {
     const userInfo = useSelector((state: RootState) => state.userInfo);
 
     useEffect(() => {
-        const maxExp = experienceJson.maxExp[userInfo.level - 1];
+        const maxExp = experienceJson.userMaxExp[userInfo.level - 1];
         if (userInfo.exp >= maxExp) {
             triggerLevelUp(userInfo.exp - maxExp);
         }
@@ -134,11 +132,11 @@ export function MainComponent() {
 }
 // TODO: Create separate level up Slice in redux
 export const triggerLevelUp = (exp: number) => {
-    store.dispatch(setLevelUpDisplay(true));
+    store.dispatch(setLevelUpVisibility(true));
     store.dispatch(increaseLevel(exp));
 
     setTimeout(() => {
-        store.dispatch(setLevelUpDisplay(false));
+        store.dispatch(setLevelUpVisibility(false));
     }, 3000);
 };
 

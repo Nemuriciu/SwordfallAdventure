@@ -247,10 +247,10 @@ export function TopStatus() {
                         style={styles.experience}
                         adjustsFontSizeToFit={true}
                         numberOfLines={1}>
-                        {experienceJson.maxExp[userInfo.level - 1]
+                        {experienceJson.userMaxExp[userInfo.level - 1]
                             ? userInfo.exp +
                               '/' +
-                              experienceJson.maxExp[userInfo.level - 1]
+                              experienceJson.userMaxExp[userInfo.level - 1]
                             : ''}
                     </Text>
                     <Text
@@ -293,7 +293,7 @@ export function TopStatus() {
                     <ProgressBar
                         progress={
                             userInfo.exp /
-                            experienceJson.maxExp[userInfo.level - 1]
+                            experienceJson.userMaxExp[userInfo.level - 1]
                         }
                         image={'progress_bar_orange'}
                         style={styles.experienceBar}
