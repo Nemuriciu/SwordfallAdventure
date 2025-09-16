@@ -36,13 +36,13 @@ import {rand} from '../../../parsers/itemParser.tsx';
 import {Creature} from '../../../types/creature.ts';
 import cloneDeep from 'lodash.clonedeep';
 import {rewardsModalInit} from '../../../redux/slices/rewardsModalSlice.tsx';
-import {ButtonType, CustomButton} from '../../../components/customButton.tsx';
-import {huntingUpdate} from '../../../redux/slices/huntingSlice.tsx';
-import {missionsSetList} from '../../../redux/slices/missionsSlice.tsx';
 import {
-    isMissionComplete,
-    sortMissions,
-} from '../../../parsers/questParser.tsx';
+    ButtonType,
+    CustomButton,
+} from '../../../components/buttons/customButton.tsx';
+import {huntingUpdate} from '../../../redux/slices/huntingSlice.tsx';
+import {questsSetList} from '../../../redux/slices/questsSlice.tsx';
+import {isQuestComplete, sortQuests} from '../../../parsers/questParser.tsx';
 import {
     getSkillCooldown,
     getSkillEffectTurns,
@@ -63,7 +63,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export function Combat() {
     const userInfo = useSelector((state: RootState) => state.userInfo);
     const attributes = useSelector((state: RootState) => state.attributes);
-    const missions = useSelector((state: RootState) => state.missions);
+    const quests = useSelector((state: RootState) => state.quests);
     const hunting = useSelector((state: RootState) => state.hunting);
     const combat = useSelector((state: RootState) => state.combat);
     const skills = useSelector((state: RootState) => state.skills);
@@ -131,7 +131,6 @@ export function Combat() {
                                 rewardsModalInit({
                                     rewards: getCombatRewards(
                                         (combat.creature as Creature).rarity,
-                                        hunting.depth,
                                         (combat.creature as Creature).level,
                                     ),
                                     experience: getCombatExperience(
@@ -140,7 +139,7 @@ export function Combat() {
                                     ),
                                     shards: getCombatShards(
                                         (combat.creature as Creature).rarity,
-                                        (combat.creature as Creature).level,
+                                        hunting.depth,
                                     ),
                                 }),
                             );
@@ -150,30 +149,30 @@ export function Combat() {
                             setCombatComplete(true);
                         }, 500);
 
-                        /* Update Missions */
-                        const missionsList = cloneDeep(missions.missionsList);
+                        /* Update Quests */
+                        const questsList = cloneDeep(quests.questsList);
 
-                        for (let i = 0; i < missionsList.length; i++) {
-                            let mission = missionsList[i];
+                        for (let i = 0; i < questsList.length; i++) {
+                            let quest = questsList[i];
                             if (
-                                mission.isActive &&
-                                !isMissionComplete(mission) &&
-                                mission.type === 'hunt'
+                                quest.isActive &&
+                                !isQuestComplete(quest) &&
+                                quest.type === 'hunting'
                             ) {
                                 if (
-                                    mission.description.includes(
+                                    quest.description.includes(
                                         getCreatureName(
                                             (combat.creature as Creature).id,
                                         ),
                                     )
                                 ) {
-                                    mission.progress += 1;
+                                    quest.progress += 1;
                                 }
                             }
                         }
-                        sortMissions(missionsList);
+                        sortQuests(questsList);
                         setTimeout(() => {
-                            dispatch(missionsSetList(missionsList));
+                            dispatch(questsSetList(questsList));
                         }, 1500);
 
                         /* Remove Creature from list */

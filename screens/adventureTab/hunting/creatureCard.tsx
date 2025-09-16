@@ -2,7 +2,10 @@ import React, {useEffect, useState} from 'react';
 import {Image, ImageBackground, StyleSheet, Text, View} from 'react-native';
 import {getImage} from '../../../assets/images/_index';
 import {colors} from '../../../utils/colors.ts';
-import {ButtonType, CustomButton} from '../../../components/customButton.tsx';
+import {
+    ButtonType,
+    CustomButton,
+} from '../../../components/buttons/customButton.tsx';
 import {Creature} from '../../../types/creature.ts';
 import {
     getCreatureImg,
@@ -182,7 +185,7 @@ const styles = StyleSheet.create({
     },
     avatarContainer: {
         aspectRatio: 1,
-        width: '22.5%',
+        width: '20%',
         height: undefined,
         marginTop: 12,
         marginBottom: 12,
@@ -211,11 +214,11 @@ const styles = StyleSheet.create({
         height: '100%',
     },
     levelText: {
-        marginTop: 4,
+        marginTop: 3,
         color: 'white',
         textAlign: 'center',
         fontSize: 13,
-        fontFamily: 'Myriad_Bold',
+        fontFamily: 'Myriad',
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -251,14 +254,15 @@ const styles = StyleSheet.create({
     },
     row_2: {
         flexDirection: 'row',
-        marginTop: 4,
+        marginTop: 2,
     },
     row_3: {
         flexDirection: 'row',
-        marginTop: 4,
+        marginTop: 2,
     },
     healthValue: {
         color: colors.health_color,
+        fontSize: 13,
         fontFamily: 'Myriad',
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
@@ -267,6 +271,7 @@ const styles = StyleSheet.create({
     phyAtkValue: {
         flex: 1,
         color: colors.physicalAtk_color,
+        fontSize: 13,
         fontFamily: 'Myriad',
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
@@ -275,6 +280,7 @@ const styles = StyleSheet.create({
     phyResValue: {
         flex: 1,
         color: colors.physicalRes_color,
+        fontSize: 13,
         fontFamily: 'Myriad',
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
@@ -283,6 +289,7 @@ const styles = StyleSheet.create({
     magAtkValue: {
         flex: 1,
         color: colors.magicalAtk_color,
+        fontSize: 13,
         fontFamily: 'Myriad',
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
@@ -291,6 +298,7 @@ const styles = StyleSheet.create({
     magResValue: {
         flex: 1,
         color: colors.magicalRes_color,
+        fontSize: 13,
         fontFamily: 'Myriad',
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},

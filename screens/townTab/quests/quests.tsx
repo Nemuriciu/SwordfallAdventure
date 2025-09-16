@@ -12,22 +12,25 @@ import {getImage} from '../../../assets/images/_index';
 import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '../../../redux/store.tsx';
 import {
-    generateMission,
-    getMissionExp,
-    getMissionShards,
-    isMissionComplete,
-    sortMissions,
+    generateQuest,
+    getQuestExp,
+    getQuestShards,
+    isQuestComplete,
+    sortQuests,
 } from '../../../parsers/questParser.tsx';
 import {
-    missionsSet,
-    missionsSetList,
-    missionsSetTimestamp,
-} from '../../../redux/slices/missionsSlice.tsx';
+    questsSet,
+    questsSetList,
+    questsSetTimestamp,
+} from '../../../redux/slices/questsSlice.tsx';
 import {getItemImg} from '../../../parsers/itemParser.tsx';
 import {strings} from '../../../utils/strings.ts';
 import {colors} from '../../../utils/colors.ts';
 import ProgressBar from '../../../components/progressBar.tsx';
-import {ButtonType, CustomButton} from '../../../components/customButton.tsx';
+import {
+    ButtonType,
+    CustomButton,
+} from '../../../components/buttons/customButton.tsx';
 import cloneDeep from 'lodash.clonedeep';
 import {marshall, unmarshall} from '@aws-sdk/util-dynamodb';
 import {USER_ID} from '../../../App';
@@ -35,11 +38,14 @@ import {dynamoDb} from '../../../database';
 import {rewardsModalInit} from '../../../redux/slices/rewardsModalSlice.tsx';
 import {AbandonModal} from './abandonModal.tsx';
 
-export const MISSIONS_AMOUNT: number = 8;
+export const QUESTS_AMOUNT: number = 8;
+export const QUESTS_HUNTING_AMOUNT: number = 5;
+export const QUESTS_GATHERING_AMOUNT: number = 2;
+export const QUESTS_CRAFTING_AMOUNT: number = 1;
 
-export function Missions() {
+export function Quests() {
     const userInfo = useSelector((state: RootState) => state.userInfo);
-    const missions = useSelector((state: RootState) => state.missions);
+    const quests = useSelector((state: RootState) => state.quests);
     const dispatch = useDispatch();
     const [refreshFetched, setRefreshFetched] = useState(false);
     const [refreshTimer, setRefreshTimer] = useState(1);
@@ -51,18 +57,18 @@ export function Missions() {
     let timer: string | number | NodeJS.Timeout | undefined;
 
     useEffect(() => {
-        fetchMissionsDB();
+        fetchQuestsDB();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
         if (!didMount.current) {
-            updateMissionsDB();
+            updateQuestsDB();
         } else {
             didMount.current -= 1;
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [missions]);
+    }, [quests]);
 
     useEffect(() => {
         if (!didMount_2.current) {
@@ -71,14 +77,14 @@ export function Missions() {
 
                 let diff =
                     new Date().getTime() -
-                    new Date(missions.refreshTimestamp).getTime();
+                    new Date(quests.refreshTimestamp).getTime();
 
                 if (diff >= twoHour) {
-                    refreshMissions();
+                    refreshQuests();
 
                     diff %= twoHour;
                     dispatch(
-                        missionsSetTimestamp(
+                        questsSetTimestamp(
                             new Date(Date.now() - diff).toISOString(),
                         ),
                     );
@@ -91,42 +97,42 @@ export function Missions() {
             didMount_2.current -= 1;
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [missions.refreshTimestamp]);
+    }, [quests.refreshTimestamp]);
 
     useEffect(() => {
         if (refreshTimer <= 0) {
             clearInterval(timer);
             setRefreshTimer(1);
-            refreshMissions();
-            dispatch(missionsSetTimestamp(new Date().toISOString()));
+            refreshQuests();
+            dispatch(questsSetTimestamp(new Date().toISOString()));
             setRefreshTimer(twoHour);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [refreshTimer]);
 
-    function fetchMissionsDB() {
+    function fetchQuestsDB() {
         const params = {
             TableName: 'users',
             Key: marshall({id: USER_ID}),
-            ProjectionExpression: 'missions',
+            ProjectionExpression: 'quests',
         };
         dynamoDb.getItem(params, function (err, data) {
             if (err) {
                 console.log(err);
             } else {
                 // @ts-ignore
-                dispatch(missionsSet(unmarshall(data.Item).missions));
+                dispatch(questsSet(unmarshall(data.Item).quests));
             }
         });
     }
 
-    function updateMissionsDB() {
+    function updateQuestsDB() {
         const params = {
             TableName: 'users',
             Key: marshall({id: USER_ID}),
-            UpdateExpression: 'set missions = :val',
+            UpdateExpression: 'set quests = :val',
             ExpressionAttributeValues: marshall({
-                ':val': missions,
+                ':val': quests,
             }),
         };
         dynamoDb.updateItem(params, function (err) {
@@ -136,49 +142,73 @@ export function Missions() {
         });
     }
 
-    function startMission(index: number) {
-        const missionsList = cloneDeep(missions.missionsList);
-        missionsList[index].isActive = true;
+    function startQuest(index: number) {
+        const questsList = cloneDeep(quests.questsList);
+        questsList[index].isActive = true;
 
-        sortMissions(missionsList);
-        dispatch(missionsSetList(missionsList));
+        sortQuests(questsList);
+        dispatch(questsSetList(questsList));
     }
 
-    function abandonMission(index: number) {
+    function abandonQuest(index: number) {
         setAbandonIndex(index);
         setAbandonVisible(true);
     }
 
-    function claimMissionRewards(index: number) {
-        const missionsList = cloneDeep(missions.missionsList);
+    function claimQuestRewards(index: number) {
+        const questsList = cloneDeep(quests.questsList);
         /* Display Rewards */
         dispatch(
             rewardsModalInit({
-                rewards: missionsList[index].rewards,
-                experience: getMissionExp(missionsList[index], userInfo.level),
-                shards: getMissionShards(missionsList[index], userInfo.level),
+                rewards: questsList[index].rewards,
+                experience: getQuestExp(questsList[index], userInfo.level),
+                shards: getQuestShards(questsList[index]),
             }),
         );
-        /* Remove mission */
-        missionsList.splice(index, 1);
-        //sortMissions(missionsList);
-        dispatch(missionsSetList(missionsList));
+        /* Remove quest */
+        questsList.splice(index, 1);
+        //sortQuests(questsList);
+        dispatch(questsSetList(questsList));
     }
 
-    function refreshMissions() {
-        const missionsList =
-            missions.missionsList.length > 0
-                ? cloneDeep(missions.missionsList).filter(
-                      mission => mission.isActive,
-                  )
+    function refreshQuests() {
+        const questsList =
+            quests.questsList.length > 0
+                ? cloneDeep(quests.questsList).filter(quest => quest.isActive)
                 : [];
+        let huntingCount = 0,
+            gatheringCount = 0,
+            craftingCount = 0;
 
-        const activeCount = missionsList.length;
-        for (let i = 0; i < MISSIONS_AMOUNT - activeCount; i++) {
-            missionsList.push(generateMission(userInfo.level));
+        if (questsList.length) {
+            questsList.map(quest => {
+                switch (quest.type) {
+                    case 'hunting':
+                        huntingCount += 1;
+                        break;
+                    case 'gathering':
+                        gatheringCount += 1;
+                        break;
+                    case 'crafting':
+                        craftingCount += 1;
+                        break;
+                }
+            });
         }
 
-        dispatch(missionsSetList(missionsList));
+        for (let i = huntingCount; i < QUESTS_HUNTING_AMOUNT; i++) {
+            questsList.push(generateQuest('hunting', userInfo.level));
+        }
+
+        for (let i = gatheringCount; i < QUESTS_GATHERING_AMOUNT; i++) {
+            questsList.push(generateQuest('gathering', userInfo.level));
+        }
+
+        for (let i = craftingCount; i < QUESTS_CRAFTING_AMOUNT; i++) {
+            questsList.push(generateQuest('crafting', userInfo.level));
+        }
+
+        dispatch(questsSetList(questsList));
     }
 
     function startTimer(remainingTime: number) {
@@ -210,21 +240,21 @@ export function Missions() {
     const renderItem = ({item, index}) => {
         return (
             <ImageBackground
-                style={styles.missionBackground}
+                style={styles.questBackground}
                 source={getImage('background_node')}
                 resizeMode={'stretch'}
                 fadeDuration={0}>
                 <View style={styles.topContainer}>
                     {/* Icon */}
                     <Image
-                        style={styles.missionIcon}
+                        style={styles.questIcon}
                         source={
-                            item.type === 'hunt'
-                                ? getImage('missions_icon_hunting')
-                                : item.type === 'craft'
-                                ? getImage('missions_icon_crafting')
-                                : item.type === 'gather'
-                                ? getImage('missions_icon_gathering')
+                            item.type === 'hunting'
+                                ? getImage('quests_icon_hunting')
+                                : item.type === 'crafting'
+                                ? getImage('quests_icon_crafting')
+                                : item.type === 'gathering'
+                                ? getImage('quests_icon_gathering')
                                 : null
                         }
                         resizeMode={'stretch'}
@@ -242,7 +272,7 @@ export function Missions() {
                             <ProgressBar
                                 progress={item.progress / item.maxProgress}
                                 image={
-                                    isMissionComplete(item)
+                                    isQuestComplete(item)
                                         ? 'progress_bar_green'
                                         : 'progress_bar_orange'
                                 }
@@ -282,7 +312,7 @@ export function Missions() {
                                     style={styles.shardsText}
                                     adjustsFontSizeToFit={true}
                                     numberOfLines={1}>
-                                    {getMissionShards(item, userInfo.level)}
+                                    {getQuestShards(item)}
                                 </Text>
                             ) : null}
                         </View>
@@ -300,7 +330,7 @@ export function Missions() {
                                     style={styles.expText}
                                     adjustsFontSizeToFit={true}
                                     numberOfLines={1}>
-                                    {getMissionExp(item, userInfo.level)}
+                                    {getQuestExp(item, userInfo.level)}
                                 </Text>
                             ) : null}
                         </View>
@@ -330,29 +360,29 @@ export function Missions() {
                         ) : null}
                     </View>
                     {/* Action Button */}
-                    {item.isActive && !isMissionComplete(item) ? (
+                    {item.isActive && !isQuestComplete(item) ? (
                         <CustomButton
                             type={ButtonType.Red}
                             title={'Abandon'}
-                            onPress={() => abandonMission(index)}
+                            onPress={() => abandonQuest(index)}
                             style={styles.button}
                         />
                     ) : (
                         <CustomButton
                             type={
-                                isMissionComplete(item)
+                                isQuestComplete(item)
                                     ? ButtonType.Green
                                     : ButtonType.Orange
                             }
                             title={
-                                isMissionComplete(item)
+                                isQuestComplete(item)
                                     ? strings.claim
                                     : strings.start
                             }
                             onPress={
                                 item.isActive
-                                    ? () => claimMissionRewards(index)
-                                    : () => startMission(index)
+                                    ? () => claimQuestRewards(index)
+                                    : () => startQuest(index)
                             }
                             style={styles.button}
                         />
@@ -364,7 +394,7 @@ export function Missions() {
 
     return (
         <ImageBackground
-            style={styles.container}
+            style={styles.outerContainer}
             source={getImage('background_outer')}
             resizeMode={'stretch'}>
             <AbandonModal
@@ -372,29 +402,26 @@ export function Missions() {
                 setVisible={setAbandonVisible}
                 index={abandonIndex}
             />
+            {/* Quests Refresh Title */}
             <Text
                 style={styles.refreshTitle}
                 adjustsFontSizeToFit={true}
                 numberOfLines={1}>
-                Missions refresh in: {formatTime(refreshTimer)}
+                {strings.quests_refresh_in}
+                {formatTime(refreshTimer)}
             </Text>
-            <ImageBackground
-                style={styles.innerContainer}
-                source={getImage('background_inner')}
-                resizeMode={'stretch'}
-                fadeDuration={0}>
-                <FlatList
-                    style={styles.missionsList}
-                    data={missions.missionsList}
-                    renderItem={renderItem}
-                    overScrollMode={'never'}
-                />
-            </ImageBackground>
+            {/* Quests List */}
+            <FlatList
+                style={styles.questsList}
+                data={quests.questsList}
+                renderItem={renderItem}
+                overScrollMode={'never'}
+            />
             {/* DEBUG */}
             <CustomButton
                 type={ButtonType.Orange}
                 title={'Refresh'}
-                onPress={refreshMissions}
+                onPress={refreshQuests}
                 style={styles.refreshButton}
             />
         </ImageBackground>
@@ -402,7 +429,7 @@ export function Missions() {
 }
 
 const styles = StyleSheet.create({
-    container: {
+    outerContainer: {
         flex: 1,
     },
     refreshTitle: {
@@ -416,16 +443,13 @@ const styles = StyleSheet.create({
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
     },
-    innerContainer: {
+    questsList: {
+        //TODO: margins
         flex: 1,
-        marginStart: 2,
-        marginEnd: 2,
-    },
-    missionsList: {
         marginTop: 5,
         marginBottom: 6,
     },
-    missionBackground: {},
+    questBackground: {},
     topContainer: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -449,7 +473,7 @@ const styles = StyleSheet.create({
     separator: {
         width: '100%',
     },
-    missionIcon: {
+    questIcon: {
         width: '7%',
         aspectRatio: 1,
     },

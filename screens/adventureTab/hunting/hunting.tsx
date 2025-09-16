@@ -1,28 +1,20 @@
-import {
-    FlatList,
-    Image,
-    ImageBackground,
-    StyleSheet,
-    Text,
-    View,
-} from 'react-native';
+import {FlatList, ImageBackground, StyleSheet, Text, View} from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import {getImage} from '../../../assets/images/_index';
-import {colors} from '../../../utils/colors.ts';
 import {CreatureCard} from './creatureCard.tsx';
 import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '../../../redux/store.tsx';
 import {Creature} from '../../../types/creature.ts';
 import {getCreature} from '../../../parsers/creatureParser.tsx';
 import {huntingUpdate} from '../../../redux/slices/huntingSlice.tsx';
-import {ButtonType, CustomButton} from '../../../components/customButton.tsx';
 import {marshall, unmarshall} from '@aws-sdk/util-dynamodb';
 import {USER_ID} from '../../../App';
 import {dynamoDb} from '../../../database';
-import {strings} from '../../../utils/strings.ts';
 import {rand} from '../../../parsers/itemParser.tsx';
-import {Slider} from '@miblanchard/react-native-slider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {IconText} from '../../../components/iconText.tsx';
+import {MinusButton} from '../../../components/buttons/minusButton.tsx';
+import {PlusButton} from '../../../components/buttons/plusButton.tsx';
 
 export const CREATURE_COUNT_MIN = 5;
 export const CREATURE_COUNT_MAX = 7;
@@ -64,7 +56,7 @@ export function Hunting() {
 
     async function fetchAsyncStorage() {
         try {
-            const level = await AsyncStorage.getItem('creatureLevelSlider');
+            const level = await AsyncStorage.getItem('huntingCreatureLevel');
             if (level !== null) {
                 setCreatureLevel(parseInt(level as string, 10));
             }
@@ -75,7 +67,10 @@ export function Hunting() {
 
     async function setStorageCreatureLevel(level: number) {
         try {
-            await AsyncStorage.setItem('creatureLevelSlider', level.toString());
+            await AsyncStorage.setItem(
+                'huntingCreatureLevel',
+                level.toString(),
+            );
         } catch (e) {
             console.error(e);
         }
@@ -111,7 +106,32 @@ export function Hunting() {
         });
     }
 
-    function goDeeper() {
+    function decreaseCreatureLevel() {
+        // noinspection JSIgnoredPromiseFromCall
+        setStorageCreatureLevel(creatureLevel - 1);
+        setCreatureLevel(creatureLevel - 1);
+    }
+
+    function increaseCreatureLevel() {
+        // noinspection JSIgnoredPromiseFromCall
+        setStorageCreatureLevel(creatureLevel + 1);
+        setCreatureLevel(creatureLevel + 1);
+    }
+
+    function decreaseDepth() {
+        const depth = hunting.depth - 1;
+        //TODO: Decrease creatures bonus stats
+
+        dispatch(
+            huntingUpdate({
+                depth: depth,
+                creatureList: hunting.creatureList,
+                killCount: 0,
+            }),
+        );
+    }
+
+    function increaseDepth() {
         const depth = hunting.depth + 1;
         const creatureList: Creature[] = [];
 
@@ -128,181 +148,160 @@ export function Hunting() {
         );
     }
 
-    function resetDepth() {
-        const depth = 0;
-        let creatureList: Creature[] = [];
-
-        for (let i = 0; i < rand(CREATURE_COUNT_MIN, CREATURE_COUNT_MAX); i++) {
-            creatureList.push(getCreature(creatureLevel, depth));
-        }
-
-        dispatch(
-            huntingUpdate({
-                depth: depth,
-                creatureList: creatureList,
-                killCount: 0,
-            }),
-        );
-    }
-
     return (
         <ImageBackground
-            style={styles.container}
+            style={styles.outerContainer}
             source={getImage('background_outer')}
             resizeMode={'stretch'}>
-            {/* Depth */}
-            <View style={styles.depthContainer}>
-                <Text style={styles.depthText}>{'Depth ' + hunting.depth}</Text>
-                <Image
-                    style={styles.infoIcon}
-                    source={getImage('icon_info')}
+            <View style={styles.innerContainer}>
+                {/* Creature Level Value */}
+                <IconText
+                    text={creatureLevel.toString(10)}
+                    image={'frame_round_small_red'}
+                    containerStyle={styles.valueIcon}
+                    textContainerStyle={styles.valueTextContainer}
+                    textStyle={styles.valueText}
+                />
+                {/* Creature Level Label */}
+                <ImageBackground
+                    style={styles.creatureLevelLabelContainer}
+                    source={getImage('background_small_arrow_left')}
                     resizeMode={'stretch'}
-                />
-            </View>
-            {/* Creature Level Slider */}
-            {userInfo.level > 1 && (
-                <View style={styles.creatureLevelContainer}>
-                    <Text style={styles.creatureLevelText}>
-                        Creature Level: {creatureLevel}
-                    </Text>
-                    <Slider
-                        value={creatureLevel}
-                        step={1}
-                        minimumValue={1}
-                        maximumValue={userInfo.level ? userInfo.level : 1}
-                        minimumTrackTintColor={colors.primary}
-                        onValueChange={level => {
-                            setCreatureLevel(level[0]);
-                        }}
-                        onSlidingComplete={level => {
-                            // noinspection JSIgnoredPromiseFromCall
-                            setStorageCreatureLevel(level[0]);
-                        }}
-                        containerStyle={styles.creatureSliderContainer}
-                        thumbStyle={styles.sliderThumb}
+                    fadeDuration={0}>
+                    <MinusButton
+                        style={styles.creatureMinusButton}
+                        onPress={decreaseCreatureLevel}
+                        disabled={creatureLevel <= 1}
                     />
-                </View>
-            )}
-            <ImageBackground
-                style={styles.innerContainer}
-                source={getImage('background_inner')}
-                resizeMode={'stretch'}>
-                <FlatList
-                    style={styles.creatureList}
-                    data={hunting.creatureList} //hunting.creatureList
-                    keyExtractor={(_item, index) => index.toString()}
-                    renderItem={({item, index}) => (
-                        <CreatureCard creature={item} index={index} />
-                    )}
-                    overScrollMode={'never'}
-                />
-            </ImageBackground>
-            <View style={styles.buttonContainer}>
-                <CustomButton
-                    type={ButtonType.Orange}
-                    style={styles.button}
-                    title={strings.back}
-                    onPress={goDeeper}
-                />
-                <CustomButton
-                    type={ButtonType.Orange}
-                    style={styles.button}
-                    title={strings.go_deeper}
-                    disabled={hunting.killCount < 3}
-                    onPress={goDeeper}
-                />
-                {/* TODO: disable button on depth 0 */}
-                <CustomButton
-                    type={ButtonType.Orange}
-                    style={styles.button}
-                    title={strings.reset}
-                    onPress={resetDepth}
+                    <Text
+                        style={styles.labelText}
+                        adjustsFontSizeToFit={true}
+                        numberOfLines={1}>
+                        Creature Lv.
+                    </Text>
+                    <PlusButton
+                        style={styles.creaturePlusButton}
+                        onPress={increaseCreatureLevel}
+                        disabled={creatureLevel >= userInfo.level}
+                    />
+                </ImageBackground>
+                {/* Depth Label */}
+                <ImageBackground
+                    style={styles.depthLabelContainer}
+                    source={getImage('background_small_arrow_right')}
+                    resizeMode={'stretch'}
+                    fadeDuration={0}>
+                    <MinusButton
+                        style={styles.depthMinusButton}
+                        onPress={decreaseDepth}
+                        disabled={hunting.depth <= 0}
+                    />
+                    <Text
+                        style={styles.labelText}
+                        adjustsFontSizeToFit={true}
+                        numberOfLines={1}>
+                        Depth
+                    </Text>
+                    <PlusButton
+                        style={styles.depthPlusButton}
+                        onPress={increaseDepth}
+                        //TODO:
+                        // disabled={hunting.killCount < 3}
+                    />
+                </ImageBackground>
+                {/* Depth Value */}
+                <IconText
+                    text={hunting.depth.toString()}
+                    image={'frame_round_small_red'}
+                    containerStyle={styles.valueIcon}
+                    textContainerStyle={styles.valueTextContainer}
+                    textStyle={styles.valueText}
                 />
             </View>
+            {/* Creature List */}
+            <FlatList
+                style={styles.creatureList}
+                data={hunting.creatureList}
+                keyExtractor={(_item, index) => index.toString()}
+                renderItem={({item, index}) => (
+                    <CreatureCard creature={item} index={index} />
+                )}
+                overScrollMode={'never'}
+            />
         </ImageBackground>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
+    outerContainer: {
         flex: 1,
-    },
-    depthContainer: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        marginTop: 8,
-        marginBottom: 4,
-    },
-    depthText: {
-        width: '100%',
-        textAlign: 'center',
-        fontSize: 20,
-        color: colors.primary,
-        fontFamily: 'Myriad',
-        textShadowColor: 'rgba(0, 0, 0, 1)',
-        textShadowOffset: {width: 1, height: 1},
-        textShadowRadius: 5,
-    },
-    infoIcon: {
-        position: 'absolute',
-        right: 16,
-        aspectRatio: 1,
-        width: '7.5%',
-        height: undefined,
-    },
-    creatureLevelContainer: {
-        flexDirection: 'row',
-        marginStart: 12,
-        marginEnd: 12,
-    },
-    creatureLevelText: {
-        width: '35%',
-        textAlign: 'center',
-        alignSelf: 'center',
-        color: colors.primary,
-        fontSize: 16,
-        fontFamily: 'Myriad',
-        textShadowColor: 'rgba(0, 0, 0, 1)',
-        textShadowOffset: {width: 1, height: 1},
-        textShadowRadius: 5,
-    },
-    creatureSliderContainer: {
-        flex: 1,
-        marginStart: 12,
-    },
-    sliderThumb: {
-        backgroundColor: 'white',
-    },
-    thumbValue: {
-        color: colors.primary,
-        fontSize: 16,
-        fontFamily: 'Myriad_Bold',
-        textShadowColor: 'rgba(0, 0, 0, 1)',
-        textShadowOffset: {width: 1, height: 1},
-        textShadowRadius: 5,
     },
     innerContainer: {
-        flex: 1,
-        marginTop: 6,
-        marginBottom: 8,
-        marginStart: 8,
-        marginEnd: 8,
-    },
-    creatureList: {
-        marginTop: 8,
-        marginBottom: 8,
-        marginStart: 2,
-        marginEnd: 2,
-    },
-    buttonContainer: {
+        height: '6.5%',
         flexDirection: 'row',
+        marginStart: 4,
+        marginEnd: 4,
+        marginTop: 14,
+        marginBottom: 12,
+    },
+    creatureLevelLabelContainer: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-evenly',
+        paddingStart: 12,
+    },
+    creatureMinusButton: {
+        width: '17.5%',
+        marginStart: 4,
+    },
+    creaturePlusButton: {
+        width: '17.5%',
+        marginEnd: 6,
+    },
+    depthLabelContainer: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
         justifyContent: 'space-evenly',
         marginStart: 8,
-        marginEnd: 8,
-        marginBottom: 8,
+        paddingEnd: 12,
     },
-    button: {
-        aspectRatio: 3,
-        width: '30%',
+    depthMinusButton: {
+        width: '17.5%',
+        marginStart: 6,
     },
+    depthPlusButton: {
+        width: '17.5%',
+        marginEnd: 4,
+    },
+    valueIcon: {
+        aspectRatio: 1,
+    },
+    valueTextContainer: {
+        justifyContent: 'center',
+        width: '100%',
+        height: '100%',
+    },
+    valueText: {
+        marginBottom: 1,
+        textAlign: 'center',
+        color: 'white',
+        fontFamily: 'Myriad',
+        textShadowColor: 'rgba(0, 0, 0, 1)',
+        textShadowOffset: {width: 1, height: 1},
+        textShadowRadius: 5,
+    },
+    labelText: {
+        flex: 1,
+        marginStart: 4,
+        marginEnd: 4,
+        textAlign: 'center',
+        color: 'white',
+        fontFamily: 'Myriad',
+        textShadowColor: 'rgba(0, 0, 0, 1)',
+        textShadowOffset: {width: 1, height: 1},
+        textShadowRadius: 5,
+    },
+    creatureList: {},
 });

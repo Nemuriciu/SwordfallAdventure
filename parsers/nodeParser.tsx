@@ -4,6 +4,7 @@ import nodesJson from '../assets/json/nodes.json';
 import experienceJson from '../assets/json/experience.json';
 import {Item} from '../types/item.ts';
 import {getHerb, getOre, getWood, rand} from './itemParser.tsx';
+import shardsJson from '../assets/json/shards.json';
 
 export interface Node {
     id: string;
@@ -94,7 +95,7 @@ export function getNodeRewards(node: Node, level: number): Item[] {
 }
 
 export function getNodeExperience(node: Node, level: number): number {
-    const timeMultiplier = node.time / 5;
+    const timeMultiplier = getTimeMultiplier(node.time);
     const exp = experienceJson.userGatheringExp[level - 1] * timeMultiplier;
 
     /* Variation ~2% of Exp */
@@ -104,7 +105,7 @@ export function getNodeExperience(node: Node, level: number): number {
 }
 
 export function getNodeGatheringExp(node: Node, level: number): number {
-    const timeMultiplier = node.time / 5;
+    const timeMultiplier = getTimeMultiplier(node.time);
     const exp = experienceJson.gatheringExp[level - 1] * timeMultiplier;
 
     /* Variation ~2% of Exp */
@@ -113,17 +114,48 @@ export function getNodeGatheringExp(node: Node, level: number): number {
     return rand(expMin, exp);
 }
 
-export function getNodeShards(node: Node, level: number): number {
-    const timeMultiplier = node.time / 5;
-    const lvl = level % 10 === 0 ? 9 : (level % 10) - 1;
-    const shards = Math.round(
-        (7 * Math.pow(lvl + 1, 2) + Math.pow(3, lvl)) * timeMultiplier,
-    );
+export function getNodeShards(node: Node): number {
+    let shards = shardsJson.gatheringShards * getTimeMultiplier(node.time);
 
-    /* Variation ~2% of Shards */
-    const shardsMin: number = Math.round(shards * 0.98);
+    /* Increase Shards by Creature Rarity */
+    switch (node.rarity) {
+        case 'uncommon':
+            shards *= 2;
+            break;
+        case 'rare':
+            shards *= 3;
+            break;
+        case 'epic':
+            shards *= 5;
+            break;
+    }
+
+    /* Variation ~10% of Shards */
+    const shardsMin: number = Math.round(shards * 0.9);
 
     return rand(shardsMin, shards);
+}
+
+export function getTimeMultiplier(time: number): number {
+    let multiplier: number = 0;
+
+    /* Set time multiplier */
+    switch (time) {
+        case 10:
+            multiplier = 1;
+            break;
+        case 15:
+            multiplier = 1.5;
+            break;
+        case 30:
+            multiplier = 2.5;
+            break;
+        case 60:
+            multiplier = 4.5;
+            break;
+    }
+
+    return multiplier;
 }
 
 function getRandomTime(): number {
@@ -237,26 +269,4 @@ function getHerbQuantity(node: Node): number {
     }
 
     return quantity;
-}
-
-function getTimeMultiplier(time: number): number {
-    let multiplier: number = 0;
-
-    /* Set time multiplier */
-    switch (time) {
-        case 10:
-            multiplier = 1;
-            break;
-        case 15:
-            multiplier = 1.5;
-            break;
-        case 30:
-            multiplier = 2.8;
-            break;
-        case 60:
-            multiplier = 5;
-            break;
-    }
-
-    return multiplier;
 }

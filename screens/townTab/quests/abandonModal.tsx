@@ -4,12 +4,15 @@ import Modal from 'react-native-modal';
 import {useDispatch, useSelector} from 'react-redux';
 import {getImage} from '../../../assets/images/_index';
 import SpannableBuilder from '@mj-studio/react-native-spannable-string';
-import {ButtonType, CustomButton} from '../../../components/customButton.tsx';
+import {
+    ButtonType,
+    CustomButton,
+} from '../../../components/buttons/customButton.tsx';
 import {strings} from '../../../utils/strings.ts';
 import {RootState} from '../../../redux/store.tsx';
 import cloneDeep from 'lodash.clonedeep';
-import {sortMissions} from '../../../parsers/questParser.tsx';
-import {missionsSetList} from '../../../redux/slices/missionsSlice.tsx';
+import {sortQuests} from '../../../parsers/questParser.tsx';
+import {questsSetList} from '../../../redux/slices/questsSlice.tsx';
 
 interface props {
     visible: boolean;
@@ -18,20 +21,20 @@ interface props {
 }
 
 export function AbandonModal({visible, setVisible, index}: props) {
-    const missions = useSelector((state: RootState) => state.missions);
+    const quests = useSelector((state: RootState) => state.quests);
     const dispatch = useDispatch();
     const [disabled, setDisabled] = useState(false);
     SpannableBuilder.getInstanceWithComponent(Text);
 
-    function abandonMission() {
+    function abandonQuest() {
         setDisabled(true);
 
-        const missionsList = cloneDeep(missions.missionsList);
-        missionsList[index].isActive = false;
-        missionsList[index].progress = 0;
+        const questsList = cloneDeep(quests.questsList);
+        questsList[index].isActive = false;
+        questsList[index].progress = 0;
 
-        sortMissions(missionsList);
-        dispatch(missionsSetList(missionsList));
+        sortQuests(questsList);
+        dispatch(questsSetList(questsList));
 
         /* Hide Abandon Modal */
         setTimeout(() => {
@@ -46,8 +49,8 @@ export function AbandonModal({visible, setVisible, index}: props) {
     const Title = () => {
         return SpannableBuilder.getInstance(styles.title)
             .append(
-                'Are you sure you want to abandon mission?\n\n' +
-                    'Progress will be lost, but the mission will ' +
+                'Are you sure you want to abandon quest?\n\n' +
+                    'Progress will be lost, but the quest will ' +
                     'still be available for restart.',
             )
             .build();
@@ -74,7 +77,7 @@ export function AbandonModal({visible, setVisible, index}: props) {
                                 type={ButtonType.Orange}
                                 style={styles.actionButton}
                                 title={strings.yes}
-                                onPress={abandonMission}
+                                onPress={abandonQuest}
                                 disabled={disabled}
                             />
                             <CustomButton

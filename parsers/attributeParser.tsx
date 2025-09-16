@@ -375,7 +375,7 @@ function getUpgradeValue(
     }
 
     let upgradeValue = 0;
-    /* Get Enhancement Value */
+    /* Get Upgrade Value */
     for (let upgradeLevel = 1; upgradeLevel <= item.upgrade; upgradeLevel++) {
         switch (upgradeLevel) {
             case 1:
@@ -417,7 +417,3 @@ function getRarityBonus(
 
     return rarityBonus;
 }
-
-/*const rand = (min: number, max: number): number => {
-    return Math.floor(Math.random() * (max - min + 1) + min);
-};*/

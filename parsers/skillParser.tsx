@@ -61,7 +61,7 @@ export function getSkillEffectType(id: string): string | undefined {
         : undefined;
 }
 
-export function generateSkillsList(): {[key: string]: Skill} {
+export function initializeSkills(): {[key: string]: Skill} {
     const skillsList: {[key: string]: Skill} = {};
 
     for (const key in skillsJson) {

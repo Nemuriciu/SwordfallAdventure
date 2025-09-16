@@ -1,34 +1,25 @@
 import creatureJson from '../assets/json/creatures.json';
 import experienceJson from '../assets/json/experience.json';
-import missionsJson from '../assets/json/missions.json';
-import {Mission} from '../types/mission.ts';
+import questsJson from '../assets/json/quests.json';
+import {Quest} from '../types/quest.ts';
 import {getChest, getKey, getRandomEquip, rand} from './itemParser.tsx';
 import {getCreatureName} from './creatureParser.tsx';
 import {Item} from '../types/item.ts';
+import shardsJson from '../assets/json/shards.json';
+import {
+    QUESTS_CRAFTING_AMOUNT,
+    QUESTS_GATHERING_AMOUNT,
+    QUESTS_HUNTING_AMOUNT,
+} from '../screens/townTab/quests/quests.tsx';
 
-export function generateMission(level: number): Mission {
-    /* Select random Type */
-    const r = Math.random();
-    let type: string;
-    /* Hunt - 55% */
-    if (r <= 0.55) {
-        type = 'hunt';
-    } else if (r <= 0.85) {
-        /* Gather 30% */
-        type = 'gather';
-    } else {
-        /* Craft - 15% */
-        type = 'craft';
-    }
-
-    /* Create Mission by type */
+export function generateQuest(type: string, level: number): Quest {
     let amount: number;
     let minAmount: number, maxAmount: number;
 
     switch (type) {
-        case 'hunt':
-            minAmount = missionsJson.hunting.minAmount;
-            maxAmount = missionsJson.hunting.maxAmount;
+        case 'hunting':
+            minAmount = questsJson.hunting.minAmount;
+            maxAmount = questsJson.hunting.maxAmount;
             amount = rand(minAmount, maxAmount);
             const creatureId =
                 Object.keys(creatureJson)[
@@ -41,13 +32,12 @@ export function generateMission(level: number): Mission {
                 description: `Hunt ${amount} ${getCreatureName(creatureId)}`,
                 progress: 0,
                 maxProgress: amount,
-                rewards: getMissionRewards('common', level),
+                rewards: getQuestRewards('common', level),
                 isActive: false,
             };
-        case 'craft':
-        case 'gather':
-            minAmount = missionsJson.gathering.minAmount;
-            maxAmount = missionsJson.gathering.maxAmount;
+        case 'gathering':
+            minAmount = questsJson.gathering.minAmount;
+            maxAmount = questsJson.gathering.maxAmount;
             amount = Math.round(rand(minAmount, maxAmount) / 10) * 10;
             /* Get random resource type */
             const gatherType = ['ore', 'wood', 'herb'][rand(0, 2)];
@@ -58,28 +48,41 @@ export function generateMission(level: number): Mission {
                 description: `Gather ${gatherType} for ${amount} min`,
                 progress: 0,
                 maxProgress: amount,
-                rewards: getMissionRewards('common', level),
+                rewards: getQuestRewards('common', level),
                 isActive: false,
             };
-        /*case 'craft':
-            amount = rand(1, 2);*/
+        case 'crafting':
+            minAmount = questsJson.crafting.minAmount;
+            maxAmount = questsJson.crafting.maxAmount;
+            amount = rand(minAmount, maxAmount);
+
+            return {
+                type: type,
+                rarity: 'common',
+                description: `Craft ${amount} item(s)`,
+                progress: 0,
+                maxProgress: amount,
+                rewards: getQuestRewards('common', level),
+                isActive: false,
+            };
+
         default:
             throw new Error('Unexpected value: ' + type);
     }
 }
 
-export function isMissionComplete(mission: Mission): boolean {
-    return mission.progress >= mission.maxProgress;
+export function isQuestComplete(quest: Quest): boolean {
+    return quest.progress >= quest.maxProgress;
 }
 
-export function sortMissions(list: Mission[]) {
+export function sortQuests(list: Quest[]) {
     list.sort((a, b) => {
         if (a.isActive && b.isActive) {
-            if (isMissionComplete(a) && isMissionComplete(b)) {
+            if (isQuestComplete(a) && isQuestComplete(b)) {
                 return 0;
-            } else if (isMissionComplete(a)) {
+            } else if (isQuestComplete(a)) {
                 return -1;
-            } else if (isMissionComplete(b)) {
+            } else if (isQuestComplete(b)) {
                 return 1;
             }
             return 0;
@@ -92,38 +95,80 @@ export function sortMissions(list: Mission[]) {
     });
 }
 
-export function getMissionShards(mission: Mission, level: number): number {
-    const shards = 250; //TODO:
+export function getQuestShards(quest: Quest): number {
+    // @ts-ignore
+    let shards: number;
+    let multiplier: number;
+
+    switch (quest.type) {
+        case 'hunting':
+            multiplier = quest.maxProgress / questsJson.hunting.minAmount;
+            shards = Math.round(shardsJson.questShards.hunting * multiplier);
+            break;
+        case 'gathering':
+            multiplier = quest.maxProgress / questsJson.gathering.minAmount;
+            shards = Math.round(shardsJson.questShards.gathering * multiplier);
+            break;
+        case 'crafting':
+            multiplier = quest.maxProgress / questsJson.crafting.minAmount;
+            shards = Math.round(shardsJson.questShards.crafting * multiplier);
+            break;
+        default:
+            throw new Error('Unexpected value: ' + quest.type);
+    }
 
     return shards;
 }
 
-export function getMissionExp(mission: Mission, level: number): number {
+export function getQuestExp(quest: Quest, level: number): number {
     let exp: number;
     let multiplier: number;
 
-    switch (mission.type) {
-        case 'hunt':
-            multiplier = mission.maxProgress / missionsJson.hunting.minAmount;
+    switch (quest.type) {
+        case 'hunting':
+            multiplier = quest.maxProgress / questsJson.hunting.minAmount;
             exp = Math.round(
-                experienceJson.missionExp.hunting[level - 1] * multiplier,
+                experienceJson.questExp.hunting[level - 1] * multiplier,
             );
             break;
-        case 'craft':
-        case 'gather':
-            multiplier = mission.maxProgress / missionsJson.gathering.minAmount;
+        case 'gathering':
+            multiplier = quest.maxProgress / questsJson.gathering.minAmount;
             exp = Math.round(
-                experienceJson.missionExp.gathering[level - 1] * multiplier,
+                experienceJson.questExp.gathering[level - 1] * multiplier,
+            );
+            break;
+        case 'crafting':
+            multiplier = quest.maxProgress / questsJson.crafting.minAmount;
+            exp = Math.round(
+                experienceJson.questExp.crafting[level - 1] * multiplier,
             );
             break;
         default:
-            throw new Error('Unexpected value: ' + mission.type);
+            throw new Error('Unexpected value: ' + quest.type);
     }
 
     return exp;
 }
 
-function getMissionRewards(missionRarity: string, level: number): Item[] {
+export function initializeQuests(level: number): Quest[] {
+    let questsList: Quest[] = [];
+
+    for (let i = 0; i < QUESTS_HUNTING_AMOUNT; i++) {
+        questsList.push(generateQuest('hunting', level));
+    }
+
+    for (let i = 0; i < QUESTS_GATHERING_AMOUNT; i++) {
+        questsList.push(generateQuest('gathering', level));
+    }
+
+    for (let i = 0; i < QUESTS_CRAFTING_AMOUNT; i++) {
+        questsList.push(generateQuest('crafting', level));
+    }
+
+    return questsList;
+}
+
+function getQuestRewards(questRarity: string, level: number): Item[] {
     const rewards: Item[] = [];
     const r = Math.random();
     let equipmentDropped = false;
@@ -131,7 +176,7 @@ function getMissionRewards(missionRarity: string, level: number): Item[] {
     let treasureDropped = false;
 
     /* Check what items dropped */
-    switch (missionRarity) {
+    switch (questRarity) {
         case 'common':
             /* Equipment drop */
             if (r <= 0.5) {
@@ -181,7 +226,7 @@ function getMissionRewards(missionRarity: string, level: number): Item[] {
     if (equipmentDropped) {
         const randVal = Math.random();
         /* Equipment Rarity Chance */
-        switch (missionRarity) {
+        switch (questRarity) {
             case 'common':
                 /* uncommon - 2.5% */
                 if (randVal <= 0.025 && level >= 3) {
@@ -231,7 +276,7 @@ function getMissionRewards(missionRarity: string, level: number): Item[] {
     if (treasureDropped) {
         const randVal = Math.random();
         /* Treasure Rarity Chance */
-        switch (missionRarity) {
+        switch (questRarity) {
             case 'common':
                 /* uncommon - 5% */
                 if (randVal <= 0.05 && level >= 3) {
@@ -278,7 +323,7 @@ function getMissionRewards(missionRarity: string, level: number): Item[] {
     if (keyDropped) {
         const randVal = Math.random();
         /* Key Rarity Chance */
-        switch (missionRarity) {
+        switch (questRarity) {
             case 'common':
                 /* uncommon - 5% */
                 if (randVal <= 0.05 && level >= 3) {

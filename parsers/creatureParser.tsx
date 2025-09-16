@@ -1,4 +1,5 @@
 import experienceJson from '../assets/json/experience.json';
+import shardsJson from '../assets/json/shards.json';
 import creaturesJson from '../assets/json/creatures.json';
 import statsJson from '../assets/json/stats.json';
 import {Creature} from '../types/creature.ts';
@@ -128,11 +129,7 @@ export function getCreature(level: number, depth: number): Creature {
     } as Creature;
 }
 
-export function getCombatRewards(
-    rarity: string,
-    depth: number,
-    level: number,
-): Item[] {
+export function getCombatRewards(rarity: string, level: number): Item[] {
     const rewards: Item[] = [];
     let r = Math.random();
     let equipDrop = false,
@@ -354,18 +351,17 @@ export function getCombatRewards(
 
 export function getCombatExperience(rarity: string, level: number): number {
     let exp = experienceJson.huntingExp[level - 1];
-    // let exp = Math.round(5 * Math.pow(level, 1.7) + Math.pow(level, 3.2));
 
-    /* Green +100% / Blue +150% / Purple +250% */
+    /* Increase Experience by Creature Rarity */
     switch (rarity) {
         case 'uncommon':
             exp *= 2;
             break;
         case 'rare':
-            exp *= 2.5;
+            exp *= 3;
             break;
         case 'epic':
-            exp *= 3.5;
+            exp *= 5;
             break;
     }
 
@@ -375,31 +371,25 @@ export function getCombatExperience(rarity: string, level: number): number {
     return rand(expMin, exp);
 }
 
-export function getCombatShards(rarity: string, level: number): number {
-    /* Creature Shards Formula */
-    const cLevel = level % 10 === 0 ? 9 : (level % 10) - 1;
-    let shardsValue = Math.round(
-        12 * Math.pow(cLevel + 1, 2) + Math.pow(3, cLevel),
-    );
+export function getCombatShards(rarity: string, _depth: number): number {
+    let shardsValue = shardsJson.huntingShards;
+    // TODO: Shard Bonus by Depth
 
     /* Increase Shards by Creature Rarity */
     switch (rarity) {
-        /* Green +100% Shards */
         case 'uncommon':
             shardsValue *= 2;
             break;
-        /* Blue +150% Shards */
         case 'rare':
-            shardsValue *= 2.5;
+            shardsValue *= 3;
             break;
-        /* Purple +250% Shards */
         case 'epic':
-            shardsValue *= 3.5;
+            shardsValue *= 5;
             break;
     }
 
-    /* Variation ~2% of Shards */
-    const shardsMin = Math.round(shardsValue * 0.98);
+    /* Variation ~5% of Shards */
+    const shardsMin = Math.round(shardsValue * 0.95);
 
     return rand(shardsMin, shardsValue);
 }
@@ -422,14 +412,14 @@ export function getCombatShards(rarity: string, level: number): number {
 
 function getClothQuantity(rarity: string): number {
     /* Values defined in Sheet */
-    const grayMin: number = 3,
-        greenMin: number = 2,
+    const grayMin: number = 4,
+        greenMin: number = 1,
         blueMin: number = 1,
         purpleMin: number = 1;
-    const grayMax: number = 4,
-        greenMax: number = 4,
-        blueMax: number = 2,
-        purpleMax: number = 2;
+    const grayMax: number = 6,
+        greenMax: number = 1,
+        blueMax: number = 1,
+        purpleMax: number = 1;
     let quantity: number = 0;
 
     switch (rarity) {

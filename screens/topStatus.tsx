@@ -1,4 +1,4 @@
-import {Image, StyleSheet, Text, View} from 'react-native';
+import {Image, ImageBackground, StyleSheet, Text, View} from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import {getImage} from '../assets/images/_index';
 import {marshall, unmarshall} from '@aws-sdk/util-dynamodb';
@@ -14,6 +14,8 @@ import {
 import {colors} from '../utils/colors.ts';
 import ProgressBar from '../components/progressBar.tsx';
 import experienceJson from '../assets/json/experience.json';
+import {PlusButton} from '../components/buttons/plusButton.tsx';
+import {IconText} from '../components/iconText.tsx';
 
 export function TopStatus() {
     const userInfo = useSelector((state: RootState) => state.userInfo);
@@ -203,45 +205,69 @@ export function TopStatus() {
     }
 
     return (
-        <View style={styles.container}>
+        <ImageBackground
+            style={styles.outerContainer}
+            source={getImage('background_landscape')}
+            resizeMode={'stretch'}
+            fadeDuration={0}>
             <View style={styles.innerTopContainer}>
+                <IconText
+                    text={userInfo.level ? userInfo.level.toString() : ''}
+                    image={'frame_round_small'}
+                    containerStyle={styles.levelContainer}
+                    textContainerStyle={styles.levelTextContainer}
+                    textStyle={styles.levelText}
+                />
                 <Text
                     style={styles.username}
                     adjustsFontSizeToFit={true}
                     numberOfLines={1}>
                     {userInfo.username}
                 </Text>
-                <Image
-                    style={styles.shardsIcon}
-                    source={getImage('icon_shards')}
-                    fadeDuration={0}
-                />
-                <Text
-                    style={styles.shardsValue}
-                    adjustsFontSizeToFit={true}
-                    numberOfLines={1}>
-                    {userInfo.shards}
-                </Text>
-                <Image
-                    style={styles.diamondsIcon}
-                    source={getImage('icon_diamonds')}
-                    fadeDuration={0}
-                />
-                <Text
-                    style={styles.diamondsValue}
-                    adjustsFontSizeToFit={true}
-                    numberOfLines={1}>
-                    {userInfo.diamonds}
-                </Text>
+                <ImageBackground
+                    style={styles.currencyContainer}
+                    source={getImage('background_small')}
+                    resizeMode={'stretch'}
+                    fadeDuration={0}>
+                    <Image
+                        style={styles.currencyIcon}
+                        source={getImage('icon_shards')}
+                        fadeDuration={0}
+                    />
+                    <Text
+                        style={styles.currencyValue}
+                        adjustsFontSizeToFit={true}
+                        numberOfLines={1}>
+                        {userInfo.shards}
+                    </Text>
+                </ImageBackground>
+                <ImageBackground
+                    style={styles.currencyContainer}
+                    source={getImage('background_small')}
+                    resizeMode={'stretch'}
+                    fadeDuration={0}>
+                    <Image
+                        style={styles.currencyIcon}
+                        source={getImage('icon_diamonds')}
+                        fadeDuration={0}
+                    />
+                    <Text
+                        style={styles.currencyValue}
+                        adjustsFontSizeToFit={true}
+                        numberOfLines={1}>
+                        {userInfo.diamonds}
+                    </Text>
+                    <PlusButton style={styles.plusButton} onPress={() => {}} />
+                </ImageBackground>
             </View>
 
             <View style={styles.innerMidContainer}>
                 <View style={styles.midLeftContainer}>
                     <Text
-                        style={styles.level}
+                        style={styles.expIcon}
                         adjustsFontSizeToFit={true}
                         numberOfLines={1}>
-                        {userInfo.level ? 'Level ' + userInfo.level : ''}
+                        XP
                     </Text>
                     <Text
                         style={styles.experience}
@@ -252,12 +278,6 @@ export function TopStatus() {
                               '/' +
                               experienceJson.userMaxExp[userInfo.level - 1]
                             : ''}
-                    </Text>
-                    <Text
-                        style={styles.expIcon}
-                        adjustsFontSizeToFit={true}
-                        numberOfLines={1}>
-                        XP
                     </Text>
                 </View>
                 <View style={styles.midRightContainer}>
@@ -307,19 +327,18 @@ export function TopStatus() {
                     />
                 </View>
             </View>
-        </View>
+        </ImageBackground>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        backgroundColor: '#221c19',
-    },
+    outerContainer: {},
     innerTopContainer: {
         flexDirection: 'row',
+        alignItems: 'center',
         marginTop: 8,
-        marginStart: '2.5%',
-        marginEnd: '2.5%',
+        marginStart: 8,
+        marginEnd: 8,
     },
     innerMidContainer: {
         flexDirection: 'row',
@@ -355,72 +374,78 @@ const styles = StyleSheet.create({
     experienceBar: {},
     staminaBar: {},
 
-    username: {
-        flex: 1,
-        fontSize: 18,
-        color: 'white',
+    levelContainer: {
+        flex: 0.185,
+        aspectRatio: 1,
+    },
+    levelTextContainer: {
+        justifyContent: 'center',
+        width: '100%',
+        height: '100%',
+    },
+    levelText: {
+        marginBottom: 1,
+        textAlign: 'center',
+        color: colors.primary,
         fontFamily: 'Myriad',
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
     },
-    shardsIcon: {
-        aspectRatio: 1,
-        width: '6%',
-    },
-    shardsValue: {
-        width: '20%',
-        marginStart: 6,
-        marginTop: 2,
+    username: {
+        flex: 0.815,
+        marginStart: 8,
+        marginEnd: 4,
         fontSize: 16,
         color: 'white',
-        fontFamily: 'Myriad_Regular',
-        textShadowColor: 'rgba(0, 0, 0, 1)',
-        textShadowOffset: {width: 1, height: 1},
-        textShadowRadius: 5,
-    },
-    diamondsIcon: {
-        aspectRatio: 1,
-        width: '6%',
-        marginStart: 4,
-    },
-    diamondsValue: {
-        width: '15%',
-        marginStart: 6,
-        marginTop: 2,
-        fontSize: 16,
-        color: 'white',
-        fontFamily: 'Myriad_Regular',
+        fontFamily: 'Myriad',
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
     },
 
-    level: {
+    currencyContainer: {
+        flex: 0.5,
+        flexDirection: 'row',
         marginEnd: 4,
-        fontSize: 16,
+        padding: 4,
+    },
+    currencyIcon: {
+        aspectRatio: 1,
+        width: '20%',
+        marginStart: 2,
+    },
+    currencyValue: {
+        flex: 1,
+        marginStart: 6,
         color: 'white',
-        fontFamily: 'Myriad',
+        fontFamily: 'Myriad_Regular',
+        textShadowColor: 'rgba(0, 0, 0, 1)',
+        textShadowOffset: {width: 1, height: 1},
+        textShadowRadius: 5,
+    },
+    plusButton: {
+        position: 'absolute',
+        right: '-5%',
+        width: '30%',
+    },
+
+    expIcon: {
+        marginStart: 4,
+        marginEnd: 8,
+        fontSize: 16,
+        color: colors.experience_color,
+        fontFamily: 'Myriad_Bold',
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
     },
     experience: {
         flex: 1,
-        textAlign: 'right',
+        textAlign: 'left',
         fontSize: 16,
         color: colors.experience_color,
         fontFamily: 'Myriad_Regular',
-        textShadowColor: 'rgba(0, 0, 0, 1)',
-        textShadowOffset: {width: 1, height: 1},
-        textShadowRadius: 5,
-    },
-    expIcon: {
-        marginStart: 4,
-        marginEnd: 4,
-        fontSize: 16,
-        color: colors.experience_color,
-        fontFamily: 'Myriad_Bold',
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,

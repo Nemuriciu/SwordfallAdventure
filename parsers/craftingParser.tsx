@@ -1,5 +1,7 @@
 import craftingJson from '../assets/json/crafting.json';
 import {Item} from '../types/item.ts';
+import experienceJson from '../assets/json/experience.json';
+import {rand} from './itemParser.tsx';
 
 export const getCraftingEquipmentList = (level: number): [Item[], Item[][]] => {
     const equipmentList: Item[] = [];
@@ -66,3 +68,12 @@ export const getCraftingConsumablesList = (
 
     return [consumablesList, materialsList];
 };
+
+export function getCraftingExperience(level: number): number {
+    const exp = experienceJson.craftingExp[level - 1];
+
+    /* Variation ~5% of Exp */
+    const expMin = Math.round(exp * 0.95);
+
+    return rand(expMin, exp);
+}

@@ -1,0 +1,49 @@
+{
+  "huntingShards": 50,
+  "chestShards": 360,
+  "gatheringShards": 150,
+  "questShards": {
+    "hunting": 180,
+    "gathering": 250,
+    "crafting": 200
+  },
+  "equipmentShards": {
+    "common": {
+      "break": 250,
+      "1": 1500,
+      "2": 5000,
+      "3": 0,
+      "4": 0,
+      "5": 0,
+      "6": 0
+    },
+    "uncommon": {
+      "break": 250,
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 0,
+      "6": 0
+    },
+    "rare": {
+      "break": 250,
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 0,
+      "6": 0
+    },
+    "epic": {
+      "break": 250,
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 0,
+      "6": 0
+    }
+  },
+  "breakRefund": 0.2
+}

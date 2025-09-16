@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {StyleSheet, View, ImageBackground, Text, Image} from 'react-native';
 import Modal from 'react-native-modal';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {getImage} from '../../../assets/images/_index';
 import {Item} from '../../../types/item.ts';
 import SpannableBuilder from '@mj-studio/react-native-spannable-string';
@@ -10,13 +10,19 @@ import {
     getItemColor,
     getItemName,
     getItemRarity,
+    getBreakValue,
 } from '../../../parsers/itemParser.tsx';
 import {Slider} from '@miblanchard/react-native-slider';
 import {colors} from '../../../utils/colors.ts';
-import {ButtonType, CustomButton} from '../../../components/customButton.tsx';
+import {
+    ButtonType,
+    CustomButton,
+} from '../../../components/buttons/customButton.tsx';
 import {strings} from '../../../utils/strings.ts';
 import {itemDetailsHide} from '../../../redux/slices/itemDetailsSlice.tsx';
 import {inventoryRemoveItemAt} from '../../../redux/slices/inventorySlice.tsx';
+import {updateShards} from '../../../redux/slices/userInfoSlice.tsx';
+import {RootState} from '../../../redux/store.tsx';
 
 interface props {
     visible: boolean;
@@ -26,6 +32,7 @@ interface props {
 }
 
 export function DiscardModal({visible, setVisible, item, index}: props) {
+    const userInfo = useSelector((state: RootState) => state.userInfo);
     const dispatch = useDispatch();
     const [quantity, setQuantity] = useState(1);
     const [disabled, setDisabled] = useState(false);
@@ -33,6 +40,13 @@ export function DiscardModal({visible, setVisible, item, index}: props) {
 
     function removeItem() {
         setDisabled(true);
+
+        /* Add Break Shards If Item is Equipment */
+        if (getItemCategory(item.id) === 'equipment') {
+            setTimeout(() => {
+                dispatch(updateShards(userInfo.shards + getBreakValue(item)));
+            }, 0);
+        }
 
         /* Hide Item Details */
         setTimeout(() => {
@@ -115,7 +129,9 @@ export function DiscardModal({visible, setVisible, item, index}: props) {
                                         source={getImage('icon_shards')}
                                         fadeDuration={0}
                                     />
-                                    <Text style={styles.shardsText}>100</Text>
+                                    <Text style={styles.shardsText}>
+                                        {getBreakValue(item)}
+                                    </Text>
                                 </View>
                             </View>
                         )}

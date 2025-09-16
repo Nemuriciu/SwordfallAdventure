@@ -1,7 +1,7 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {useState} from 'react';
 import {TouchableOpacity, Text, ImageBackground, ViewStyle} from 'react-native';
-import {getImage} from '../assets/images/_index';
+import {getImage} from '../../assets/images/_index';
 
 interface props {
     type: ButtonType;

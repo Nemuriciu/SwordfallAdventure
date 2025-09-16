@@ -4,12 +4,16 @@ import Modal from 'react-native-modal';
 import {getImage} from '../../../assets/images/_index';
 import SpannableBuilder from '@mj-studio/react-native-spannable-string';
 import {
+    getBreakValue,
     getItemCategory,
     getItemColor,
     getItemRarity,
 } from '../../../parsers/itemParser.tsx';
 import {colors} from '../../../utils/colors.ts';
-import {ButtonType, CustomButton} from '../../../components/customButton.tsx';
+import {
+    ButtonType,
+    CustomButton,
+} from '../../../components/buttons/customButton.tsx';
 import {strings} from '../../../utils/strings.ts';
 import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '../../../redux/store.tsx';
@@ -46,7 +50,7 @@ export function BreakAllModal({visible, setVisible, rarity}: props) {
                         getItemRarity(item.id) === rarity
                     ) {
                         //TODO: shards based on rarity + upgrade
-                        totalShards += 100;
+                        totalShards += getBreakValue(item);
                         itemsIndex.push(i);
                     }
                 }

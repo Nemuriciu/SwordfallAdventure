@@ -1,15 +1,14 @@
 import {StyleSheet, Text, useWindowDimensions} from 'react-native';
 import React from 'react';
 import {TabView, SceneMap, TabBar} from 'react-native-tab-view';
-import {Missions} from './missions/missions.tsx';
 import {Crafting} from './crafting/crafting.tsx';
 import {colors} from '../../utils/colors.ts';
+import {Quests} from './quests/quests.tsx';
 import {Shop} from './shop/shop.tsx';
 
 const renderScene = SceneMap({
     1: Crafting,
-    2: Missions,
-    //3: DailyQuests,
+    2: Quests,
     3: Shop,
 });
 
@@ -19,7 +18,7 @@ export function TownTab() {
     const [index, setIndex] = React.useState(0);
     const [routes] = React.useState([
         {key: '1', title: 'Crafting'},
-        {key: '2', title: 'Missions'},
+        {key: '2', title: 'Quests'},
         //{key: '3', title: 'Daily Quests'},
         {key: '3', title: 'Shop'},
     ]);
@@ -34,6 +33,7 @@ export function TownTab() {
                         <Text
                             style={[
                                 styles.tabText,
+                                // eslint-disable-next-line react-native/no-inline-styles
                                 {color: focused ? colors.primary : 'white'},
                             ]}>
                             {route.title + ' '}

@@ -16,7 +16,10 @@ import {
     getRandomEquip,
 } from '../../../parsers/itemParser.tsx';
 import {getImage} from '../../../assets/images/_index';
-import {ButtonType, CustomButton} from '../../../components/customButton.tsx';
+import {
+    ButtonType,
+    CustomButton,
+} from '../../../components/buttons/customButton.tsx';
 import {marshall, unmarshall} from '@aws-sdk/util-dynamodb';
 import {USER_ID} from '../../../App';
 import {dynamoDb} from '../../../database';
@@ -175,108 +178,103 @@ export function Inventory() {
                 setVisible={setBreakAllVisible}
                 rarity={breakAllRarity}
             />
-            <ImageBackground
-                style={styles.innerContainer}
-                source={getImage('background_inner')}
-                resizeMode={'stretch'}
-                fadeDuration={0}>
-                <View style={styles.infoContainer}>
-                    <Image
-                        style={styles.bagIcon}
-                        source={getImage('icon_bag')}
-                        fadeDuration={0}
-                    />
-                    <Text
-                        numberOfLines={1}
-                        style={[
-                            styles.slotsText,
-                            // eslint-disable-next-line react-native/no-inline-styles
-                            {
-                                color:
-                                    usedSlots / inventory.list.length === 1
-                                        ? 'red'
-                                        : usedSlots / inventory.list.length >=
-                                          0.8
-                                        ? 'yellow'
-                                        : 'white',
-                            },
-                        ]}>
-                        {usedSlots + '/' + inventory.list.length}
-                    </Text>
-                    <CustomButton
-                        type={ButtonType.Orange}
-                        title={'Sort'}
-                        onPress={sortInventory}
-                        style={styles.sortButton}
-                    />
-                </View>
-
-                <View style={styles.inventoryContainer}>
-                    <FlatList
-                        style={styles.inventoryFlatList}
-                        data={inventory.list}
-                        renderItem={({item, index}) => (
-                            <TouchableOpacity
-                                onPress={() => slotPress(item, index)}
-                                disabled={disabled || !isItem(item)}
-                                style={styles.inventorySlotContainer}>
-                                <ImageBackground
-                                    style={styles.inventorySlot}
-                                    source={
-                                        isItem(item)
-                                            ? getImage(getItemImg(item.id))
-                                            : getImage('icon_slot')
-                                    }
-                                    fadeDuration={0}>
-                                    {isItem(item) &&
-                                    canConvert(item, userInfo.level) ? (
-                                        <Image
-                                            style={styles.inventorySlotConvert}
-                                            source={getImage('icon_convert')}
-                                            resizeMode={'stretch'}
-                                        />
-                                    ) : null}
-                                    <Text style={styles.inventorySlotUpgrade}>
-                                        {isItem(item) && item.upgrade
-                                            ? '+' + item.upgrade
-                                            : ''}
-                                    </Text>
-                                    <Text style={styles.inventorySlotQuantity}>
-                                        {isItem(item) && item.quantity > 1
-                                            ? item.quantity
-                                            : ''}
-                                    </Text>
-                                </ImageBackground>
-                            </TouchableOpacity>
-                        )}
-                        numColumns={COLUMN_NR}
-                        overScrollMode={'never'}
-                    />
-                </View>
-                {/* DEBUG */}
-                <View
-                    /* eslint-disable-next-line react-native/no-inline-styles */
-                    style={{
-                        flexDirection: 'row',
-                        justifyContent: 'center',
-                        marginBottom: 36,
-                    }}>
-                    {/* ADD ITEM */}
-                    <CustomButton
-                        type={ButtonType.Orange}
-                        title={'Add Item'}
-                        onPress={addItemOnPress}
-                        style={styles.button}
-                    />
-                    {/* CLEAR INVENTORY */}
-                    <CustomButton
-                        type={ButtonType.Orange}
-                        title={'CLEAR'}
-                        onPress={clearInventoryList}
-                        style={styles.clearButton}
-                    />
-                </View>
-            </ImageBackground>
+            {/* Inventory Info + Sort */}
+            <View style={styles.infoContainer}>
+                <Image
+                    style={styles.bagIcon}
+                    source={getImage('icon_bag')}
+                    fadeDuration={0}
+                />
+                <Text
+                    numberOfLines={1}
+                    style={[
+                        styles.slotsText,
+                        // eslint-disable-next-line react-native/no-inline-styles
+                        {
+                            color:
+                                usedSlots / inventory.list.length === 1
+                                    ? 'red'
+                                    : usedSlots / inventory.list.length >= 0.8
+                                    ? 'yellow'
+                                    : 'white',
+                        },
+                    ]}>
+                    {usedSlots + '/' + inventory.list.length}
+                </Text>
+                <CustomButton
+                    type={ButtonType.Orange}
+                    title={'Sort'}
+                    onPress={sortInventory}
+                    style={styles.sortButton}
+                />
+            </View>
+            {/* Inventory */}
+            <View style={styles.inventoryContainer}>
+                <FlatList
+                    style={styles.inventoryFlatList}
+                    data={inventory.list}
+                    renderItem={({item, index}) => (
+                        <TouchableOpacity
+                            onPress={() => slotPress(item, index)}
+                            disabled={disabled || !isItem(item)}
+                            style={styles.inventorySlotContainer}>
+                            <ImageBackground
+                                style={styles.inventorySlot}
+                                source={
+                                    isItem(item)
+                                        ? getImage(getItemImg(item.id))
+                                        : getImage('icon_slot')
+                                }
+                                fadeDuration={0}>
+                                {isItem(item) &&
+                                canConvert(item, userInfo.level) ? (
+                                    <Image
+                                        style={styles.inventorySlotConvert}
+                                        source={getImage('icon_convert')}
+                                        resizeMode={'stretch'}
+                                    />
+                                ) : null}
+                                <Text style={styles.inventorySlotUpgrade}>
+                                    {isItem(item) && item.upgrade
+                                        ? '+' + item.upgrade
+                                        : ''}
+                                </Text>
+                                <Text style={styles.inventorySlotQuantity}>
+                                    {isItem(item) && item.quantity > 1
+                                        ? item.quantity
+                                        : ''}
+                                </Text>
+                            </ImageBackground>
+                        </TouchableOpacity>
+                    )}
+                    numColumns={COLUMN_NR}
+                    overScrollMode={'never'}
+                />
+            </View>
+            {/* DEBUG */}
+            <View
+                /* eslint-disable-next-line react-native/no-inline-styles */
+                style={{
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    marginBottom: 36,
+                }}>
+                {/* ADD ITEM */}
+                <CustomButton
+                    type={ButtonType.Orange}
+                    title={'Add Item'}
+                    onPress={addItemOnPress}
+                    style={styles.button}
+                />
+                {/* CLEAR INVENTORY */}
+                <CustomButton
+                    type={ButtonType.Orange}
+                    title={'CLEAR'}
+                    onPress={clearInventoryList}
+                    style={styles.clearButton}
+                />
+            </View>
+            {/* Equipment Break */}
             <View style={styles.breakContainer}>
                 <Text style={styles.breakLabel}>
                     {strings.equipment + ' ' + strings.Break + ':'}
@@ -295,12 +293,6 @@ export function Inventory() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-    },
-    innerContainer: {
-        flex: 1,
-        marginTop: 4,
-        marginStart: 2,
-        marginEnd: 2,
     },
     infoContainer: {
         flexDirection: 'row',

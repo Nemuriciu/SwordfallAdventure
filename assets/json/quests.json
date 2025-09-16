@@ -1,0 +1,14 @@
+{
+  "hunting": {
+    "minAmount": 3,
+    "maxAmount": 6
+  },
+  "gathering": {
+    "minAmount": 30,
+    "maxAmount": 90
+  },
+  "crafting": {
+    "minAmount": 1,
+    "maxAmount": 2
+  }
+}

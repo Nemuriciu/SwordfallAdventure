@@ -77,7 +77,7 @@ export function Skills() {
 
     return (
         <ImageBackground
-            style={styles.container}
+            style={styles.outerContainer}
             source={getImage('background_outer')}
             resizeMode={'stretch'}>
             <SkillsDetails />
@@ -86,6 +86,7 @@ export function Skills() {
                 setVisible={setSpellsListVisible}
                 slot={selectedSlot}
             />
+            {/* Offense/Defense Buttons */}
             <ButtonGroup
                 onPress={value => setSelectedIndex(value)}
                 selectedIndex={selectedIndex}
@@ -94,78 +95,73 @@ export function Skills() {
                 selectedButtonStyle={styles.selectedButton}
                 textStyle={styles.buttonText}
             />
-            {skills.list && (
-                <ImageBackground
-                    style={styles.outerContainer}
-                    source={getImage('background_inner')}
-                    resizeMode={'stretch'}
-                    fadeDuration={0}>
-                    {selectedIndex === 0 && (
-                        <ScrollView style={styles.innerContainer}>
-                            <View style={styles.skillsRowContainer}>
-                                <SkillsIcon
-                                    style={styles.skillsIconContainer}
-                                    skill={skills.list['100']}
-                                />
-                                <SkillsIcon
-                                    style={styles.skillsIconContainer}
-                                    skill={skills.list['101']}
-                                />
-                            </View>
-                            <View style={styles.skillsRowContainer}>
-                                <SkillsIcon
-                                    style={styles.skillsIconContainer}
-                                    skill={skills.list['102']}
-                                />
-                                <SkillsIcon
-                                    style={styles.skillsIconContainer}
-                                    skill={skills.list['103']}
-                                />
-                                <SkillsIcon
-                                    style={styles.skillsIconContainer}
-                                    skill={skills.list['104']}
-                                />
-                                <SkillsIcon
-                                    style={styles.skillsIconContainer}
-                                    skill={skills.list['105']}
-                                />
-                            </View>
-                        </ScrollView>
-                    )}
-                    {selectedIndex === 1 && (
-                        <ScrollView style={styles.innerContainer}>
-                            <View style={styles.skillsRowContainer}>
-                                <SkillsIcon
-                                    style={styles.skillsIconContainer}
-                                    skill={skills.list['500']}
-                                />
-                                <SkillsIcon
-                                    style={styles.skillsIconContainer}
-                                    skill={skills.list['501']}
-                                />
-                            </View>
-                            <View style={styles.skillsRowContainer}>
-                                <SkillsIcon
-                                    style={styles.skillsIconContainer}
-                                    skill={skills.list['502']}
-                                />
-                                <SkillsIcon
-                                    style={styles.skillsIconContainer}
-                                    skill={skills.list['503']}
-                                />
-                                <SkillsIcon
-                                    style={styles.skillsIconContainer}
-                                    skill={skills.list['504']}
-                                />
-                                <SkillsIcon
-                                    style={styles.skillsIconContainer}
-                                    skill={skills.list['505']}
-                                />
-                            </View>
-                        </ScrollView>
-                    )}
-                </ImageBackground>
+            {/* Offense Skill List */}
+            {skills.list && selectedIndex === 0 && (
+                <ScrollView style={styles.innerContainer}>
+                    <View style={styles.skillsRowContainer}>
+                        <SkillsIcon
+                            style={styles.skillsIconContainer}
+                            skill={skills.list['100']}
+                        />
+                        <SkillsIcon
+                            style={styles.skillsIconContainer}
+                            skill={skills.list['101']}
+                        />
+                    </View>
+                    <View style={styles.skillsRowContainer}>
+                        <SkillsIcon
+                            style={styles.skillsIconContainer}
+                            skill={skills.list['102']}
+                        />
+                        <SkillsIcon
+                            style={styles.skillsIconContainer}
+                            skill={skills.list['103']}
+                        />
+                        <SkillsIcon
+                            style={styles.skillsIconContainer}
+                            skill={skills.list['104']}
+                        />
+                        <SkillsIcon
+                            style={styles.skillsIconContainer}
+                            skill={skills.list['105']}
+                        />
+                    </View>
+                </ScrollView>
             )}
+            {/* Defense Skill List */}
+            {skills.list && selectedIndex === 1 && (
+                <ScrollView style={styles.innerContainer}>
+                    <View style={styles.skillsRowContainer}>
+                        <SkillsIcon
+                            style={styles.skillsIconContainer}
+                            skill={skills.list['500']}
+                        />
+                        <SkillsIcon
+                            style={styles.skillsIconContainer}
+                            skill={skills.list['501']}
+                        />
+                    </View>
+                    <View style={styles.skillsRowContainer}>
+                        <SkillsIcon
+                            style={styles.skillsIconContainer}
+                            skill={skills.list['502']}
+                        />
+                        <SkillsIcon
+                            style={styles.skillsIconContainer}
+                            skill={skills.list['503']}
+                        />
+                        <SkillsIcon
+                            style={styles.skillsIconContainer}
+                            skill={skills.list['504']}
+                        />
+                        <SkillsIcon
+                            style={styles.skillsIconContainer}
+                            skill={skills.list['505']}
+                        />
+                    </View>
+                </ScrollView>
+            )}
+            {/* Active Spells */}
             <View style={styles.activeSpellsContainer}>
                 <Text style={styles.activeSpellsLabel}>
                     {strings.active_spells + ':'}
@@ -248,7 +244,7 @@ export function Skills() {
 }
 
 const styles = StyleSheet.create({
-    container: {
+    outerContainer: {
         flex: 1,
     },
     buttonGroupContainer: {
@@ -269,19 +265,12 @@ const styles = StyleSheet.create({
     selectedButton: {
         backgroundColor: colors.secondary,
     },
-    outerContainer: {
+    innerContainer: {
         flex: 1,
         marginStart: 4,
         marginEnd: 4,
         marginTop: 2,
         marginBottom: 4,
-    },
-    innerContainer: {
-        flex: 1,
-        marginStart: 24,
-        marginEnd: 24,
-        marginTop: 18,
-        marginBottom: 12,
     },
     skillsIconContainer: {
         aspectRatio: 1,

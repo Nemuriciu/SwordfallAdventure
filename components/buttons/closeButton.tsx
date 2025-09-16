@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {TouchableOpacity, ViewStyle, Image} from 'react-native';
-import {getImage} from '../assets/images/_index';
+import {getImage} from '../../assets/images/_index';
 
 interface props {
     onPress: () => void;

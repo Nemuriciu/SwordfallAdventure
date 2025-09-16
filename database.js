@@ -1,14 +1,13 @@
 import AWS from 'aws-sdk';
 import {marshall} from '@aws-sdk/util-dynamodb';
-import {MISSIONS_AMOUNT} from './screens/townTab/missions/missions';
-import {generateMission} from './parsers/questParser';
+import {initializeQuests} from './parsers/questParser';
 import {getCreature} from './parsers/creatureParser';
 import {rand} from './parsers/itemParser';
 import {
     CREATURE_COUNT_MAX,
     CREATURE_COUNT_MIN,
 } from './screens/adventureTab/hunting/hunting';
-import {generateSkillsList} from './parsers/skillParser';
+import {initializeSkills} from './parsers/skillParser';
 //import "react-native-get-random-values";
 //import 'react-native-url-polyfill/auto';
 //import {ReadableStream} from 'web-streams-polyfill/ponyfill';
@@ -158,15 +157,12 @@ function createUserEntry(userID, username) {
                 //TODO:
                 list: new Array(36).fill({}),
             },
-            missions: {
-                missionsList: [...Array(MISSIONS_AMOUNT).keys()].map(_ =>
-                    generateMission(1),
-                ),
+            quests: {
+                questsList: initializeQuests(1),
                 refreshTimestamp: new Date().toISOString(),
             },
-            quests: [],
             skills: {
-                list: generateSkillsList(),
+                list: initializeSkills(),
                 spell_1: null,
                 spell_2: null,
                 spell_3: null,

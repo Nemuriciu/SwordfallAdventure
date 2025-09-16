@@ -13,9 +13,12 @@ import Modal from 'react-native-modal';
 import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '../../../redux/store.tsx';
 import {getImage} from '../../../assets/images/_index';
-import {ButtonType, CustomButton} from '../../../components/customButton.tsx';
+import {
+    ButtonType,
+    CustomButton,
+} from '../../../components/buttons/customButton.tsx';
 import {strings} from '../../../utils/strings.ts';
-import {CloseButton} from '../../../components/closeButton.tsx';
+import {CloseButton} from '../../../components/buttons/closeButton.tsx';
 import {
     getSkillCooldown,
     getSkillDescription,

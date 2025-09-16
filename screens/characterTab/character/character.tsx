@@ -20,33 +20,25 @@ export function Character() {
             source={getImage('background_outer')}
             resizeMode={'stretch'}
             fadeDuration={0}>
-            <ImageBackground
-                style={styles.innerContainer}
-                source={getImage('background_inner')}
-                resizeMode={'stretch'}
-                fadeDuration={0}>
-                <ScrollView
-                    style={styles.scrollView}
-                    alwaysBounceVertical={false}>
-                    <View style={styles.infoOuterContainer}>
-                        <Image
-                            style={styles.avatar}
-                            source={getImage('user_avatar')}
-                            resizeMode={'stretch'}
-                            fadeDuration={0}
-                        />
-                        <View style={styles.infoInnerContainer}>
-                            <Text style={styles.username}>Username</Text>
-                            <Text style={styles.guild}>{'<No Guild>'}</Text>
-                            <Text style={styles.arena}>{'<Arena Rank>'}</Text>
-                        </View>
+            <ScrollView style={styles.scrollView} alwaysBounceVertical={false}>
+                <View style={styles.infoOuterContainer}>
+                    <Image
+                        style={styles.avatar}
+                        source={getImage('user_avatar')}
+                        resizeMode={'stretch'}
+                        fadeDuration={0}
+                    />
+                    <View style={styles.infoInnerContainer}>
+                        <Text style={styles.username}>Username</Text>
+                        <Text style={styles.guild}>{'<No Guild>'}</Text>
+                        <Text style={styles.arena}>{'<Arena Rank>'}</Text>
                     </View>
-                    <TitleSeparator title={'Equipment'} />
-                    <Equipment />
-                    <TitleSeparator title={'Attributes'} />
-                    <Attributes />
-                </ScrollView>
-            </ImageBackground>
+                </View>
+                <TitleSeparator title={'Equipment'} />
+                <Equipment />
+                <TitleSeparator title={'Attributes'} />
+                <Attributes />
+            </ScrollView>
         </ImageBackground>
     );
 }
@@ -59,13 +51,6 @@ const styles = StyleSheet.create({
         marginTop: 12,
         marginBottom: 12,
         paddingStart: 0,
-    },
-    innerContainer: {
-        flex: 1,
-        marginTop: 4,
-        marginBottom: 4,
-        marginStart: 2,
-        marginEnd: 2,
     },
     infoOuterContainer: {
         flexDirection: 'row',

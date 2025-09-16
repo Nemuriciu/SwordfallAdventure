@@ -13,7 +13,10 @@ import {
 } from '../../../parsers/nodeParser.tsx';
 import {colors} from '../../../utils/colors.ts';
 import {getItemColor} from '../../../parsers/itemParser.tsx';
-import {ButtonType, CustomButton} from '../../../components/customButton.tsx';
+import {
+    ButtonType,
+    CustomButton,
+} from '../../../components/buttons/customButton.tsx';
 import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '../../../redux/store.tsx';
 import {setGatherInfo} from '../../../redux/slices/gatherInfoSlice.tsx';
@@ -21,11 +24,8 @@ import ProgressBar from '../../../components/progressBar.tsx';
 import {rewardsModalInit} from '../../../redux/slices/rewardsModalSlice.tsx';
 import Toast from 'react-native-simple-toast';
 import {updateStamina} from '../../../redux/slices/userInfoSlice.tsx';
-import {
-    isMissionComplete,
-    sortMissions,
-} from '../../../parsers/questParser.tsx';
-import {missionsSetList} from '../../../redux/slices/missionsSlice.tsx';
+import {isQuestComplete, sortQuests} from '../../../parsers/questParser.tsx';
+import {questsSetList} from '../../../redux/slices/questsSlice.tsx';
 
 interface props {
     node: Node;
@@ -33,9 +33,10 @@ interface props {
 }
 
 export function GatherNode({node, index}: props) {
+    const staminaCost = Math.round(5 * (node.time / 10));
     const userInfo = useSelector((state: RootState) => state.userInfo);
     const gatherInfo = useSelector((state: RootState) => state.gatherInfo);
-    const missions = useSelector((state: RootState) => state.missions);
+    const quests = useSelector((state: RootState) => state.quests);
     const [timer, setTimer] = useState(1);
     const [nodeTime, setNodeTime] = useState(1);
     const [disabled, setDisabled] = useState(false);
@@ -78,8 +79,6 @@ export function GatherNode({node, index}: props) {
     function startGathering() {
         if (!disabled) {
             setDisabled(true);
-
-            const staminaCost: number = 10; //TODO:
 
             if (userInfo.stamina >= staminaCost) {
                 dispatch(updateStamina(userInfo.stamina - staminaCost));
@@ -124,31 +123,29 @@ export function GatherNode({node, index}: props) {
                     ),
                     shards: getNodeShards(
                         gatherInfo.nodes[gatherInfo.nodeIndex],
-                        userInfo.level,
                     ),
                 }),
             );
-            /* Update Missions */
-            const missionsList = cloneDeep(missions.missionsList);
+            /* Update Quests */
+            const questsList = cloneDeep(quests.questsList);
 
-            for (let i = 0; i < missionsList.length; i++) {
-                let mission = missionsList[i];
+            for (let i = 0; i < questsList.length; i++) {
+                let quest = questsList[i];
                 if (
-                    mission.isActive &&
-                    !isMissionComplete(mission) &&
-                    (mission.type === 'gather' || mission.type === 'craft')
-                    //TODO: remove craft
+                    quest.isActive &&
+                    !isQuestComplete(quest) &&
+                    quest.type === 'gathering'
                 ) {
-                    if (mission.description.includes(node.type)) {
-                        mission.progress = Math.min(
-                            mission.progress + node.time,
-                            mission.maxProgress,
+                    if (quest.description.includes(node.type)) {
+                        quest.progress = Math.min(
+                            quest.progress + node.time,
+                            quest.maxProgress,
                         );
                     }
                 }
             }
-            sortMissions(missionsList);
-            dispatch(missionsSetList(missionsList));
+            sortQuests(questsList);
+            dispatch(questsSetList(questsList));
 
             /* Remove Node from list */
             const nodeList = cloneDeep(gatherInfo.nodes);
@@ -238,7 +235,7 @@ export function GatherNode({node, index}: props) {
                 )}
                 {!gatherInfo.isGathering && (
                     <View style={styles.staminaContainer}>
-                        <Text style={styles.staminaText}>10</Text>
+                        <Text style={styles.staminaText}>{staminaCost}</Text>
                         <Image
                             source={getImage('icon_stamina')}
                             style={styles.staminaIcon}

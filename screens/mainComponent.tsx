@@ -1,5 +1,11 @@
 /* eslint-disable react/no-unstable-nested-components */
-import {Image, StatusBar, StyleSheet, View} from 'react-native';
+import {
+    Image,
+    ImageBackground,
+    StatusBar,
+    StyleSheet,
+    View,
+} from 'react-native';
 import React, {useEffect} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {CharacterTab} from './characterTab/characterTab';
@@ -17,6 +23,7 @@ import {increaseLevel} from '../redux/slices/userInfoSlice.tsx';
 import {store} from '../redux/store.tsx';
 import experienceJson from '../assets/json/experience.json';
 import {setLevelUpVisibility} from '../redux/slices/levelUpSlice.tsx';
+import {colors} from '../utils/colors.ts';
 
 const Tab = createBottomTabNavigator();
 
@@ -42,20 +49,30 @@ export function MainComponent() {
                     screenOptions={{
                         lazy: false,
                         headerShown: false,
+                        tabBarActiveTintColor: colors.primary,
                         tabBarStyle: {
-                            height: 62,
-                            backgroundColor: '#221c19',
+                            height: 82,
                             borderTopWidth: 0,
                             elevation: 0,
+                            paddingTop: 4,
+                            paddingBottom: 4,
                         },
                         tabBarLabelStyle: {
-                            fontSize: 14,
+                            fontSize: 13,
                             fontFamily: 'Myriad',
                             textShadowColor: 'rgba(0, 0, 0, 1)',
                             textShadowOffset: {width: 1, height: 1},
                             textShadowRadius: 5,
                             marginBottom: 8,
                         },
+                        tabBarBackground: () => (
+                            <ImageBackground
+                                style={styles.tabBarBackground}
+                                source={getImage('background_landscape')}
+                                resizeMode={'stretch'}
+                                fadeDuration={0}
+                            />
+                        ),
                     }}>
                     <Tab.Screen
                         name="Character"
@@ -143,7 +160,7 @@ export const triggerLevelUp = (exp: number) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
+        backgroundColor: '#000000',
     },
     navContainer: {},
     baseText: {
@@ -155,9 +172,12 @@ const styles = StyleSheet.create({
         width: '100%',
         resizeMode: 'contain',
     },
+    tabBarBackground: {
+        flex: 1,
+        width: '100%',
+    },
     icon: {
-        width: 36,
-        height: 36,
-        marginBottom: -4,
+        aspectRatio: 1,
+        height: 45,
     },
 });

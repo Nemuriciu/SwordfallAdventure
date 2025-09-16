@@ -1,6 +1,6 @@
 import {Item} from './item.ts';
 
-export interface Mission {
+export interface Quest {
     type: string;
     rarity: string;
     description: string;

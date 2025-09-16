@@ -10,8 +10,11 @@ import React, {useEffect, useRef, useState} from 'react';
 import {getImage} from '../../../assets/images/_index';
 import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '../../../redux/store.tsx';
-import {missionsSet} from '../../../redux/slices/missionsSlice.tsx';
-import {ButtonType, CustomButton} from '../../../components/customButton.tsx';
+import {questsSet} from '../../../redux/slices/questsSlice.tsx';
+import {
+    ButtonType,
+    CustomButton,
+} from '../../../components/buttons/customButton.tsx';
 import {marshall, unmarshall} from '@aws-sdk/util-dynamodb';
 import {USER_ID} from '../../../App';
 import {dynamoDb} from '../../../database';
@@ -50,14 +53,14 @@ export function Shop() {
 
                 let diff =
                     new Date().getTime() -
-                    new Date(missions.refreshTimestamp).getTime();
+                    new Date(quests.refreshTimestamp).getTime();
 
                 if (diff >= twoHour) {
                     refreshMissions();
 
                     diff %= twoHour;
                     dispatch(
-                        missionsSetTimestamp(
+                        questsSetTimestamp(
                             new Date(Date.now() - diff).toISOString(),
                         ),
                     );
@@ -70,14 +73,14 @@ export function Shop() {
             didMount_2.current -= 1;
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [missions.refreshTimestamp]);*/
+    }, [quests.refreshTimestamp]);*/
 
     /*useEffect(() => {
         if (refreshTimer <= 0) {
             clearInterval(timer);
             setRefreshTimer(1);
             refreshMissions();
-            dispatch(missionsSetTimestamp(new Date().toISOString()));
+            dispatch(questsSetTimestamp(new Date().toISOString()));
             setRefreshTimer(twoHour);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -87,14 +90,14 @@ export function Shop() {
         const params = {
             TableName: 'users',
             Key: marshall({id: USER_ID}),
-            ProjectionExpression: 'missions',
+            ProjectionExpression: 'quests',
         };
         dynamoDb.getItem(params, function (err, data) {
             if (err) {
                 console.log(err);
             } else {
                 // @ts-ignore
-                dispatch(missionsSet(unmarshall(data.Item).shopList));
+                dispatch(questsSet(unmarshall(data.Item).shopList));
             }
         });
     }
@@ -103,7 +106,7 @@ export function Shop() {
         /*const params = {
             TableName: 'users',
             Key: marshall({id: USER_ID}),
-            UpdateExpression: 'set missions = :val',
+            UpdateExpression: 'set quests = :val',
             ExpressionAttributeValues: marshall({
                 ':val': shopList,
             }),
@@ -116,19 +119,19 @@ export function Shop() {
     }
 
     function refreshShop() {
-        /*const missionsList =
-            missions.missionsList.length > 0
-                ? cloneDeep(missions.missionsList).filter(
-                      mission => mission.isActive,
+        /*const questsList =
+            quests.questsList.length > 0
+                ? cloneDeep(quests.questsList).filter(
+                      quest => quest.isActive,
                   )
                 : [];
 
-        const activeCount = missionsList.length;
-        for (let i = 0; i < MISSIONS_AMOUNT - activeCount; i++) {
-            missionsList.push(generateMission(userInfo.level));
+        const activeCount = questsList.length;
+        for (let i = 0; i < QUESTS_AMOUNT - activeCount; i++) {
+            questsList.push(generateQuest(userInfo.level));
         }
 
-        dispatch(missionsSetList(missionsList));*/
+        dispatch(questsSetList(questsList));*/
     }
 
     function startTimer(remainingTime: number) {
@@ -158,247 +161,227 @@ export function Shop() {
 
     return (
         <ImageBackground
-            style={styles.container}
+            style={styles.outerContainer}
             source={getImage('background_outer')}
             resizeMode={'stretch'}>
+            {/* Shop Refresh Title */}
             <Text
                 style={styles.refreshTitle}
                 adjustsFontSizeToFit={true}
                 numberOfLines={1}>
                 Shop refresh in: {formatTime(refreshTimer)}
             </Text>
-            <ImageBackground
-                style={styles.innerContainer}
-                source={getImage('background_inner')}
-                resizeMode={'stretch'}
-                fadeDuration={0}>
-                <View style={styles.innerLayout}>
-                    <TitleSeparator title={'Traveling Merchant'} />
-                    {/* Shop Row 1 */}
-                    <View style={styles.shopRow}>
-                        {/* Item 1 */}
-                        <TouchableOpacity
-                            onPress={() => {}}
-                            disabled={disabled}
-                            style={styles.shopItemContainer}>
-                            <ImageBackground
-                                style={styles.shopItem}
-                                source={getImage('icon_slot')}
-                                fadeDuration={0}>
-                                <Text style={styles.shopItemQuantity}>
-                                    {/*{isItem(item) && item.quantity > 1*/}
-                                    {/*    ? item.quantity*/}
-                                    {/*    : ''}*/}
-                                    {''}
-                                </Text>
-                            </ImageBackground>
-                            <View style={styles.shopItemCostLayout}>
-                                <Image
-                                    style={styles.shopItemCostIcon}
-                                    source={getImage('icon_shards')}
-                                    fadeDuration={0}
-                                />
-                                <Text style={styles.shopItemCostText}>
-                                    1999
-                                </Text>
-                            </View>
-                        </TouchableOpacity>
-                        {/* Item 2 */}
-                        <TouchableOpacity
-                            onPress={() => {}}
-                            disabled={disabled}
-                            style={styles.shopItemContainer}>
-                            <ImageBackground
-                                style={styles.shopItem}
-                                source={getImage('icon_slot')}
-                                fadeDuration={0}>
-                                <Text style={styles.shopItemQuantity}>
-                                    {/*{isItem(item) && item.quantity > 1*/}
-                                    {/*    ? item.quantity*/}
-                                    {/*    : ''}*/}
-                                    {''}
-                                </Text>
-                            </ImageBackground>
-                            <View style={styles.shopItemCostLayout}>
-                                <Image
-                                    style={styles.shopItemCostIcon}
-                                    source={getImage('icon_shards')}
-                                    fadeDuration={0}
-                                />
-                                <Text style={styles.shopItemCostText}>
-                                    1999
-                                </Text>
-                            </View>
-                        </TouchableOpacity>
-                        {/* Item 3 */}
-                        <TouchableOpacity
-                            onPress={() => {}}
-                            disabled={disabled}
-                            style={styles.shopItemContainer}>
-                            <ImageBackground
-                                style={styles.shopItem}
-                                source={getImage('icon_slot')}
-                                fadeDuration={0}>
-                                <Text style={styles.shopItemQuantity}>
-                                    {/*{isItem(item) && item.quantity > 1*/}
-                                    {/*    ? item.quantity*/}
-                                    {/*    : ''}*/}
-                                    {''}
-                                </Text>
-                            </ImageBackground>
-                            <View style={styles.shopItemCostLayout}>
-                                <Image
-                                    style={styles.shopItemCostIcon}
-                                    source={getImage('icon_shards')}
-                                    fadeDuration={0}
-                                />
-                                <Text style={styles.shopItemCostText}>
-                                    1999
-                                </Text>
-                            </View>
-                        </TouchableOpacity>
-                        {/* Item 4 */}
-                        <TouchableOpacity
-                            onPress={() => {}}
-                            disabled={disabled}
-                            style={styles.shopItemContainer}>
-                            <ImageBackground
-                                style={styles.shopItem}
-                                source={getImage('icon_slot')}
-                                fadeDuration={0}>
-                                <Text style={styles.shopItemQuantity}>
-                                    {/*{isItem(item) && item.quantity > 1*/}
-                                    {/*    ? item.quantity*/}
-                                    {/*    : ''}*/}
-                                    {''}
-                                </Text>
-                            </ImageBackground>
-                            <View style={styles.shopItemCostLayout}>
-                                <Image
-                                    style={styles.shopItemCostIcon}
-                                    source={getImage('icon_shards')}
-                                    fadeDuration={0}
-                                />
-                                <Text style={styles.shopItemCostText}>
-                                    1999
-                                </Text>
-                            </View>
-                        </TouchableOpacity>
-                    </View>
-                    <TitleSeparator title={'Black Market'} />
-                    {/* Shop Row 2 */}
-                    <View style={styles.shopRow}>
-                        {/* Item 1 */}
-                        <TouchableOpacity
-                            onPress={() => {}}
-                            disabled={disabled}
-                            style={styles.shopItemContainer}>
-                            <ImageBackground
-                                style={styles.shopItem}
-                                source={getImage('icon_slot')}
-                                fadeDuration={0}>
-                                <Text style={styles.shopItemQuantity}>
-                                    {/*{isItem(item) && item.quantity > 1*/}
-                                    {/*    ? item.quantity*/}
-                                    {/*    : ''}*/}
-                                    {''}
-                                </Text>
-                            </ImageBackground>
-                            <View style={styles.shopItemCostLayout}>
-                                <Image
-                                    style={styles.shopItemCostIcon}
-                                    source={getImage('icon_diamonds')}
-                                    fadeDuration={0}
-                                />
-                                <Text style={styles.shopItemCostText}>
-                                    1999
-                                </Text>
-                            </View>
-                        </TouchableOpacity>
-                        {/* Item 2 */}
-                        <TouchableOpacity
-                            onPress={() => {}}
-                            disabled={disabled}
-                            style={styles.shopItemContainer}>
-                            <ImageBackground
-                                style={styles.shopItem}
-                                source={getImage('icon_slot')}
-                                fadeDuration={0}>
-                                <Text style={styles.shopItemQuantity}>
-                                    {/*{isItem(item) && item.quantity > 1*/}
-                                    {/*    ? item.quantity*/}
-                                    {/*    : ''}*/}
-                                    {''}
-                                </Text>
-                            </ImageBackground>
-                            <View style={styles.shopItemCostLayout}>
-                                <Image
-                                    style={styles.shopItemCostIcon}
-                                    source={getImage('icon_diamonds')}
-                                    fadeDuration={0}
-                                />
-                                <Text style={styles.shopItemCostText}>
-                                    1999
-                                </Text>
-                            </View>
-                        </TouchableOpacity>
-                        {/* Item 3 */}
-                        <TouchableOpacity
-                            onPress={() => {}}
-                            disabled={disabled}
-                            style={styles.shopItemContainer}>
-                            <ImageBackground
-                                style={styles.shopItem}
-                                source={getImage('icon_slot')}
-                                fadeDuration={0}>
-                                <Text style={styles.shopItemQuantity}>
-                                    {/*{isItem(item) && item.quantity > 1*/}
-                                    {/*    ? item.quantity*/}
-                                    {/*    : ''}*/}
-                                    {''}
-                                </Text>
-                            </ImageBackground>
-                            <View style={styles.shopItemCostLayout}>
-                                <Image
-                                    style={styles.shopItemCostIcon}
-                                    source={getImage('icon_diamonds')}
-                                    fadeDuration={0}
-                                />
-                                <Text style={styles.shopItemCostText}>
-                                    1999
-                                </Text>
-                            </View>
-                        </TouchableOpacity>
-                        {/* Item 4 */}
-                        <TouchableOpacity
-                            onPress={() => {}}
-                            disabled={disabled}
-                            style={styles.shopItemContainer}>
-                            <ImageBackground
-                                style={styles.shopItem}
-                                source={getImage('icon_slot')}
-                                fadeDuration={0}>
-                                <Text style={styles.shopItemQuantity}>
-                                    {/*{isItem(item) && item.quantity > 1*/}
-                                    {/*    ? item.quantity*/}
-                                    {/*    : ''}*/}
-                                    {''}
-                                </Text>
-                            </ImageBackground>
-                            <View style={styles.shopItemCostLayout}>
-                                <Image
-                                    style={styles.shopItemCostIcon}
-                                    source={getImage('icon_diamonds')}
-                                    fadeDuration={0}
-                                />
-                                <Text style={styles.shopItemCostText}>
-                                    1999
-                                </Text>
-                            </View>
-                        </TouchableOpacity>
-                    </View>
+            {/* Shop Container */}
+            <View style={styles.innerLayout}>
+                <TitleSeparator title={'Traveling Merchant'} />
+                {/* Shop Row 1 */}
+                <View style={styles.shopRow}>
+                    {/* Item 1 */}
+                    <TouchableOpacity
+                        onPress={() => {}}
+                        disabled={disabled}
+                        style={styles.shopItemContainer}>
+                        <ImageBackground
+                            style={styles.shopItem}
+                            source={getImage('icon_slot')}
+                            fadeDuration={0}>
+                            <Text style={styles.shopItemQuantity}>
+                                {/*{isItem(item) && item.quantity > 1*/}
+                                {/*    ? item.quantity*/}
+                                {/*    : ''}*/}
+                                {''}
+                            </Text>
+                        </ImageBackground>
+                        <View style={styles.shopItemCostLayout}>
+                            <Image
+                                style={styles.shopItemCostIcon}
+                                source={getImage('icon_shards')}
+                                fadeDuration={0}
+                            />
+                            <Text style={styles.shopItemCostText}>1999</Text>
+                        </View>
+                    </TouchableOpacity>
+                    {/* Item 2 */}
+                    <TouchableOpacity
+                        onPress={() => {}}
+                        disabled={disabled}
+                        style={styles.shopItemContainer}>
+                        <ImageBackground
+                            style={styles.shopItem}
+                            source={getImage('icon_slot')}
+                            fadeDuration={0}>
+                            <Text style={styles.shopItemQuantity}>
+                                {/*{isItem(item) && item.quantity > 1*/}
+                                {/*    ? item.quantity*/}
+                                {/*    : ''}*/}
+                                {''}
+                            </Text>
+                        </ImageBackground>
+                        <View style={styles.shopItemCostLayout}>
+                            <Image
+                                style={styles.shopItemCostIcon}
+                                source={getImage('icon_shards')}
+                                fadeDuration={0}
+                            />
+                            <Text style={styles.shopItemCostText}>1999</Text>
+                        </View>
+                    </TouchableOpacity>
+                    {/* Item 3 */}
+                    <TouchableOpacity
+                        onPress={() => {}}
+                        disabled={disabled}
+                        style={styles.shopItemContainer}>
+                        <ImageBackground
+                            style={styles.shopItem}
+                            source={getImage('icon_slot')}
+                            fadeDuration={0}>
+                            <Text style={styles.shopItemQuantity}>
+                                {/*{isItem(item) && item.quantity > 1*/}
+                                {/*    ? item.quantity*/}
+                                {/*    : ''}*/}
+                                {''}
+                            </Text>
+                        </ImageBackground>
+                        <View style={styles.shopItemCostLayout}>
+                            <Image
+                                style={styles.shopItemCostIcon}
+                                source={getImage('icon_shards')}
+                                fadeDuration={0}
+                            />
+                            <Text style={styles.shopItemCostText}>1999</Text>
+                        </View>
+                    </TouchableOpacity>
+                    {/* Item 4 */}
+                    <TouchableOpacity
+                        onPress={() => {}}
+                        disabled={disabled}
+                        style={styles.shopItemContainer}>
+                        <ImageBackground
+                            style={styles.shopItem}
+                            source={getImage('icon_slot')}
+                            fadeDuration={0}>
+                            <Text style={styles.shopItemQuantity}>
+                                {/*{isItem(item) && item.quantity > 1*/}
+                                {/*    ? item.quantity*/}
+                                {/*    : ''}*/}
+                                {''}
+                            </Text>
+                        </ImageBackground>
+                        <View style={styles.shopItemCostLayout}>
+                            <Image
+                                style={styles.shopItemCostIcon}
+                                source={getImage('icon_shards')}
+                                fadeDuration={0}
+                            />
+                            <Text style={styles.shopItemCostText}>1999</Text>
+                        </View>
+                    </TouchableOpacity>
                 </View>
-            </ImageBackground>
+                <TitleSeparator title={'Black Market'} />
+                {/* Shop Row 2 */}
+                <View style={styles.shopRow}>
+                    {/* Item 1 */}
+                    <TouchableOpacity
+                        onPress={() => {}}
+                        disabled={disabled}
+                        style={styles.shopItemContainer}>
+                        <ImageBackground
+                            style={styles.shopItem}
+                            source={getImage('icon_slot')}
+                            fadeDuration={0}>
+                            <Text style={styles.shopItemQuantity}>
+                                {/*{isItem(item) && item.quantity > 1*/}
+                                {/*    ? item.quantity*/}
+                                {/*    : ''}*/}
+                                {''}
+                            </Text>
+                        </ImageBackground>
+                        <View style={styles.shopItemCostLayout}>
+                            <Image
+                                style={styles.shopItemCostIcon}
+                                source={getImage('icon_diamonds')}
+                                fadeDuration={0}
+                            />
+                            <Text style={styles.shopItemCostText}>1999</Text>
+                        </View>
+                    </TouchableOpacity>
+                    {/* Item 2 */}
+                    <TouchableOpacity
+                        onPress={() => {}}
+                        disabled={disabled}
+                        style={styles.shopItemContainer}>
+                        <ImageBackground
+                            style={styles.shopItem}
+                            source={getImage('icon_slot')}
+                            fadeDuration={0}>
+                            <Text style={styles.shopItemQuantity}>
+                                {/*{isItem(item) && item.quantity > 1*/}
+                                {/*    ? item.quantity*/}
+                                {/*    : ''}*/}
+                                {''}
+                            </Text>
+                        </ImageBackground>
+                        <View style={styles.shopItemCostLayout}>
+                            <Image
+                                style={styles.shopItemCostIcon}
+                                source={getImage('icon_diamonds')}
+                                fadeDuration={0}
+                            />
+                            <Text style={styles.shopItemCostText}>1999</Text>
+                        </View>
+                    </TouchableOpacity>
+                    {/* Item 3 */}
+                    <TouchableOpacity
+                        onPress={() => {}}
+                        disabled={disabled}
+                        style={styles.shopItemContainer}>
+                        <ImageBackground
+                            style={styles.shopItem}
+                            source={getImage('icon_slot')}
+                            fadeDuration={0}>
+                            <Text style={styles.shopItemQuantity}>
+                                {/*{isItem(item) && item.quantity > 1*/}
+                                {/*    ? item.quantity*/}
+                                {/*    : ''}*/}
+                                {''}
+                            </Text>
+                        </ImageBackground>
+                        <View style={styles.shopItemCostLayout}>
+                            <Image
+                                style={styles.shopItemCostIcon}
+                                source={getImage('icon_diamonds')}
+                                fadeDuration={0}
+                            />
+                            <Text style={styles.shopItemCostText}>1999</Text>
+                        </View>
+                    </TouchableOpacity>
+                    {/* Item 4 */}
+                    <TouchableOpacity
+                        onPress={() => {}}
+                        disabled={disabled}
+                        style={styles.shopItemContainer}>
+                        <ImageBackground
+                            style={styles.shopItem}
+                            source={getImage('icon_slot')}
+                            fadeDuration={0}>
+                            <Text style={styles.shopItemQuantity}>
+                                {/*{isItem(item) && item.quantity > 1*/}
+                                {/*    ? item.quantity*/}
+                                {/*    : ''}*/}
+                                {''}
+                            </Text>
+                        </ImageBackground>
+                        <View style={styles.shopItemCostLayout}>
+                            <Image
+                                style={styles.shopItemCostIcon}
+                                source={getImage('icon_diamonds')}
+                                fadeDuration={0}
+                            />
+                            <Text style={styles.shopItemCostText}>1999</Text>
+                        </View>
+                    </TouchableOpacity>
+                </View>
+            </View>
             {/* DEBUG */}
             <CustomButton
                 type={ButtonType.Orange}
@@ -411,7 +394,7 @@ export function Shop() {
 }
 
 const styles = StyleSheet.create({
-    container: {
+    outerContainer: {
         flex: 1,
     },
     refreshTitle: {
@@ -425,13 +408,11 @@ const styles = StyleSheet.create({
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
     },
-    innerContainer: {
+    innerLayout: {
         flex: 1,
         justifyContent: 'center',
         marginStart: 2,
         marginEnd: 2,
-    },
-    innerLayout: {
         marginBottom: 32,
     },
     shopRow: {

@@ -20,23 +20,29 @@ import {
     getItemImg,
     getItemName,
     getItemRarity,
-    getItemType,
-    getSpecificEquip,
+    getRandomEquip,
 } from '../../../parsers/itemParser.tsx';
-import {ButtonType, CustomButton} from '../../../components/customButton.tsx';
+import {
+    ButtonType,
+    CustomButton,
+} from '../../../components/buttons/customButton.tsx';
 import {strings} from '../../../utils/strings.ts';
-import {CloseButton} from '../../../components/closeButton.tsx';
+import {CloseButton} from '../../../components/buttons/closeButton.tsx';
 import cloneDeep from 'lodash.clonedeep';
 import {Counter} from '../../../components/counter.tsx';
 import {getInventoryIndex} from '../../../utils/arrayUtils.ts';
 import {rewardsModalInit} from '../../../redux/slices/rewardsModalSlice.tsx';
 import {inventoryRemoveItemAt} from '../../../redux/slices/inventorySlice.tsx';
+import {getCraftingExperience} from '../../../parsers/craftingParser.tsx';
+import {isQuestComplete, sortQuests} from '../../../parsers/questParser.tsx';
+import {questsSetList} from '../../../redux/slices/questsSlice.tsx';
 
 export function CraftingDetails() {
     const inventory = useSelector((state: RootState) => state.inventory);
     const craftingDetails = useSelector(
         (state: RootState) => state.craftingDetails,
     );
+    const quests = useSelector((state: RootState) => state.quests);
     const [materialsTemp, setMaterialsTemp] = useState<Item[]>([]);
     const [materialsOwned, setMaterialsOwned] = useState<number[]>([]);
     const [amount, setAmount] = useState('1');
@@ -105,7 +111,7 @@ export function CraftingDetails() {
     //TODO: Check Inventory Full
     function craftItem() {
         if (isItem(craftingDetails.item)) {
-            /* Resources and Consumables */
+            /* Consumables */
             if (
                 getItemCategory(craftingDetails.item.id) !== Category.equipment
             ) {
@@ -143,8 +149,7 @@ export function CraftingDetails() {
                 const rewards = [];
                 for (let i = 0; i < amountNr; i++) {
                     const equipItem = cloneDeep(craftingDetails.item);
-                    const item = getSpecificEquip(
-                        getItemType(equipItem.id),
+                    const item = getRandomEquip(
                         getItemRarity(equipItem.id),
                         equipItem.level,
                     );
@@ -153,7 +158,9 @@ export function CraftingDetails() {
                 dispatch(
                     rewardsModalInit({
                         rewards: rewards,
-                        experience: 0,
+                        experience:
+                            getCraftingExperience(craftingDetails.item.level) *
+                            rewards.length,
                         shards: 0,
                     }),
                 );
@@ -173,6 +180,25 @@ export function CraftingDetails() {
                     );
                 }
             }
+            /* Update Quests */
+            const questsList = cloneDeep(quests.questsList);
+
+            for (let i = 0; i < questsList.length; i++) {
+                let quest = questsList[i];
+                if (
+                    quest.isActive &&
+                    !isQuestComplete(quest) &&
+                    quest.type === 'crafting'
+                ) {
+                    // TODO: Check Craft Type (Equipment/Consumable, etc.)
+                    quest.progress = Math.min(
+                        quest.progress + parseInt(amount, 10),
+                        quest.maxProgress,
+                    );
+                }
+            }
+            sortQuests(questsList);
+            dispatch(questsSetList(questsList));
         }
     }
 

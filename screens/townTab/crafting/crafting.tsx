@@ -77,10 +77,11 @@ export function Crafting() {
 
     return (
         <ImageBackground
-            style={styles.container}
+            style={styles.outerContainer}
             source={getImage('background_outer')}
             resizeMode={'stretch'}>
             <CraftingDetails />
+            {/* Category Buttons */}
             <ButtonGroup
                 onPress={value => setSelectedIndex(value)}
                 selectedIndex={selectedIndex}
@@ -89,29 +90,22 @@ export function Crafting() {
                 selectedButtonStyle={styles.selectedButton}
                 textStyle={styles.buttonText}
             />
-            <ImageBackground
-                style={styles.innerContainer}
-                source={getImage('background_inner')}
-                resizeMode={'stretch'}
-                fadeDuration={0}>
-                <FlatList
-                    style={styles.craftingList}
-                    data={
-                        selectedIndex === 0
-                            ? equipmentList[0]
-                            : consumablesList[0]
-                    }
-                    keyExtractor={item => item.id}
-                    renderItem={renderItem}
-                    overScrollMode={'never'}
-                />
-            </ImageBackground>
+            {/* Crafting List */}
+            <FlatList
+                style={styles.craftingList}
+                data={
+                    selectedIndex === 0 ? equipmentList[0] : consumablesList[0]
+                }
+                keyExtractor={item => item.id}
+                renderItem={renderItem}
+                overScrollMode={'never'}
+            />
         </ImageBackground>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
+    outerContainer: {
         flex: 1,
     },
     buttonGroupContainer: {
@@ -132,14 +126,9 @@ const styles = StyleSheet.create({
     selectedButton: {
         backgroundColor: colors.secondary,
     },
-    innerContainer: {
-        flex: 1,
-        marginStart: 4,
-        marginEnd: 4,
-        marginTop: 2,
-        marginBottom: 4,
-    },
     craftingList: {
+        //TODO: margins
+        flex: 1,
         marginTop: 5,
         marginBottom: 6,
     },

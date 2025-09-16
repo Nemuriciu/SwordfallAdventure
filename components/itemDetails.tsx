@@ -19,12 +19,13 @@ import {
     getKey,
     getTreasureRewards,
     getTreasureShards,
+    getUpgradeCost,
 } from '../parsers/itemParser.tsx';
 import {getImage} from '../assets/images/_index';
-import {ButtonType, CustomButton} from './customButton.tsx';
+import {ButtonType, CustomButton} from './buttons/customButton.tsx';
 import {colors} from '../utils/colors.ts';
 import {getStats} from '../parsers/attributeParser.tsx';
-import {CloseButton} from './closeButton.tsx';
+import {CloseButton} from './buttons/closeButton.tsx';
 import {
     inventoryAddItemAt,
     inventoryAddItems,
@@ -51,6 +52,8 @@ import Toast from 'react-native-simple-toast';
 import {emptyStats, Stats} from '../types/stats.ts';
 import {rewardsModalInit} from '../redux/slices/rewardsModalSlice.tsx';
 import {DiscardModal} from '../screens/characterTab/inventory/discardModal.tsx';
+import {updateShards} from '../redux/slices/userInfoSlice.tsx';
+import {ConvertModal} from '../screens/characterTab/inventory/convertModal.tsx';
 
 export function ItemDetails() {
     const userInfo = useSelector((state: RootState) => state.userInfo);
@@ -61,6 +64,7 @@ export function ItemDetails() {
     const [itemStats, setItemStats] = useState<Stats>(emptyStats);
     const [equippedStats, setEquippedStats] = useState<Stats>(emptyStats);
     const [discardVisible, setDiscardVisible] = useState(false);
+    const [convertVisible, setConvertVisible] = useState(false);
     const [disabled, setDisabled] = useState(false);
     const dispatch = useDispatch();
 
@@ -124,7 +128,12 @@ export function ItemDetails() {
 
     function upgradeItem() {
         if (isItem(itemDetails.item)) {
-            if (itemDetails.item.upgrade < 6) {
+            const upgradeCost = getUpgradeCost(itemDetails.item);
+
+            if (upgradeCost <= userInfo.shards) {
+                /* Remove Shards Cost */
+                dispatch(updateShards(userInfo.shards - upgradeCost));
+
                 /* Upgrade item in Details */
                 dispatch(upgradeSelectedItem());
 
@@ -272,7 +281,9 @@ export function ItemDetails() {
                     rewardsModalInit({
                         rewards: rewards,
                         experience: 0,
-                        shards: getTreasureShards(itemDetails.item.level),
+                        shards: getTreasureShards(
+                            getItemRarity(itemDetails.item.id),
+                        ),
                     }),
                 );
                 dispatch(itemDetailsHide());
@@ -286,6 +297,12 @@ export function ItemDetails() {
 
     function consumeItem() {
         console.log('Consumable');
+    }
+
+    function convertItem() {
+        if (isItem(itemDetails.item)) {
+            setConvertVisible(true);
+        }
     }
 
     function discardItem() {
@@ -306,6 +323,14 @@ export function ItemDetails() {
                 <DiscardModal
                     visible={discardVisible}
                     setVisible={setDiscardVisible}
+                    item={itemDetails.item}
+                    index={itemDetails.index}
+                />
+            )}
+            {isItem(itemDetails.item) && (
+                <ConvertModal
+                    visible={convertVisible}
+                    setVisible={setConvertVisible}
                     item={itemDetails.item}
                     index={itemDetails.index}
                 />
@@ -686,16 +711,45 @@ export function ItemDetails() {
                                     {/* Upgrade Button */}
                                     {getItemCategory(itemDetails.item.id) ===
                                         'equipment' && (
-                                        <CustomButton
-                                            type={ButtonType.Orange}
-                                            title={strings.upgrade}
-                                            onPress={upgradeItem}
-                                            disabled={
-                                                disabled ||
-                                                itemDetails.item.upgrade >= 6
-                                            }
-                                            style={styles.actionButton}
-                                        />
+                                        <View style={styles.actionButton}>
+                                            <CustomButton
+                                                type={ButtonType.Orange}
+                                                title={strings.upgrade}
+                                                onPress={upgradeItem}
+                                                disabled={
+                                                    disabled ||
+                                                    itemDetails.item.upgrade >=
+                                                        6 ||
+                                                    getUpgradeCost(
+                                                        itemDetails.item,
+                                                    ) > userInfo.shards
+                                                }
+                                            />
+                                            {itemDetails.item.upgrade < 6 && (
+                                                <View
+                                                    style={
+                                                        styles.upgradeCostContainer
+                                                    }>
+                                                    <Image
+                                                        style={
+                                                            styles.shardsIcon
+                                                        }
+                                                        source={getImage(
+                                                            'icon_shards',
+                                                        )}
+                                                        fadeDuration={0}
+                                                    />
+                                                    <Text
+                                                        style={
+                                                            styles.upgradeText
+                                                        }>
+                                                        {getUpgradeCost(
+                                                            itemDetails.item,
+                                                        )}
+                                                    </Text>
+                                                </View>
+                                            )}
+                                        </View>
                                     )}
                                     {/* Use/Equip/Open Button */}
                                     {getItemCategory(itemDetails.item.id) !==
@@ -785,7 +839,7 @@ export function ItemDetails() {
                                             <CustomButton
                                                 type={ButtonType.Orange}
                                                 title={strings.convert}
-                                                onPress={() => {}}
+                                                onPress={convertItem}
                                                 disabled={disabled}
                                                 style={styles.actionButton}
                                             />
@@ -909,7 +963,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         marginTop: 4,
-        marginBottom: 8,
+        marginBottom: 20,
     },
     attributesContainer: {
         marginStart: 52,
@@ -929,6 +983,26 @@ const styles = StyleSheet.create({
         aspectRatio: 2.5,
         width: '25%',
         marginBottom: 36,
+    },
+    upgradeCostContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        marginTop: 4,
+    },
+    shardsIcon: {
+        aspectRatio: 1,
+        width: '22.5%',
+        height: undefined,
+    },
+    upgradeText: {
+        marginStart: 4,
+        marginEnd: 4,
+        marginTop: 1,
+        color: 'white',
+        fontFamily: 'Myriad',
+        textShadowColor: 'rgba(0, 0, 0, 1)',
+        textShadowOffset: {width: 1, height: 1},
+        textShadowRadius: 5,
     },
     closeButton: {
         position: 'absolute',

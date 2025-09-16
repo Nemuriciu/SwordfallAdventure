@@ -8,7 +8,10 @@ import {
 } from 'react-native';
 import React, {useEffect, useRef} from 'react';
 import {getImage} from '../../../assets/images/_index';
-import {ButtonType, CustomButton} from '../../../components/customButton.tsx';
+import {
+    ButtonType,
+    CustomButton,
+} from '../../../components/buttons/customButton.tsx';
 import {GatherNode} from './gatherNode.tsx';
 import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '../../../redux/store.tsx';
@@ -134,9 +137,10 @@ export function Gathering() {
 
     return (
         <ImageBackground
-            style={styles.container}
+            style={styles.outerContainer}
             source={getImage('background_outer')}
             resizeMode={'stretch'}>
+            {/* Gathering Experience */}
             <View style={styles.experienceBarContainer}>
                 <Text style={styles.experienceLabel}>Gathering Level</Text>
                 <Text style={styles.experienceValue}>{gatherInfo.level}</Text>
@@ -158,20 +162,17 @@ export function Gathering() {
                     resizeMode={'stretch'}
                 />
             </View>
-            <ImageBackground
-                style={styles.innerContainer}
-                source={getImage('background_inner')}
-                resizeMode={'stretch'}>
-                <FlatList
-                    style={styles.nodesList}
-                    data={gatherInfo.nodes}
-                    keyExtractor={(_item, index) => index.toString()}
-                    renderItem={({item, index}) => (
-                        <GatherNode node={item} index={index} />
-                    )}
-                    overScrollMode={'never'}
-                />
-            </ImageBackground>
+            {/* Nodes List */}
+            <FlatList
+                style={styles.nodesList}
+                data={gatherInfo.nodes}
+                keyExtractor={(_item, index) => index.toString()}
+                renderItem={({item, index}) => (
+                    <GatherNode node={item} index={index} />
+                )}
+                overScrollMode={'never'}
+            />
+            {/* Gathering Buttons */}
             <View style={styles.buttonsContainer}>
                 <CustomButton
                     type={ButtonType.Orange}
@@ -193,7 +194,7 @@ export function Gathering() {
 
 // @ts-ignore
 const styles = StyleSheet.create({
-    container: {
+    outerContainer: {
         flex: 1,
     },
     experienceBarContainer: {
@@ -235,17 +236,11 @@ const styles = StyleSheet.create({
         width: '7.5%',
         height: undefined,
     },
-    innerContainer: {
-        flex: 1,
-        marginBottom: 8,
-        marginStart: 8,
-        marginEnd: 8,
-    },
     nodesList: {
+        //TODO: margins
+        flex: 1,
         marginTop: 8,
         marginBottom: 8,
-        marginStart: 2,
-        marginEnd: 2,
     },
     buttonsContainer: {
         marginBottom: 8,

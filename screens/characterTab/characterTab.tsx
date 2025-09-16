@@ -32,6 +32,7 @@ export function CharacterTab() {
                         <Text
                             style={[
                                 styles.tabText,
+                                // eslint-disable-next-line react-native/no-inline-styles
                                 {color: focused ? colors.primary : 'white'},
                             ]}>
                             {route.title + ' '}

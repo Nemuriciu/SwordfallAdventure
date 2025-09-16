@@ -14,7 +14,7 @@ import {colors} from '../../../utils/colors.ts';
 import {strings} from '../../../utils/strings.ts';
 import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '../../../redux/store.tsx';
-import {CloseButton} from '../../../components/closeButton.tsx';
+import {CloseButton} from '../../../components/buttons/closeButton.tsx';
 import {Skill} from '../../../types/skill.ts';
 import {
     getSkillElement,

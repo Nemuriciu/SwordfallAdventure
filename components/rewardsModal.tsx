@@ -12,7 +12,7 @@ import Modal from 'react-native-modal';
 import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '../redux/store.tsx';
 import {getImage} from '../assets/images/_index';
-import {CloseButton} from './closeButton.tsx';
+import {CloseButton} from './buttons/closeButton.tsx';
 import {rewardsModalHide} from '../redux/slices/rewardsModalSlice.tsx';
 import {getItemImg} from '../parsers/itemParser.tsx';
 import {strings} from '../utils/strings.ts';
@@ -110,7 +110,9 @@ export function RewardsModal() {
                                     style={styles.flatList}
                                     horizontal
                                     data={rewardsModal.rewards}
-                                    keyExtractor={item => item.id}
+                                    keyExtractor={(_item, index) =>
+                                        index.toString()
+                                    }
                                     renderItem={renderItem}
                                     overScrollMode={'never'}
                                 />

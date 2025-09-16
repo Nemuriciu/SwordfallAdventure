@@ -2,6 +2,7 @@ import itemsJson from '../assets/json/items.json';
 import equipJson from '../assets/json/equipment.json';
 import chestsJson from '../assets/json/chests.json';
 import resourcesJson from '../assets/json/resources.json';
+import shardsJson from '../assets/json/shards.json';
 import {Item} from '../types/item.ts';
 import {colors} from '../utils/colors.ts';
 
@@ -151,6 +152,29 @@ export const getSpecificEquip = (
 
     return item;
 };
+
+export function getUpgradeCost(item: Item): number {
+    const rarity = getItemRarity(item.id);
+    // @ts-ignore
+    const equipShards = shardsJson.equipmentShards[rarity];
+
+    return equipShards[item.upgrade + 1];
+}
+
+export function getBreakValue(item: Item): number {
+    const rarity = getItemRarity(item.id);
+    // @ts-ignore
+    const equipShards = shardsJson.equipmentShards[rarity];
+    const refundValue = shardsJson.breakRefund;
+    let breakValue: number = equipShards.break;
+
+    /* Refund each Upgrade Level */
+    for (let i = 1; i <= item.upgrade; i++) {
+        breakValue += Math.round(equipShards[i] * refundValue);
+    }
+
+    return breakValue;
+}
 
 function getTreasureDropCount(type: string, rarity: string): number {
     let countMin = 0,
@@ -315,19 +339,50 @@ export function getTreasureRewards(rarity: string, level: number): Item[] {
     return rewards;
 }
 
-export function getTreasureShards(level: number): number {
-    const lvl = level % 10 === 0 ? 9 : (level % 10) - 1;
-    const shards = Math.round(207 * Math.pow(lvl + 1, 2) + Math.pow(4, lvl));
+export function getTreasureShards(rarity: string): number {
+    let shards = shardsJson.chestShards;
 
-    /* Variation ~2% of shards */
-    const shardsMin: number = Math.round(shards * 0.98);
+    /* Increase Shards by Chest Rarity */
+    switch (rarity) {
+        case 'uncommon':
+            shards *= 2;
+            break;
+        case 'rare':
+            shards *= 3;
+            break;
+        case 'epic':
+            shards *= 5;
+            break;
+    }
+
+    /* Variation ~10% of shards */
+    const shardsMin: number = Math.round(shards * 0.9);
 
     return rand(shardsMin, shards);
 }
 
-export function getConvertQuantity(id: string): number {
-    const category: string = getItemCategory(id);
-    const rarity: string = getItemRarity(id);
+export function getConvertQuantity(item: Item): number {
+    const category: string = getItemCategory(item.id);
+    const rarity: string = getItemRarity(item.id);
+
+    if (category !== 'resource') {
+        return Math.floor(item.quantity / 2);
+    }
+
+    switch (rarity) {
+        case 'common':
+        case 'uncommon':
+        case 'rare':
+        case 'epic':
+            return Math.floor(item.quantity / 3);
+        default:
+            throw new Error(`Unrecognized rarity ${rarity}`);
+    }
+}
+
+export function getConvertRatio(item: Item): number {
+    const category: string = getItemCategory(item.id);
+    const rarity: string = getItemRarity(item.id);
 
     if (category !== 'resource') {
         return 2;
@@ -336,10 +391,9 @@ export function getConvertQuantity(id: string): number {
     switch (rarity) {
         case 'common':
         case 'uncommon':
-            return 3;
         case 'rare':
         case 'epic':
-            return 2;
+            return 3;
         default:
             throw new Error(`Unrecognized rarity ${rarity}`);
     }
@@ -349,7 +403,7 @@ export function canConvert(item: Item, userLevel: number): boolean {
     return (
         getItemCategory(item.id) !== 'equipment' &&
         item.level < userLevel &&
-        item.quantity >= getConvertQuantity(item.id)
+        item.quantity >= getConvertRatio(item)
     );
 }
 

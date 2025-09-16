@@ -8,7 +8,7 @@ import {gatherInfoSlice} from './slices/gatherInfoSlice.tsx';
 import {rewardsModalSlice} from './slices/rewardsModalSlice.tsx';
 import {huntingSlice} from './slices/huntingSlice.tsx';
 import {combatSlice} from './slices/combatSlice.tsx';
-import {missionsSlice} from './slices/missionsSlice.tsx';
+import {questsSlice} from './slices/questsSlice.tsx';
 import {craftingDetailsSlice} from './slices/craftingDetailsSlice.tsx';
 import {skillsSlice} from './slices/skillsSlice.tsx';
 import {skillsDetailsSlice} from './slices/skillsDetailsSlice.tsx';
@@ -28,7 +28,7 @@ export const store = configureStore({
         craftingDetails: craftingDetailsSlice.reducer,
         skillsDetails: skillsDetailsSlice.reducer,
         rewardsModal: rewardsModalSlice.reducer,
-        missions: missionsSlice.reducer,
+        quests: questsSlice.reducer,
         levelUp: levelUpSlice.reducer,
     },
 });
