@@ -155,7 +155,7 @@ function createUserEntry(userID, username) {
             },
             inventory: {
                 //TODO:
-                list: new Array(36).fill({}),
+                inventoryList: new Array(36).fill({}),
             },
             quests: {
                 questsList: initializeQuests(1),

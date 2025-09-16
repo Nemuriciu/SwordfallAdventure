@@ -8,7 +8,6 @@ import {
     Image,
 } from 'react-native';
 import Modal from 'react-native-modal';
-import {useDispatch} from 'react-redux';
 import {getImage} from '../../../assets/images/_index';
 import {Item} from '../../../types/item.ts';
 import SpannableBuilder from '@mj-studio/react-native-spannable-string';
@@ -25,12 +24,9 @@ import {
     CustomButton,
 } from '../../../components/buttons/customButton.tsx';
 import {strings} from '../../../utils/strings.ts';
-import {itemDetailsHide} from '../../../redux/slices/itemDetailsSlice.tsx';
-import {
-    inventoryAddItems,
-    inventoryRemoveItemAt,
-} from '../../../redux/slices/inventorySlice.tsx';
 import cloneDeep from 'lodash.clonedeep';
+import {inventoryStore} from '../../../_zustand/inventoryStore.tsx';
+import {itemDetailsStore} from '../../../_zustand/itemDetailsStore.tsx';
 
 interface props {
     visible: boolean;
@@ -40,41 +36,33 @@ interface props {
 }
 
 export function ConvertModal({visible, setVisible, item, index}: props) {
-    const dispatch = useDispatch();
+    const inventoryAddItems = inventoryStore(state => state.inventoryAddItems);
+
+    const inventoryRemoveItemAt = inventoryStore(
+        state => state.inventoryRemoveItemAt,
+    );
+    const itemDetailsHide = itemDetailsStore(state => state.itemDetailsHide);
     const [disabled, setDisabled] = useState(false);
     SpannableBuilder.getInstanceWithComponent(Text);
 
     function convertItem() {
         setDisabled(true);
+
         let convertedItem = cloneDeep(item);
         convertedItem.level += 1;
         convertedItem.quantity = getConvertQuantity(item);
-
         /* Hide Item Details */
-        setTimeout(() => {
-            dispatch(itemDetailsHide());
-        }, 50);
-
+        itemDetailsHide();
         /* Remove Item from Inventory */
-        setTimeout(() => {
-            dispatch(
-                inventoryRemoveItemAt({index: index, quantity: item.quantity}),
-            );
-        }, 50);
-
+        inventoryRemoveItemAt(index, item.quantity);
         /* Add Converted Item to Inventory */
-        setTimeout(() => {
-            dispatch(inventoryAddItems([convertedItem]));
-        }, 50);
-
+        inventoryAddItems([convertedItem]);
         /* Hide Discard Modal */
-        setTimeout(() => {
-            setVisible(false);
-        }, 250);
+        setVisible(false);
 
         setTimeout(() => {
             setDisabled(false);
-        }, 1000);
+        }, 250);
     }
 
     const Title = () => {

@@ -31,14 +31,20 @@ import {CloseButton} from '../../../components/buttons/closeButton.tsx';
 import cloneDeep from 'lodash.clonedeep';
 import {Counter} from '../../../components/counter.tsx';
 import {getInventoryIndex} from '../../../utils/arrayUtils.ts';
-import {rewardsModalInit} from '../../../redux/slices/rewardsModalSlice.tsx';
-import {inventoryRemoveItemAt} from '../../../redux/slices/inventorySlice.tsx';
 import {getCraftingExperience} from '../../../parsers/craftingParser.tsx';
 import {isQuestComplete, sortQuests} from '../../../parsers/questParser.tsx';
 import {questsSetList} from '../../../redux/slices/questsSlice.tsx';
+import {inventoryStore} from '../../../_zustand/inventoryStore.tsx';
+import {rewardsStore} from '../../../_zustand/rewardsStore.tsx';
 
 export function CraftingDetails() {
-    const inventory = useSelector((state: RootState) => state.inventory);
+    const rewardsInit = rewardsStore(state => state.rewardsInit);
+
+    const inventoryList = inventoryStore(state => state.inventoryList);
+    const inventoryRemoveItemAt = inventoryStore(
+        state => state.inventoryRemoveItemAt,
+    );
+
     const craftingDetails = useSelector(
         (state: RootState) => state.craftingDetails,
     );
@@ -55,7 +61,7 @@ export function CraftingDetails() {
         setMaterialsTemp(cloneDeep(craftingDetails.materials));
         updateMatsOwned();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [craftingDetails.materials, inventory.list]);
+    }, [craftingDetails.materials, inventoryList]);
 
     useEffect(() => {
         if (!didMount_1.current) {
@@ -87,11 +93,11 @@ export function CraftingDetails() {
                 for (let i = 0; i < craftingDetails.materials.length; i++) {
                     const inventoryIndex = getInventoryIndex(
                         craftingDetails.materials[i],
-                        inventory.list,
+                        inventoryList,
                     );
                     if (inventoryIndex !== -1) {
                         matsOwned.push(
-                            (inventory.list[inventoryIndex] as Item).quantity,
+                            (inventoryList[inventoryIndex] as Item).quantity,
                         );
                     } else {
                         matsOwned.push(0);
@@ -118,26 +124,18 @@ export function CraftingDetails() {
                 /* Add Item to Inventory */
                 const item = cloneDeep(craftingDetails.item);
                 item.quantity = parseInt(amount, 10);
-                dispatch(
-                    rewardsModalInit({
-                        rewards: [item],
-                        experience: 0,
-                        shards: 0,
-                    }),
-                );
+                rewardsInit([item], 0, 0);
+
                 /* Remove materials from Inventory */
                 for (let i = 0; i < materialsTemp.length; i++) {
                     const index = getInventoryIndex(
                         materialsTemp[i],
-                        inventory.list,
+                        inventoryList,
                     );
-                    dispatch(
-                        inventoryRemoveItemAt({
-                            index: index,
-                            quantity:
-                                materialsTemp[i].quantity *
-                                parseInt(amount, 10),
-                        }),
+
+                    inventoryRemoveItemAt(
+                        index,
+                        materialsTemp[i].quantity * parseInt(amount, 10),
                     );
                 }
             } else if (
@@ -155,28 +153,23 @@ export function CraftingDetails() {
                     );
                     rewards.push(item);
                 }
-                dispatch(
-                    rewardsModalInit({
-                        rewards: rewards,
-                        experience:
-                            getCraftingExperience(craftingDetails.item.level) *
-                            rewards.length,
-                        shards: 0,
-                    }),
+
+                rewardsInit(
+                    rewards,
+                    getCraftingExperience(craftingDetails.item.level) *
+                        rewards.length,
+                    0,
                 );
                 /* Remove materials from Inventory */
                 for (let i = 0; i < materialsTemp.length; i++) {
                     const index = getInventoryIndex(
                         materialsTemp[i],
-                        inventory.list,
+                        inventoryList,
                     );
-                    dispatch(
-                        inventoryRemoveItemAt({
-                            index: index,
-                            quantity:
-                                materialsTemp[i].quantity *
-                                parseInt(amount, 10),
-                        }),
+
+                    inventoryRemoveItemAt(
+                        index,
+                        materialsTemp[i].quantity * parseInt(amount, 10),
                     );
                 }
             }

@@ -3,10 +3,6 @@ import {StyleSheet, Text, View, ImageBackground, Image} from 'react-native';
 import Modal from 'react-native-modal';
 import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '../redux/store.tsx';
-import {
-    itemDetailsHide,
-    upgradeSelectedItem,
-} from '../redux/slices/itemDetailsSlice.tsx';
 import {isItem, Item} from '../types/item.ts';
 import {
     canConvert,
@@ -27,12 +23,6 @@ import {colors} from '../utils/colors.ts';
 import {getStats} from '../parsers/attributeParser.tsx';
 import {CloseButton} from './buttons/closeButton.tsx';
 import {
-    inventoryAddItemAt,
-    inventoryAddItems,
-    inventoryRemoveItemAt,
-    inventoryUpgradeItem,
-} from '../redux/slices/inventorySlice.tsx';
-import {
     equipBoots,
     equipChest,
     equipGloves,
@@ -50,15 +40,41 @@ import {
 } from '../utils/arrayUtils.ts';
 import Toast from 'react-native-simple-toast';
 import {emptyStats, Stats} from '../types/stats.ts';
-import {rewardsModalInit} from '../redux/slices/rewardsModalSlice.tsx';
 import {DiscardModal} from '../screens/characterTab/inventory/discardModal.tsx';
-import {updateShards} from '../redux/slices/userInfoSlice.tsx';
 import {ConvertModal} from '../screens/characterTab/inventory/convertModal.tsx';
+import {itemDetailsStore} from '../_zustand/itemDetailsStore.tsx';
+import {inventoryStore} from '../_zustand/inventoryStore.tsx';
+import {rewardsStore} from '../_zustand/rewardsStore.tsx';
+import {userInfoStore} from '../_zustand/userInfoStore.tsx';
 
 export function ItemDetails() {
-    const userInfo = useSelector((state: RootState) => state.userInfo);
-    const itemDetails = useSelector((state: RootState) => state.itemDetails);
-    const inventory = useSelector((state: RootState) => state.inventory);
+    const level = userInfoStore(state => state.level);
+    const shards = userInfoStore(state => state.shards);
+    const updateShards = userInfoStore(state => state.updateShards);
+
+    const modalVisible = itemDetailsStore(state => state.modalVisible);
+    const item = itemDetailsStore(state => state.item);
+    const index = itemDetailsStore(state => state.index);
+    const itemDetailsShow = itemDetailsStore(state => state.itemDetailsShow);
+    const itemDetailsHide = itemDetailsStore(state => state.itemDetailsHide);
+    const upgradeSelectedItem = itemDetailsStore(
+        state => state.upgradeSelectedItem,
+    );
+
+    const inventoryList = inventoryStore(state => state.inventoryList);
+    const inventoryUpgradeItemAt = inventoryStore(
+        state => state.inventoryUpgradeItemAt,
+    );
+    const inventoryAddItems = inventoryStore(state => state.inventoryAddItems);
+    const inventoryAddItemAt = inventoryStore(
+        state => state.inventoryAddItemAt,
+    );
+    const inventoryRemoveMultipleItemsAt = inventoryStore(
+        state => state.inventoryRemoveMultipleItemsAt,
+    );
+
+    const rewardsInit = rewardsStore(state => state.rewardsInit);
+
     const equipment = useSelector((state: RootState) => state.equipment);
     const [equippedItem, setEquippedItem] = useState<Item | {}>({});
     const [itemStats, setItemStats] = useState<Stats>(emptyStats);
@@ -71,12 +87,12 @@ export function ItemDetails() {
     useEffect(() => {
         setEquippedItem({});
 
-        if (isItem(itemDetails.item)) {
-            if (getItemCategory(itemDetails.item.id) === 'equipment') {
-                setItemStats(getStats(itemDetails.item));
+        if (isItem(item)) {
+            if (getItemCategory(item.id) === 'equipment') {
+                setItemStats(getStats(item));
 
-                if (itemDetails.index !== -1) {
-                    switch (getItemType(itemDetails.item.id)) {
+                if (index !== -1) {
+                    switch (getItemType(item.id)) {
                         case 'helmet':
                             if (isItem(equipment.helmet)) {
                                 setEquippedItem(equipment.helmet);
@@ -124,23 +140,23 @@ export function ItemDetails() {
             }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [itemDetails.item]);
+    }, [item]);
 
     function upgradeItem() {
-        if (isItem(itemDetails.item)) {
-            const upgradeCost = getUpgradeCost(itemDetails.item);
+        if (isItem(item)) {
+            const upgradeCost = getUpgradeCost(item);
 
-            if (upgradeCost <= userInfo.shards) {
+            if (upgradeCost <= shards) {
                 /* Remove Shards Cost */
-                dispatch(updateShards(userInfo.shards - upgradeCost));
+                updateShards(shards - upgradeCost);
 
                 /* Upgrade item in Details */
-                dispatch(upgradeSelectedItem());
+                upgradeSelectedItem();
 
-                if (itemDetails.index !== -1) {
-                    dispatch(inventoryUpgradeItem(itemDetails.index));
+                if (index !== -1) {
+                    inventoryUpgradeItemAt(index);
                 } else {
-                    dispatch(equippedItemUpgrade(itemDetails.item));
+                    dispatch(equippedItemUpgrade(item));
                 }
             }
         }
@@ -150,48 +166,53 @@ export function ItemDetails() {
         if (!disabled) {
             setDisabled(true);
 
-            if (isItem(itemDetails.item)) {
-                const type = getItemType(itemDetails.item.id);
+            if (isItem(item)) {
+                const type = getItemType(item.id);
                 let itemRemoved = {};
 
                 switch (type) {
                     case 'helmet':
                         itemRemoved = equipment.helmet;
-                        dispatch(equipHelmet(itemDetails.item));
+                        dispatch(equipHelmet(item));
                         break;
                     case 'weapon':
                         itemRemoved = equipment.weapon;
-                        dispatch(equipWeapon(itemDetails.item));
+                        dispatch(equipWeapon(item));
                         break;
                     case 'chest':
                         itemRemoved = equipment.chest;
-                        dispatch(equipChest(itemDetails.item));
+                        dispatch(equipChest(item));
                         break;
                     case 'offhand':
                         itemRemoved = equipment.offhand;
-                        dispatch(equipOffhand(itemDetails.item));
+                        dispatch(equipOffhand(item));
                         break;
                     case 'gloves':
                         itemRemoved = equipment.gloves;
-                        dispatch(equipGloves(itemDetails.item));
+                        dispatch(equipGloves(item));
                         break;
                     case 'pants':
                         itemRemoved = equipment.pants;
-                        dispatch(equipPants(itemDetails.item));
+                        dispatch(equipPants(item));
                         break;
                     case 'boots':
                         itemRemoved = equipment.boots;
-                        dispatch(equipBoots(itemDetails.item));
+                        dispatch(equipBoots(item));
                         break;
                 }
 
-                dispatch(inventoryAddItemAt([itemRemoved, itemDetails.index]));
-                dispatch(itemDetailsHide());
+                inventoryAddItemAt(itemRemoved as Item, index);
+
+                if (isItem(itemRemoved)) {
+                    itemDetailsShow(itemRemoved, index);
+                } else {
+                    itemDetailsHide();
+                }
             }
 
             setTimeout(() => {
                 setDisabled(false);
-            }, 1000);
+            }, 300);
         }
     }
 
@@ -199,12 +220,12 @@ export function ItemDetails() {
         if (!disabled) {
             setDisabled(true);
 
-            if (isFull(inventory.list)) {
+            if (isFull(inventoryList)) {
                 //TODO: localization
                 Toast.show('Inventory is full.', Toast.SHORT);
             } else {
-                if (isItem(itemDetails.item)) {
-                    const type = getItemType(itemDetails.item.id);
+                if (isItem(item)) {
+                    const type = getItemType(item.id);
                     let itemRemoved = {};
 
                     switch (type) {
@@ -238,14 +259,14 @@ export function ItemDetails() {
                             break;
                     }
 
-                    dispatch(inventoryAddItems([itemRemoved as Item]));
-                    dispatch(itemDetailsHide());
+                    inventoryAddItems([itemRemoved as Item]);
+                    itemDetailsHide();
                 }
             }
 
             setTimeout(() => {
                 setDisabled(false);
-            }, 1000);
+            }, 300);
         }
     }
 
@@ -253,45 +274,33 @@ export function ItemDetails() {
         if (!disabled) {
             setDisabled(true);
 
-            if (isItem(itemDetails.item)) {
+            if (isItem(item)) {
                 /* Generate Rewards */
                 const rewards = getTreasureRewards(
-                    getItemRarity(itemDetails.item.id),
-                    itemDetails.item.level,
+                    getItemRarity(item.id),
+                    item.level,
                 );
                 /* Remove Key */
                 const keyIndex = getInventoryIndex(
-                    getKey(
-                        getItemRarity(itemDetails.item.id),
-                        itemDetails.item.level,
-                        1,
-                    ),
-                    inventory.list,
+                    getKey(getItemRarity(item.id), item.level, 1),
+                    inventoryList,
                 );
-                dispatch(inventoryRemoveItemAt({index: keyIndex, quantity: 1}));
-                /* Remove Chest */
-                dispatch(
-                    inventoryRemoveItemAt({
-                        index: itemDetails.index,
-                        quantity: 1,
-                    }),
-                );
+                /* Remove Key and Chest */
+                inventoryRemoveMultipleItemsAt([keyIndex, index], [1, 1]);
+                // inventoryRemoveItemAt(keyIndex, 1);
+                // inventoryRemoveItemAt(index, 1);
                 /* Show Rewards Modal */
-                dispatch(
-                    rewardsModalInit({
-                        rewards: rewards,
-                        experience: 0,
-                        shards: getTreasureShards(
-                            getItemRarity(itemDetails.item.id),
-                        ),
-                    }),
+                rewardsInit(
+                    rewards,
+                    0,
+                    getTreasureShards(getItemRarity(item.id)),
                 );
-                dispatch(itemDetailsHide());
+                itemDetailsHide();
             }
 
             setTimeout(() => {
                 setDisabled(false);
-            }, 1000);
+            }, 250);
         }
     }
 
@@ -300,13 +309,13 @@ export function ItemDetails() {
     }
 
     function convertItem() {
-        if (isItem(itemDetails.item)) {
+        if (isItem(item)) {
             setConvertVisible(true);
         }
     }
 
     function discardItem() {
-        if (isItem(itemDetails.item)) {
+        if (isItem(item)) {
             setDiscardVisible(true);
         }
     }
@@ -314,213 +323,211 @@ export function ItemDetails() {
     // noinspection RequiredAttributes
     return (
         <Modal
-            animationIn={'zoomIn'}
+            animationIn={'fadeIn'}
             animationOut={'fadeOut'}
-            isVisible={itemDetails.modalVisible}
+            animationOutTiming={200}
+            isVisible={modalVisible}
             backdropTransitionOutTiming={0}
             useNativeDriver={true}>
-            {isItem(itemDetails.item) && (
+            {isItem(item) && (
                 <DiscardModal
                     visible={discardVisible}
                     setVisible={setDiscardVisible}
-                    item={itemDetails.item}
-                    index={itemDetails.index}
+                    item={item}
+                    index={index}
                 />
             )}
-            {isItem(itemDetails.item) && (
+            {isItem(item) && (
                 <ConvertModal
                     visible={convertVisible}
                     setVisible={setConvertVisible}
-                    item={itemDetails.item}
-                    index={itemDetails.index}
+                    item={item}
+                    index={index}
                 />
             )}
-            {isItem(itemDetails.item) && (
-                <View style={styles.modalAlpha}>
-                    <View style={styles.container}>
-                        {/* Equipped Item */}
-                        {isItem(equippedItem) ? (
-                            <ImageBackground
-                                style={styles.background}
-                                source={getImage('background_details')}
-                                resizeMode={'stretch'}
-                                fadeDuration={0}>
-                                <View>
-                                    <Text style={styles.equippedTitle}>
-                                        {strings.equipped}
-                                    </Text>
-                                    <View style={styles.topContainer}>
-                                        <View style={styles.imageContainer}>
-                                            <Image
-                                                style={styles.image}
-                                                source={getImage(
-                                                    getItemImg(equippedItem.id),
-                                                )}
-                                                fadeDuration={0}
-                                            />
-                                            <Text style={styles.imageUpgrade}>
-                                                {equippedItem.upgrade
-                                                    ? '+' + equippedItem.upgrade
-                                                    : ''}
-                                            </Text>
-                                        </View>
-                                        <View style={styles.itemInfoContainer}>
-                                            <Text
-                                                style={[
-                                                    styles.name,
-                                                    {
-                                                        color: getItemColor(
-                                                            getItemRarity(
-                                                                equippedItem.id,
-                                                            ),
-                                                        ),
-                                                    },
-                                                ]}>
-                                                {getItemName(equippedItem.id)}
-                                            </Text>
-                                            <Text
-                                                style={[
-                                                    styles.type,
-                                                    {
-                                                        color: getItemColor(
-                                                            getItemRarity(
-                                                                equippedItem.id,
-                                                            ),
-                                                        ),
-                                                    },
-                                                ]}>
-                                                {getItemRarity(
-                                                    equippedItem.id,
-                                                ) +
-                                                    ' ' +
-                                                    getItemType(
-                                                        equippedItem.id,
-                                                    )}
-                                            </Text>
-                                            <Text style={styles.level}>
-                                                {'Level ' + equippedItem.level}
-                                            </Text>
-                                        </View>
-                                    </View>
-                                    <View style={styles.separatorContainer}>
+
+            <View style={styles.modalAlpha}>
+                <View style={styles.container}>
+                    {/* Equipped Item */}
+                    {isItem(equippedItem) ? (
+                        <ImageBackground
+                            style={styles.background}
+                            source={getImage('background_details')}
+                            resizeMode={'stretch'}
+                            fadeDuration={0}>
+                            <View>
+                                <Text style={styles.equippedTitle}>
+                                    {strings.equipped}
+                                </Text>
+                                <View style={styles.topContainer}>
+                                    <View style={styles.imageContainer}>
                                         <Image
-                                            style={styles.separatorImage}
-                                            source={getImage('icon_separator')}
-                                            resizeMode={'contain'}
+                                            style={styles.image}
+                                            source={getImage(
+                                                getItemImg(equippedItem.id),
+                                            )}
                                             fadeDuration={0}
                                         />
+                                        <Text style={styles.imageUpgrade}>
+                                            {equippedItem.upgrade
+                                                ? '+' + equippedItem.upgrade
+                                                : ''}
+                                        </Text>
                                     </View>
-                                    <View style={styles.attributesContainer}>
-                                        {equippedStats.health > 0 && (
-                                            <Text
-                                                style={[
-                                                    styles.attribute,
-                                                    {
-                                                        color: colors.health_color,
-                                                    },
-                                                ]}>
-                                                {equippedStats
-                                                    ? equippedStats.health +
-                                                          equippedStats.bonusHealth >
-                                                      0
-                                                        ? '+ ' +
-                                                          (equippedStats.health +
-                                                              equippedStats.bonusHealth) +
-                                                          ' ' +
-                                                          strings.health
-                                                        : ''
-                                                    : ''}
-                                            </Text>
-                                        )}
-                                        {equippedStats.physicalAtk > 0 && (
-                                            <Text
-                                                style={[
-                                                    styles.attribute,
-                                                    {
-                                                        color: colors.physicalAtk_color,
-                                                    },
-                                                ]}>
-                                                {equippedStats
-                                                    ? equippedStats.physicalAtk +
-                                                          equippedStats.bonusPhysicalAtk >
-                                                      0
-                                                        ? '+ ' +
-                                                          (equippedStats.physicalAtk +
-                                                              equippedStats.bonusPhysicalAtk) +
-                                                          ' ' +
-                                                          strings.physical_atk
-                                                        : ''
-                                                    : ''}
-                                            </Text>
-                                        )}
-                                        {equippedStats.magicalAtk > 0 && (
-                                            <Text
-                                                style={[
-                                                    styles.attribute,
-                                                    {
-                                                        color: colors.magicalAtk_color,
-                                                    },
-                                                ]}>
-                                                {equippedStats
-                                                    ? equippedStats.magicalAtk +
-                                                          equippedStats.bonusMagicalAtk >
-                                                      0
-                                                        ? '+ ' +
-                                                          (equippedStats.magicalAtk +
-                                                              equippedStats.bonusMagicalAtk) +
-                                                          ' ' +
-                                                          strings.magical_atk
-                                                        : ''
-                                                    : ''}
-                                            </Text>
-                                        )}
-                                        {equippedStats.physicalRes > 0 && (
-                                            <Text
-                                                style={[
-                                                    styles.attribute,
-                                                    {
-                                                        color: colors.physicalRes_color,
-                                                    },
-                                                ]}>
-                                                {equippedStats
-                                                    ? equippedStats.physicalRes +
-                                                          equippedStats.bonusPhysicalRes >
-                                                      0
-                                                        ? '+ ' +
-                                                          (equippedStats.physicalRes +
-                                                              equippedStats.bonusPhysicalRes) +
-                                                          ' ' +
-                                                          strings.physical_res
-                                                        : ''
-                                                    : ''}
-                                            </Text>
-                                        )}
-                                        {equippedStats.magicalRes > 0 && (
-                                            <Text
-                                                style={[
-                                                    styles.attribute,
-                                                    {
-                                                        color: colors.magicalRes_color,
-                                                    },
-                                                ]}>
-                                                {equippedStats
-                                                    ? equippedStats.magicalRes +
-                                                          equippedStats.bonusMagicalRes >
-                                                      0
-                                                        ? '+ ' +
-                                                          (equippedStats.magicalRes +
-                                                              equippedStats.bonusMagicalRes) +
-                                                          ' ' +
-                                                          strings.magical_res
-                                                        : ''
-                                                    : ''}
-                                            </Text>
-                                        )}
+                                    <View style={styles.itemInfoContainer}>
+                                        <Text
+                                            style={[
+                                                styles.name,
+                                                {
+                                                    color: getItemColor(
+                                                        getItemRarity(
+                                                            equippedItem.id,
+                                                        ),
+                                                    ),
+                                                },
+                                            ]}>
+                                            {getItemName(equippedItem.id)}
+                                        </Text>
+                                        <Text
+                                            style={[
+                                                styles.type,
+                                                {
+                                                    color: getItemColor(
+                                                        getItemRarity(
+                                                            equippedItem.id,
+                                                        ),
+                                                    ),
+                                                },
+                                            ]}>
+                                            {getItemRarity(equippedItem.id) +
+                                                ' ' +
+                                                getItemType(equippedItem.id)}
+                                        </Text>
+                                        <Text style={styles.level}>
+                                            {'Level ' + equippedItem.level}
+                                        </Text>
                                     </View>
                                 </View>
-                            </ImageBackground>
-                        ) : null}
-                        {/* Selected Item */}
+                                <View style={styles.separatorContainer}>
+                                    <Image
+                                        style={styles.separatorImage}
+                                        source={getImage('icon_separator')}
+                                        resizeMode={'contain'}
+                                        fadeDuration={0}
+                                    />
+                                </View>
+                                <View style={styles.attributesContainer}>
+                                    {equippedStats.health > 0 && (
+                                        <Text
+                                            style={[
+                                                styles.attribute,
+                                                {
+                                                    color: colors.health_color,
+                                                },
+                                            ]}>
+                                            {equippedStats
+                                                ? equippedStats.health +
+                                                      equippedStats.bonusHealth >
+                                                  0
+                                                    ? '+ ' +
+                                                      (equippedStats.health +
+                                                          equippedStats.bonusHealth) +
+                                                      ' ' +
+                                                      strings.health
+                                                    : ''
+                                                : ''}
+                                        </Text>
+                                    )}
+                                    {equippedStats.physicalAtk > 0 && (
+                                        <Text
+                                            style={[
+                                                styles.attribute,
+                                                {
+                                                    color: colors.physicalAtk_color,
+                                                },
+                                            ]}>
+                                            {equippedStats
+                                                ? equippedStats.physicalAtk +
+                                                      equippedStats.bonusPhysicalAtk >
+                                                  0
+                                                    ? '+ ' +
+                                                      (equippedStats.physicalAtk +
+                                                          equippedStats.bonusPhysicalAtk) +
+                                                      ' ' +
+                                                      strings.physical_atk
+                                                    : ''
+                                                : ''}
+                                        </Text>
+                                    )}
+                                    {equippedStats.magicalAtk > 0 && (
+                                        <Text
+                                            style={[
+                                                styles.attribute,
+                                                {
+                                                    color: colors.magicalAtk_color,
+                                                },
+                                            ]}>
+                                            {equippedStats
+                                                ? equippedStats.magicalAtk +
+                                                      equippedStats.bonusMagicalAtk >
+                                                  0
+                                                    ? '+ ' +
+                                                      (equippedStats.magicalAtk +
+                                                          equippedStats.bonusMagicalAtk) +
+                                                      ' ' +
+                                                      strings.magical_atk
+                                                    : ''
+                                                : ''}
+                                        </Text>
+                                    )}
+                                    {equippedStats.physicalRes > 0 && (
+                                        <Text
+                                            style={[
+                                                styles.attribute,
+                                                {
+                                                    color: colors.physicalRes_color,
+                                                },
+                                            ]}>
+                                            {equippedStats
+                                                ? equippedStats.physicalRes +
+                                                      equippedStats.bonusPhysicalRes >
+                                                  0
+                                                    ? '+ ' +
+                                                      (equippedStats.physicalRes +
+                                                          equippedStats.bonusPhysicalRes) +
+                                                      ' ' +
+                                                      strings.physical_res
+                                                    : ''
+                                                : ''}
+                                        </Text>
+                                    )}
+                                    {equippedStats.magicalRes > 0 && (
+                                        <Text
+                                            style={[
+                                                styles.attribute,
+                                                {
+                                                    color: colors.magicalRes_color,
+                                                },
+                                            ]}>
+                                            {equippedStats
+                                                ? equippedStats.magicalRes +
+                                                      equippedStats.bonusMagicalRes >
+                                                  0
+                                                    ? '+ ' +
+                                                      (equippedStats.magicalRes +
+                                                          equippedStats.bonusMagicalRes) +
+                                                      ' ' +
+                                                      strings.magical_res
+                                                    : ''
+                                                : ''}
+                                        </Text>
+                                    )}
+                                </View>
+                            </View>
+                        </ImageBackground>
+                    ) : null}
+                    {/* Selected Item */}
+                    {isItem(item) && (
                         <ImageBackground
                             style={styles.background}
                             source={getImage('background_details')}
@@ -532,13 +539,13 @@ export function ItemDetails() {
                                         <Image
                                             style={styles.image}
                                             source={getImage(
-                                                getItemImg(itemDetails.item.id),
+                                                getItemImg(item.id),
                                             )}
                                             fadeDuration={0}
                                         />
                                         <Text style={styles.imageUpgrade}>
-                                            {itemDetails.item.upgrade
-                                                ? '+' + itemDetails.item.upgrade
+                                            {item.upgrade
+                                                ? '+' + item.upgrade
                                                 : ''}
                                         </Text>
                                     </View>
@@ -548,16 +555,12 @@ export function ItemDetails() {
                                                 styles.name,
                                                 {
                                                     color: getItemColor(
-                                                        getItemRarity(
-                                                            itemDetails.item.id,
-                                                        ),
+                                                        getItemRarity(item.id),
                                                     ),
                                                 },
                                             ]}>
-                                            {isItem(itemDetails.item)
-                                                ? getItemName(
-                                                      itemDetails.item.id,
-                                                  )
+                                            {isItem(item)
+                                                ? getItemName(item.id)
                                                 : ''}
                                         </Text>
                                         <Text
@@ -565,26 +568,19 @@ export function ItemDetails() {
                                                 styles.type,
                                                 {
                                                     color: getItemColor(
-                                                        getItemRarity(
-                                                            itemDetails.item.id,
-                                                        ),
+                                                        getItemRarity(item.id),
                                                     ),
                                                 },
                                             ]}>
-                                            {isItem(itemDetails.item)
-                                                ? getItemRarity(
-                                                      itemDetails.item.id,
-                                                  ) +
+                                            {isItem(item)
+                                                ? getItemRarity(item.id) +
                                                   ' ' +
-                                                  getItemType(
-                                                      itemDetails.item.id,
-                                                  )
+                                                  getItemType(item.id)
                                                 : ''}
                                         </Text>
                                         <Text style={styles.level}>
-                                            {isItem(itemDetails.item)
-                                                ? 'Level ' +
-                                                  itemDetails.item.level
+                                            {isItem(item)
+                                                ? 'Level ' + item.level
                                                 : ''}
                                         </Text>
                                     </View>
@@ -597,8 +593,7 @@ export function ItemDetails() {
                                         fadeDuration={0}
                                     />
                                 </View>
-                                {getItemCategory(itemDetails.item.id) ===
-                                    'equipment' && (
+                                {getItemCategory(item.id) === 'equipment' && (
                                     <View style={styles.attributesContainer}>
                                         {itemStats.health > 0 && (
                                             <Text
@@ -709,7 +704,7 @@ export function ItemDetails() {
                                 )}
                                 <View style={styles.buttonsContainer}>
                                     {/* Upgrade Button */}
-                                    {getItemCategory(itemDetails.item.id) ===
+                                    {getItemCategory(item.id) ===
                                         'equipment' && (
                                         <View style={styles.actionButton}>
                                             <CustomButton
@@ -718,14 +713,12 @@ export function ItemDetails() {
                                                 onPress={upgradeItem}
                                                 disabled={
                                                     disabled ||
-                                                    itemDetails.item.upgrade >=
-                                                        6 ||
-                                                    getUpgradeCost(
-                                                        itemDetails.item,
-                                                    ) > userInfo.shards
+                                                    item.upgrade >= 6 ||
+                                                    getUpgradeCost(item) >
+                                                        shards
                                                 }
                                             />
-                                            {itemDetails.item.upgrade < 6 && (
+                                            {item.upgrade < 6 && (
                                                 <View
                                                     style={
                                                         styles.upgradeCostContainer
@@ -743,37 +736,29 @@ export function ItemDetails() {
                                                         style={
                                                             styles.upgradeText
                                                         }>
-                                                        {getUpgradeCost(
-                                                            itemDetails.item,
-                                                        )}
+                                                        {getUpgradeCost(item)}
                                                     </Text>
                                                 </View>
                                             )}
                                         </View>
                                     )}
                                     {/* Use/Equip/Open Button */}
-                                    {getItemCategory(itemDetails.item.id) !==
-                                        'resource' &&
-                                        getItemCategory(itemDetails.item.id) !==
-                                            'key' && (
+                                    {getItemCategory(item.id) !== 'resource' &&
+                                        getItemCategory(item.id) !== 'key' && (
                                             <CustomButton
                                                 type={ButtonType.Orange}
                                                 title={
-                                                    getItemCategory(
-                                                        itemDetails.item.id,
-                                                    ) === 'chest'
+                                                    getItemCategory(item.id) ===
+                                                    'chest'
                                                         ? strings.open
                                                         : getItemCategory(
-                                                              itemDetails.item
-                                                                  .id,
+                                                              item.id,
                                                           ) === 'consumable'
                                                         ? strings.use
                                                         : getItemCategory(
-                                                              itemDetails.item
-                                                                  .id,
+                                                              item.id,
                                                           ) === 'equipment'
-                                                        ? itemDetails.index !==
-                                                          -1
+                                                        ? index !== -1
                                                             ? strings.equip
                                                             : strings.unequip
                                                         : ''
@@ -781,31 +766,22 @@ export function ItemDetails() {
                                                 onPress={() => {
                                                     if (
                                                         getItemCategory(
-                                                            (
-                                                                itemDetails.item as Item
-                                                            ).id,
+                                                            (item as Item).id,
                                                         ) === 'chest'
                                                     ) {
                                                         openChest();
                                                     } else if (
                                                         getItemCategory(
-                                                            (
-                                                                itemDetails.item as Item
-                                                            ).id,
+                                                            (item as Item).id,
                                                         ) === 'consumable'
                                                     ) {
                                                         consumeItem();
                                                     } else if (
                                                         getItemCategory(
-                                                            (
-                                                                itemDetails.item as Item
-                                                            ).id,
+                                                            (item as Item).id,
                                                         ) === 'equipment'
                                                     ) {
-                                                        if (
-                                                            itemDetails.index !==
-                                                            -1
-                                                        ) {
+                                                        if (index !== -1) {
                                                             equipItem();
                                                         } else {
                                                             unequipItem();
@@ -815,27 +791,22 @@ export function ItemDetails() {
                                                 disabled={
                                                     disabled ||
                                                     (getItemCategory(
-                                                        itemDetails.item.id,
+                                                        item.id,
                                                     ) === 'chest' &&
                                                         !hasTreasureKey(
-                                                            inventory.list,
+                                                            inventoryList,
                                                             getItemRarity(
-                                                                itemDetails.item
-                                                                    .id,
+                                                                item.id,
                                                             ),
-                                                            itemDetails.item
-                                                                .level,
+                                                            item.level,
                                                         ))
                                                 }
                                                 style={styles.actionButton}
                                             />
                                         )}
                                     {/* Convert Button */}
-                                    {itemDetails.index !== -1 &&
-                                        canConvert(
-                                            itemDetails.item,
-                                            userInfo.level,
-                                        ) && (
+                                    {isItem(item) &&
+                                        canConvert(item, level) && (
                                             <CustomButton
                                                 type={ButtonType.Orange}
                                                 title={strings.convert}
@@ -845,13 +816,12 @@ export function ItemDetails() {
                                             />
                                         )}
                                     {/* Break/Discard Button */}
-                                    {itemDetails.index !== -1 && (
+                                    {isItem(item) && index !== -1 && (
                                         <CustomButton
                                             type={ButtonType.Orange}
                                             title={
-                                                getItemCategory(
-                                                    itemDetails.item.id,
-                                                ) === 'equipment'
+                                                getItemCategory(item.id) ===
+                                                'equipment'
                                                     ? strings.Break
                                                     : strings.discard
                                             }
@@ -863,15 +833,16 @@ export function ItemDetails() {
                                 </View>
                                 <CloseButton
                                     onPress={() => {
-                                        dispatch(itemDetailsHide());
+                                        // dispatch(itemDetailsHide());
+                                        itemDetailsHide();
                                     }}
                                     style={styles.closeButton}
                                 />
                             </View>
                         </ImageBackground>
-                    </View>
+                    )}
                 </View>
-            )}
+            </View>
         </Modal>
     );
 }

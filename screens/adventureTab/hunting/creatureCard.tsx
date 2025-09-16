@@ -16,8 +16,8 @@ import {getResistancePercent} from '../../../parsers/attributeParser.tsx';
 import {useDispatch, useSelector} from 'react-redux';
 import {combatShow} from '../../../redux/slices/combatSlice.tsx';
 import {RootState} from '../../../redux/store.tsx';
-import {updateStamina} from '../../../redux/slices/userInfoSlice.tsx';
 import Toast from 'react-native-simple-toast';
+import {userInfoStore} from '../../../_zustand/userInfoStore.tsx';
 
 interface props {
     creature: Creature;
@@ -25,7 +25,9 @@ interface props {
 }
 
 export function CreatureCard({creature, index}: props) {
-    const userInfo = useSelector((state: RootState) => state.userInfo);
+    const stamina = userInfoStore(state => state.stamina);
+    const updateStamina = userInfoStore(state => state.updateStamina);
+
     const attributes = useSelector((state: RootState) => state.attributes);
     const [disabled, setDisabled] = useState(false);
     const dispatch = useDispatch();
@@ -37,13 +39,11 @@ export function CreatureCard({creature, index}: props) {
             setDisabled(true);
 
             const staminaCost: number = 10; //TODO:
-            if (userInfo.stamina >= staminaCost) {
+            if (stamina >= staminaCost) {
                 dispatch(
                     combatShow([creature, index, attributes, creature.stats]),
                 );
-                setTimeout(() => {
-                    dispatch(updateStamina(userInfo.stamina - staminaCost));
-                }, 250);
+                updateStamina(stamina - staminaCost);
             } else {
                 //TODO: localization
                 Toast.show('Not enough stamina.', Toast.SHORT);

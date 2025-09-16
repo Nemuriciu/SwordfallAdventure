@@ -15,12 +15,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {IconText} from '../../../components/iconText.tsx';
 import {MinusButton} from '../../../components/buttons/minusButton.tsx';
 import {PlusButton} from '../../../components/buttons/plusButton.tsx';
+import {userInfoStore} from '../../../_zustand/userInfoStore.tsx';
 
 export const CREATURE_COUNT_MIN = 5;
 export const CREATURE_COUNT_MAX = 7;
 
 export function Hunting() {
-    const userInfo = useSelector((state: RootState) => state.userInfo);
+    const level = userInfoStore(state => state.level);
+
     const hunting = useSelector((state: RootState) => state.hunting);
     const [creatureLevel, setCreatureLevel] = useState(0);
     const dispatch = useDispatch();
@@ -44,33 +46,30 @@ export function Hunting() {
     useEffect(() => {
         if (!didMount_1.current) {
             if (creatureLevel <= 0) {
-                setCreatureLevel(userInfo.level);
+                setCreatureLevel(level);
                 // noinspection JSIgnoredPromiseFromCall
-                setStorageCreatureLevel(userInfo.level);
+                setStorageCreatureLevel(level);
             }
         } else {
             didMount_1.current -= 1;
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [userInfo.level]);
+    }, [level]);
 
     async function fetchAsyncStorage() {
         try {
-            const level = await AsyncStorage.getItem('huntingCreatureLevel');
-            if (level !== null) {
-                setCreatureLevel(parseInt(level as string, 10));
+            const lvl = await AsyncStorage.getItem('huntingCreatureLevel');
+            if (lvl !== null) {
+                setCreatureLevel(parseInt(lvl as string, 10));
             }
         } catch (e) {
             console.error(e);
         }
     }
 
-    async function setStorageCreatureLevel(level: number) {
+    async function setStorageCreatureLevel(lvl: number) {
         try {
-            await AsyncStorage.setItem(
-                'huntingCreatureLevel',
-                level.toString(),
-            );
+            await AsyncStorage.setItem('huntingCreatureLevel', lvl.toString());
         } catch (e) {
             console.error(e);
         }
@@ -182,7 +181,7 @@ export function Hunting() {
                     <PlusButton
                         style={styles.creaturePlusButton}
                         onPress={increaseCreatureLevel}
-                        disabled={creatureLevel >= userInfo.level}
+                        disabled={creatureLevel >= level}
                     />
                 </ImageBackground>
                 {/* Depth Label */}

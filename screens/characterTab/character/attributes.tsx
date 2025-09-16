@@ -13,9 +13,11 @@ import {colors} from '../../../utils/colors.ts';
 import {strings} from '../../../utils/strings.ts';
 import cloneDeep from 'lodash.clonedeep';
 import {startingStats} from '../../../types/stats.ts';
+import {userInfoStore} from '../../../_zustand/userInfoStore.tsx';
 
 export function Attributes() {
-    const userInfo = useSelector((state: RootState) => state.userInfo);
+    const level = userInfoStore(state => state.level);
+
     const equipment = useSelector((state: RootState) => state.equipment);
     const attributes = useSelector((state: RootState) => state.attributes);
     const [phyResPercent, setPhyResPercent] = useState(true);
@@ -107,7 +109,7 @@ export function Attributes() {
                             ? phyResPercent
                                 ? getResistancePercent(
                                       attributes.physicalRes,
-                                      userInfo.level,
+                                      level,
                                   ).toFixed(1) + '%'
                                 : attributes.physicalRes
                             : ''}
@@ -146,7 +148,7 @@ export function Attributes() {
                             ? magResPercent
                                 ? getResistancePercent(
                                       attributes.magicalRes,
-                                      userInfo.level,
+                                      level,
                                   ).toFixed(1) + '%'
                                 : attributes.magicalRes
                             : ''}

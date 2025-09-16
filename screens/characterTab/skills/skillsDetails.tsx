@@ -36,8 +36,8 @@ import {colors} from '../../../utils/colors.ts';
 import cloneDeep from 'lodash.clonedeep';
 import {Skill} from '../../../types/skill.ts';
 import {skillsUpdateSkill} from '../../../redux/slices/skillsSlice.tsx';
-import {updateSkillPoints} from '../../../redux/slices/userInfoSlice.tsx';
 import SpannableBuilder from '@mj-studio/react-native-spannable-string';
+import {userInfoStore} from '../../../_zustand/userInfoStore.tsx';
 
 interface props {
     description: string;
@@ -47,7 +47,9 @@ interface props {
 }
 
 export function SkillsDetails() {
-    const userInfo = useSelector((state: RootState) => state.userInfo);
+    const skillPoints = userInfoStore(state => state.skillPoints);
+    const updateSkillPoints = userInfoStore(state => state.updateSkillPoints);
+
     const skillsDetails = useSelector(
         (state: RootState) => state.skillsDetails,
     );
@@ -60,7 +62,7 @@ export function SkillsDetails() {
     useEffect(() => {
         if (skillsDetails.skill !== null) {
             setPointsSpent(skillsDetails.skill.points);
-            setPointsAvailable(userInfo.skillPoints);
+            setPointsAvailable(skillPoints);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [skillsDetails.skill]);
@@ -89,10 +91,11 @@ export function SkillsDetails() {
     function applyPoints() {
         if (!disabled) {
             setDisabled(true);
+
             const skill = cloneDeep(skillsDetails.skill) as Skill;
             skill.points = pointsSpent;
             /* Update Player Available Skill Points */
-            dispatch(updateSkillPoints(pointsAvailable));
+            updateSkillPoints(pointsAvailable);
             /* Update Skill Points spent */
             setTimeout(() => {
                 dispatch(skillsUpdateSkill([skill.id, skill]));
@@ -101,9 +104,10 @@ export function SkillsDetails() {
             setTimeout(() => {
                 dispatch(skillsDetailsUpdateSkill(skill));
             }, 200);
+
             setTimeout(() => {
                 setDisabled(false);
-            }, 400);
+            }, 250);
         }
     }
 

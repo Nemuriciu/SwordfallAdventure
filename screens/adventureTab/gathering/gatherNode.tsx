@@ -23,9 +23,9 @@ import {setGatherInfo} from '../../../redux/slices/gatherInfoSlice.tsx';
 import ProgressBar from '../../../components/progressBar.tsx';
 import {rewardsModalInit} from '../../../redux/slices/rewardsModalSlice.tsx';
 import Toast from 'react-native-simple-toast';
-import {updateStamina} from '../../../redux/slices/userInfoSlice.tsx';
 import {isQuestComplete, sortQuests} from '../../../parsers/questParser.tsx';
 import {questsSetList} from '../../../redux/slices/questsSlice.tsx';
+import {userInfoStore} from '../../../_zustand/userInfoStore.tsx';
 
 interface props {
     node: Node;
@@ -34,7 +34,10 @@ interface props {
 
 export function GatherNode({node, index}: props) {
     const staminaCost = Math.round(5 * (node.time / 10));
-    const userInfo = useSelector((state: RootState) => state.userInfo);
+    const level = userInfoStore(state => state.level);
+    const stamina = userInfoStore(state => state.stamina);
+    const updateStamina = userInfoStore(state => state.updateStamina);
+
     const gatherInfo = useSelector((state: RootState) => state.gatherInfo);
     const quests = useSelector((state: RootState) => state.quests);
     const [timer, setTimer] = useState(1);
@@ -80,8 +83,8 @@ export function GatherNode({node, index}: props) {
         if (!disabled) {
             setDisabled(true);
 
-            if (userInfo.stamina >= staminaCost) {
-                dispatch(updateStamina(userInfo.stamina - staminaCost));
+            if (stamina >= staminaCost) {
+                updateStamina(stamina - staminaCost);
                 dispatch(
                     setGatherInfo({
                         level: gatherInfo.level,
@@ -111,15 +114,15 @@ export function GatherNode({node, index}: props) {
                 rewardsModalInit({
                     rewards: getNodeRewards(
                         gatherInfo.nodes[gatherInfo.nodeIndex],
-                        userInfo.level,
+                        level,
                     ),
                     experience: getNodeExperience(
                         gatherInfo.nodes[gatherInfo.nodeIndex],
-                        userInfo.level,
+                        level,
                     ),
                     gatheringExp: getNodeGatheringExp(
                         gatherInfo.nodes[gatherInfo.nodeIndex],
-                        userInfo.level,
+                        level,
                     ),
                     shards: getNodeShards(
                         gatherInfo.nodes[gatherInfo.nodeIndex],
@@ -147,7 +150,7 @@ export function GatherNode({node, index}: props) {
             sortQuests(questsList);
             dispatch(questsSetList(questsList));
 
-            /* Remove Node from list */
+            /* Remove Node from inventoryList */
             const nodeList = cloneDeep(gatherInfo.nodes);
             nodeList.splice(index, 1);
 

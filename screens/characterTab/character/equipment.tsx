@@ -9,10 +9,12 @@ import {isItem, Item} from '../../../types/item';
 import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '../../../redux/store.tsx';
 import {equipmentUpdate} from '../../../redux/slices/equipmentSlice.tsx';
-import {itemDetailsShow} from '../../../redux/slices/itemDetailsSlice.tsx';
+import {itemDetailsStore} from '../../../_zustand/itemDetailsStore.tsx';
 
 export function Equipment() {
     const equipment = useSelector((state: RootState) => state.equipment);
+    const itemDetailsShow = itemDetailsStore(state => state.itemDetailsShow);
+
     const [disabled, setDisabled] = useState(false);
     const dispatch = useDispatch();
     const didMount = useRef(2);
@@ -63,11 +65,11 @@ export function Equipment() {
         if (!disabled) {
             setDisabled(true);
 
-            dispatch(itemDetailsShow([item, -1]));
+            itemDetailsShow(item, -1);
 
             setTimeout(() => {
                 setDisabled(false);
-            }, 300);
+            }, 250);
         }
     }
 

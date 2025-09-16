@@ -35,7 +35,6 @@ import {
 import {rand} from '../../../parsers/itemParser.tsx';
 import {Creature} from '../../../types/creature.ts';
 import cloneDeep from 'lodash.clonedeep';
-import {rewardsModalInit} from '../../../redux/slices/rewardsModalSlice.tsx';
 import {
     ButtonType,
     CustomButton,
@@ -58,10 +57,14 @@ import {Effect, EffectType, isBuff, isDOT} from '../../../types/effect.ts';
 import {Stats} from '../../../types/stats.ts';
 import {EffectTooltip} from './effectTooltip.tsx';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {rewardsStore} from '../../../_zustand/rewardsStore.tsx';
+import {userInfoStore} from '../../../_zustand/userInfoStore.tsx';
 
-// TODO: Remove creature from list after starting combat (not after ending it)
+// TODO: Remove creature from inventoryList after starting combat (not after ending it)
 export function Combat() {
-    const userInfo = useSelector((state: RootState) => state.userInfo);
+    const username = userInfoStore(state => state.username);
+    const level = userInfoStore(state => state.level);
+
     const attributes = useSelector((state: RootState) => state.attributes);
     const quests = useSelector((state: RootState) => state.quests);
     const hunting = useSelector((state: RootState) => state.hunting);
@@ -76,6 +79,8 @@ export function Combat() {
     const [creatureLevel, setCreatureLevel] = useState(0);
     const dispatch = useDispatch();
     const didMount = useRef(1);
+
+    const rewardsInit = rewardsStore(state => state.rewardsInit);
 
     useEffect(() => {
         // noinspection JSIgnoredPromiseFromCall
@@ -113,7 +118,7 @@ export function Combat() {
                     if (combat.statsEnemy.health <= 0) {
                         /* Player Win */
                         combatLog.push({
-                            username: userInfo.username,
+                            username: username,
                             opponent: getCreatureName(
                                 (combat.creature as Creature).id,
                             ),
@@ -122,33 +127,24 @@ export function Combat() {
                             damage: 0,
                         });
                         /* Show Victory Log */
-                        setTimeout(() => {
-                            dispatch(combatSetLog(combatLog));
-                        }, 200);
+                        dispatch(combatSetLog(combatLog));
                         /* Display Rewards */
-                        setTimeout(() => {
-                            dispatch(
-                                rewardsModalInit({
-                                    rewards: getCombatRewards(
-                                        (combat.creature as Creature).rarity,
-                                        (combat.creature as Creature).level,
-                                    ),
-                                    experience: getCombatExperience(
-                                        (combat.creature as Creature).rarity,
-                                        (combat.creature as Creature).level,
-                                    ),
-                                    shards: getCombatShards(
-                                        (combat.creature as Creature).rarity,
-                                        hunting.depth,
-                                    ),
-                                }),
-                            );
-                        }, 250);
-
-                        setTimeout(() => {
-                            setCombatComplete(true);
-                        }, 500);
-
+                        rewardsInit(
+                            getCombatRewards(
+                                (combat.creature as Creature).rarity,
+                                (combat.creature as Creature).level,
+                            ),
+                            getCombatExperience(
+                                (combat.creature as Creature).rarity,
+                                (combat.creature as Creature).level,
+                            ),
+                            getCombatShards(
+                                (combat.creature as Creature).rarity,
+                                hunting.depth,
+                            ),
+                        );
+                        /* Set Combat Complete TODO: */
+                        setCombatComplete(true);
                         /* Update Quests */
                         const questsList = cloneDeep(quests.questsList);
 
@@ -175,7 +171,7 @@ export function Combat() {
                             dispatch(questsSetList(questsList));
                         }, 1500);
 
-                        /* Remove Creature from list */
+                        /* Remove Creature from inventoryList */
                         const creatureList = cloneDeep(hunting.creatureList);
                         creatureList.splice(combat.index, 1);
 
@@ -210,7 +206,7 @@ export function Combat() {
                             username: getCreatureName(
                                 (combat.creature as Creature).id,
                             ),
-                            opponent: userInfo.username,
+                            opponent: username,
                             turn: true,
                             atkType: 'Win',
                             damage: 0,
@@ -224,7 +220,7 @@ export function Combat() {
                             setCombatComplete(true);
                         }, 250);
 
-                        /* Remove Creature from list */
+                        /* Remove Creature from inventoryList */
                         const creatureList = cloneDeep(hunting.creatureList);
                         creatureList.splice(combat.index, 1);
 
@@ -234,13 +230,13 @@ export function Combat() {
                         if (r <= 0.2) {
                             /* 20% chance to add 2 creatures */
                             creatureList.unshift(
-                                getCreature(userInfo.level, hunting.depth),
-                                getCreature(userInfo.level, hunting.depth),
+                                getCreature(level, hunting.depth),
+                                getCreature(level, hunting.depth),
                             );
                         } else if (r > 0.2 && r <= 0.9) {
                             /* 70% chance to add 1 creature */
                             creatureList.unshift(
-                                getCreature(userInfo.level, hunting.depth),
+                                getCreature(level, hunting.depth),
                             );
                         }
 
@@ -262,7 +258,7 @@ export function Combat() {
 
     async function fetchCreatureLevel() {
         try {
-            const level = await AsyncStorage.getItem('creatureLevelSlider');
+            const level = await AsyncStorage.getItem('huntingCreatureLevel');
             if (level !== null) {
                 setCreatureLevel(parseInt(level as string, 10));
             }
@@ -291,7 +287,7 @@ export function Combat() {
                 /* Miss Spell */
                 if (Math.random() <= statsEnemy.dodge) {
                     combatLog.push({
-                        username: userInfo.username,
+                        username: username,
                         opponent: getCreatureName(creature.id),
                         turn: turn,
                         atkType: 'Spell' + atkType + 'Dodge',
@@ -308,7 +304,7 @@ export function Combat() {
                     if (Math.random() <= statsPlayer.critical) {
                         damage = Math.round(damage * 1.5);
                         combatLog.push({
-                            username: userInfo.username,
+                            username: username,
                             opponent: getCreatureName(creature.id),
                             turn: turn,
                             atkType: 'Spell' + atkType + 'Crit',
@@ -317,7 +313,7 @@ export function Combat() {
                         });
                     } else {
                         combatLog.push({
-                            username: userInfo.username,
+                            username: username,
                             opponent: getCreatureName(creature.id),
                             turn: turn,
                             atkType: 'Spell' + atkType,
@@ -373,7 +369,7 @@ export function Combat() {
                 /* Basic Attack */
                 if (Math.random() <= statsEnemy.dodge) {
                     combatLog.push({
-                        username: userInfo.username,
+                        username: username,
                         opponent: getCreatureName(creature.id),
                         turn: turn,
                         atkType: 'Dodge',
@@ -389,7 +385,7 @@ export function Combat() {
                     if (Math.random() <= statsPlayer.critical) {
                         damage = Math.round(damage * 1.5);
                         combatLog.push({
-                            username: userInfo.username,
+                            username: username,
                             opponent: getCreatureName(creature.id),
                             turn: turn,
                             atkType: atkType + 'Crit',
@@ -397,7 +393,7 @@ export function Combat() {
                         });
                     } else {
                         combatLog.push({
-                            username: userInfo.username,
+                            username: username,
                             opponent: getCreatureName(creature.id),
                             turn: turn,
                             atkType: atkType,
@@ -448,7 +444,7 @@ export function Combat() {
                         const damage = getDOTDamage(
                             effect.value,
                             effect.type,
-                            userInfo.level,
+                            level,
                             turn,
                         );
                         statsPlayer.health = Math.max(
@@ -456,7 +452,7 @@ export function Combat() {
                             0,
                         );
                         combatLog.push({
-                            username: userInfo.username,
+                            username: username,
                             opponent: getCreatureName(creature.id),
                             turn: turn,
                             atkType: effect.type,
@@ -558,23 +554,19 @@ export function Combat() {
                 if (Math.random() <= statsPlayer.dodge) {
                     combatLog.push({
                         username: getCreatureName(creature.id),
-                        opponent: userInfo.username,
+                        opponent: username,
                         turn: turn,
                         atkType: 'Dodge',
                         damage: 0,
                     });
                 } else {
-                    let damage: number = getBasicDamage(
-                        atkType,
-                        userInfo.level,
-                        turn,
-                    );
+                    let damage: number = getBasicDamage(atkType, level, turn);
                     /* Check if critical hit */
                     if (Math.random() <= statsPlayer.critical) {
                         damage = Math.round(damage * 1.5);
                         combatLog.push({
                             username: getCreatureName(creature.id),
-                            opponent: userInfo.username,
+                            opponent: username,
                             turn: turn,
                             atkType: atkType + 'Crit',
                             damage: damage,
@@ -582,7 +574,7 @@ export function Combat() {
                     } else {
                         combatLog.push({
                             username: getCreatureName(creature.id),
-                            opponent: userInfo.username,
+                            opponent: username,
                             turn: turn,
                             atkType: atkType,
                             damage: damage,
@@ -644,7 +636,7 @@ export function Combat() {
                         );
                         combatLog.push({
                             username: getCreatureName(creature.id),
-                            opponent: userInfo.username,
+                            opponent: username,
                             turn: turn,
                             atkType: effect.type,
                             damage: damage,
@@ -1725,7 +1717,7 @@ export function Combat() {
                                                 combat.statsPlayer.physicalRes +
                                                     combat.statsPlayer
                                                         .bonusPhysicalRes,
-                                                userInfo.level,
+                                                level,
                                             ).toFixed(1) + '%'}
                                         </Text>
                                         <Image
@@ -1770,7 +1762,7 @@ export function Combat() {
                                                 combat.statsPlayer.magicalRes +
                                                     combat.statsPlayer
                                                         .bonusMagicalRes,
-                                                userInfo.level,
+                                                level,
                                             ).toFixed(1) + '%'}
                                         </Text>
                                         <Image

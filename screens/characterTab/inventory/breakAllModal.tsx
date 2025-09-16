@@ -15,11 +15,9 @@ import {
     CustomButton,
 } from '../../../components/buttons/customButton.tsx';
 import {strings} from '../../../utils/strings.ts';
-import {useDispatch, useSelector} from 'react-redux';
-import {RootState} from '../../../redux/store.tsx';
 import {Category, isItem} from '../../../types/item.ts';
-import {inventoryRemoveMultipleItemsAt} from '../../../redux/slices/inventorySlice.tsx';
-import {updateShards} from '../../../redux/slices/userInfoSlice.tsx';
+import {inventoryStore} from '../../../_zustand/inventoryStore.tsx';
+import {userInfoStore} from '../../../_zustand/userInfoStore.tsx';
 
 interface props {
     visible: boolean;
@@ -28,12 +26,16 @@ interface props {
 }
 
 export function BreakAllModal({visible, setVisible, rarity}: props) {
-    const userInfo = useSelector((state: RootState) => state.userInfo);
-    const inventory = useSelector((state: RootState) => state.inventory);
+    const shards = userInfoStore(state => state.shards);
+    const updateShards = userInfoStore(state => state.updateShards);
+
+    const inventoryList = inventoryStore(state => state.inventoryList);
+    const inventoryRemoveMultipleItemsAt = inventoryStore(
+        state => state.inventoryRemoveMultipleItemsAt,
+    );
     const [disabled, setDisabled] = useState(false);
-    const [shards, setShards] = useState(0);
+    const [shardsAmount, setShardsAmount] = useState(0);
     const [removedItems, setRemovedItems] = useState<number[]>([]);
-    const dispatch = useDispatch();
     SpannableBuilder.getInstanceWithComponent(Text);
 
     useEffect(() => {
@@ -41,8 +43,8 @@ export function BreakAllModal({visible, setVisible, rarity}: props) {
             /* Index items which need to be removed */
             let totalShards = 0;
             const itemsIndex: number[] = [];
-            for (let i = 0; i < inventory.list.length; i++) {
-                const item = inventory.list[i];
+            for (let i = 0; i < inventoryList.length; i++) {
+                const item = inventoryList[i];
                 if (isItem(item)) {
                     //TODO: Skip locked items
                     if (
@@ -55,7 +57,7 @@ export function BreakAllModal({visible, setVisible, rarity}: props) {
                     }
                 }
             }
-            setShards(totalShards);
+            setShardsAmount(totalShards);
             setRemovedItems(itemsIndex);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -64,23 +66,18 @@ export function BreakAllModal({visible, setVisible, rarity}: props) {
     function removeAllEquipment() {
         setDisabled(true);
 
-        dispatch(updateShards(userInfo.shards + shards));
-        /* Remove items from inventory */
-        dispatch(
-            inventoryRemoveMultipleItemsAt({
-                index: removedItems,
-                quantity: Array(removedItems.length).fill(1),
-            }),
+        updateShards(shards + shardsAmount);
+        /* Remove items from inventoryList */
+        inventoryRemoveMultipleItemsAt(
+            removedItems,
+            Array(removedItems.length).fill(1),
         );
-
         /* Hide Modal */
-        setTimeout(() => {
-            setVisible(false);
-        }, 200);
+        setVisible(false);
 
         setTimeout(() => {
             setDisabled(false);
-        }, 500);
+        }, 250);
     }
 
     const Title = () => {

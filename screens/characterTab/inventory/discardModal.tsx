@@ -1,7 +1,6 @@
 import React, {useState} from 'react';
 import {StyleSheet, View, ImageBackground, Text, Image} from 'react-native';
 import Modal from 'react-native-modal';
-import {useDispatch, useSelector} from 'react-redux';
 import {getImage} from '../../../assets/images/_index';
 import {Item} from '../../../types/item.ts';
 import SpannableBuilder from '@mj-studio/react-native-spannable-string';
@@ -19,10 +18,9 @@ import {
     CustomButton,
 } from '../../../components/buttons/customButton.tsx';
 import {strings} from '../../../utils/strings.ts';
-import {itemDetailsHide} from '../../../redux/slices/itemDetailsSlice.tsx';
-import {inventoryRemoveItemAt} from '../../../redux/slices/inventorySlice.tsx';
-import {updateShards} from '../../../redux/slices/userInfoSlice.tsx';
-import {RootState} from '../../../redux/store.tsx';
+import {inventoryStore} from '../../../_zustand/inventoryStore.tsx';
+import {itemDetailsStore} from '../../../_zustand/itemDetailsStore.tsx';
+import {userInfoStore} from '../../../_zustand/userInfoStore.tsx';
 
 interface props {
     visible: boolean;
@@ -32,8 +30,12 @@ interface props {
 }
 
 export function DiscardModal({visible, setVisible, item, index}: props) {
-    const userInfo = useSelector((state: RootState) => state.userInfo);
-    const dispatch = useDispatch();
+    const shards = userInfoStore(state => state.shards);
+    const updateShards = userInfoStore(state => state.updateShards);
+    const inventoryRemoveItemAt = inventoryStore(
+        state => state.inventoryRemoveItemAt,
+    );
+    const itemDetailsHide = itemDetailsStore(state => state.itemDetailsHide);
     const [quantity, setQuantity] = useState(1);
     const [disabled, setDisabled] = useState(false);
     SpannableBuilder.getInstanceWithComponent(Text);
@@ -43,29 +45,18 @@ export function DiscardModal({visible, setVisible, item, index}: props) {
 
         /* Add Break Shards If Item is Equipment */
         if (getItemCategory(item.id) === 'equipment') {
-            setTimeout(() => {
-                dispatch(updateShards(userInfo.shards + getBreakValue(item)));
-            }, 0);
+            updateShards(shards + getBreakValue(item));
         }
-
         /* Hide Item Details */
-        setTimeout(() => {
-            dispatch(itemDetailsHide());
-        }, 50);
-
+        itemDetailsHide();
         /* Remove item from Inventory */
-        setTimeout(() => {
-            dispatch(inventoryRemoveItemAt({index: index, quantity: quantity}));
-        }, 50);
-
+        inventoryRemoveItemAt(index, quantity);
         /* Hide Discard Modal */
-        setTimeout(() => {
-            setVisible(false);
-        }, 250);
+        setVisible(false);
 
         setTimeout(() => {
             setDisabled(false);
-        }, 1000);
+        }, 250);
     }
 
     const Title = () => {

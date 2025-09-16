@@ -17,34 +17,36 @@ import {getImage} from '../assets/images/_index';
 import {RewardsModal} from '../components/rewardsModal';
 import {Combat} from './adventureTab/hunting/combat';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {useSelector} from 'react-redux';
-import {RootState} from '../redux/store.tsx';
-import {increaseLevel} from '../redux/slices/userInfoSlice.tsx';
 import {store} from '../redux/store.tsx';
 import experienceJson from '../assets/json/experience.json';
 import {setLevelUpVisibility} from '../redux/slices/levelUpSlice.tsx';
 import {colors} from '../utils/colors.ts';
+import {ItemDetails} from '../components/itemDetails.tsx';
+import {userInfoStore} from '../_zustand/userInfoStore.tsx';
 
 const Tab = createBottomTabNavigator();
 
 export function MainComponent() {
-    const userInfo = useSelector((state: RootState) => state.userInfo);
+    const level = userInfoStore(state => state.level);
+    const exp = userInfoStore(state => state.exp);
 
     useEffect(() => {
-        const maxExp = experienceJson.userMaxExp[userInfo.level - 1];
-        if (userInfo.exp >= maxExp) {
-            triggerLevelUp(userInfo.exp - maxExp);
+        const maxExp = experienceJson.userMaxExp[level - 1];
+        if (exp >= maxExp) {
+            triggerLevelUp(exp - maxExp);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [userInfo.exp]);
+    }, [exp]);
 
     return (
         <View style={styles.container}>
+            <ItemDetails />
+            <RewardsModal />
+            <Combat />
+
             <StatusBar />
             <TopStatus />
             <NavigationContainer>
-                <RewardsModal />
-                <Combat />
                 <Tab.Navigator
                     screenOptions={{
                         lazy: false,
@@ -150,7 +152,7 @@ export function MainComponent() {
 // TODO: Create separate level up Slice in redux
 export const triggerLevelUp = (exp: number) => {
     store.dispatch(setLevelUpVisibility(true));
-    store.dispatch(increaseLevel(exp));
+    //TODO:
 
     setTimeout(() => {
         store.dispatch(setLevelUpVisibility(false));

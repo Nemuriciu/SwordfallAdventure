@@ -4,24 +4,32 @@ import {getImage} from '../assets/images/_index';
 import {marshall, unmarshall} from '@aws-sdk/util-dynamodb';
 import {dynamoDb} from '../database';
 import {USER_ID} from '../App';
-import {useDispatch, useSelector} from 'react-redux';
-import {RootState} from '../redux/store.tsx';
-import {
-    setUserInfo,
-    updateStamina,
-    updateTimestampStamina,
-} from '../redux/slices/userInfoSlice.tsx';
 import {colors} from '../utils/colors.ts';
 import ProgressBar from '../components/progressBar.tsx';
 import experienceJson from '../assets/json/experience.json';
 import {PlusButton} from '../components/buttons/plusButton.tsx';
 import {IconText} from '../components/iconText.tsx';
+import {userInfoStore} from '../_zustand/userInfoStore.tsx';
 
 export function TopStatus() {
-    const userInfo = useSelector((state: RootState) => state.userInfo);
+    const username = userInfoStore(state => state.username);
+    const level = userInfoStore(state => state.level);
+    const exp = userInfoStore(state => state.exp);
+    const stamina = userInfoStore(state => state.stamina);
+    const staminaMax = userInfoStore(state => state.staminaMax);
+    const skillPoints = userInfoStore(state => state.skillPoints);
+    const shards = userInfoStore(state => state.shards);
+    const diamonds = userInfoStore(state => state.diamonds);
+    const staminaTimestamp = userInfoStore(state => state.staminaTimestamp);
+
+    const setUserInfo = userInfoStore(state => state.setUserInfo);
+    const updateStaminaTimestamp = userInfoStore(
+        state => state.updateStaminaTimestamp,
+    );
+    const updateStamina = userInfoStore(state => state.updateStamina);
+
     const [staminaFetched, setStaminaFetched] = useState(false);
     const [staminaTimer, setStaminaTimer] = useState(1);
-    const dispatch = useDispatch();
     const didMount_1 = useRef(2);
     const didMount_2 = useRef(1);
     const didMount_3 = useRef(2);
@@ -39,7 +47,17 @@ export function TopStatus() {
             didMount_1.current -= 1;
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [userInfo]);
+    }, [
+        username,
+        level,
+        exp,
+        stamina,
+        staminaMax,
+        skillPoints,
+        shards,
+        diamonds,
+        staminaTimestamp,
+    ]);
     useEffect(() => {
         if (!didMount_2.current) {
             if (!staminaFetched) {
@@ -50,7 +68,7 @@ export function TopStatus() {
             didMount_2.current -= 1;
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [userInfo.staminaTimestamp]);
+    }, [staminaTimestamp]);
     useEffect(() => {
         if (staminaTimer <= 0) {
             clearInterval(timer);
@@ -61,13 +79,10 @@ export function TopStatus() {
     }, [staminaTimer]);
     useEffect(() => {
         if (!didMount_3.current) {
-            if (staminaTimer <= 1 && userInfo.stamina < userInfo.staminaMax) {
-                dispatch(updateTimestampStamina(new Date().toISOString()));
+            if (staminaTimer <= 1 && stamina < staminaMax) {
+                updateStaminaTimestamp(new Date().toISOString());
                 startTimer(fiveMin);
-            } else if (
-                staminaTimer > 1 &&
-                userInfo.stamina >= userInfo.staminaMax
-            ) {
+            } else if (staminaTimer > 1 && stamina >= staminaMax) {
                 clearInterval(timer);
                 setStaminaTimer(1);
             }
@@ -75,7 +90,7 @@ export function TopStatus() {
             didMount_3.current -= 1;
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [userInfo.stamina]);
+    }, [stamina]);
 
     function fetchUserInfoDB() {
         const params = {
@@ -89,7 +104,18 @@ export function TopStatus() {
                 console.log(err);
             } else {
                 // @ts-ignore
-                dispatch(setUserInfo(unmarshall(data.Item).userInfo));
+                const {userInfo} = unmarshall(data.Item);
+                setUserInfo(
+                    userInfo.username,
+                    userInfo.level,
+                    userInfo.exp,
+                    userInfo.stamina,
+                    userInfo.staminaMax,
+                    userInfo.skillPoints,
+                    userInfo.shards,
+                    userInfo.diamonds,
+                    userInfo.staminaTimestamp,
+                );
             }
         });
     }
@@ -98,8 +124,39 @@ export function TopStatus() {
         const params = {
             TableName: 'users',
             Key: marshall({id: USER_ID}),
-            UpdateExpression: 'set userInfo = :val',
-            ExpressionAttributeValues: marshall({':val': userInfo}),
+            UpdateExpression: `
+            set userInfo.#diamonds = :diamonds,
+                userInfo.#exp = :exp,
+                userInfo.#level = :level,
+                userInfo.#shards = :shards,
+                userInfo.#skillPoints = :skillPoints,
+                userInfo.#stamina = :stamina,
+                userInfo.#staminaMax = :staminaMax,
+                userInfo.#staminaTimestamp = :staminaTimestamp,
+                userInfo.#username = :username
+        `,
+            ExpressionAttributeNames: {
+                '#diamonds': 'diamonds',
+                '#exp': 'exp',
+                '#level': 'level',
+                '#shards': 'shards',
+                '#skillPoints': 'skillPoints',
+                '#stamina': 'stamina',
+                '#staminaMax': 'staminaMax',
+                '#staminaTimestamp': 'staminaTimestamp',
+                '#username': 'username',
+            },
+            ExpressionAttributeValues: marshall({
+                ':diamonds': diamonds,
+                ':exp': exp,
+                ':level': level,
+                ':shards': shards,
+                ':skillPoints': skillPoints,
+                ':stamina': stamina,
+                ':staminaMax': staminaMax,
+                ':staminaTimestamp': staminaTimestamp,
+                ':username': username,
+            }),
         };
         dynamoDb.updateItem(params, function (err) {
             if (err) {
@@ -109,46 +166,39 @@ export function TopStatus() {
     }
 
     function updateStaminaOffline() {
-        if (
-            userInfo.staminaTimestamp === '' ||
-            userInfo.stamina === userInfo.staminaMax
-        ) {
+        if (staminaTimestamp === '' || stamina === staminaMax) {
             return;
         }
 
         const timePassed =
-            new Date().getTime() -
-            new Date(userInfo.staminaTimestamp).getTime();
+            new Date().getTime() - new Date(staminaTimestamp).getTime();
 
         const minutes = Math.floor(timePassed / 60000);
         const seconds = (timePassed / 1000) % 60;
         const staminaVal = 10 * Math.floor(minutes / 5);
 
-        if (userInfo.stamina + staminaVal >= userInfo.staminaMax) {
+        if (stamina + staminaVal >= staminaMax) {
             if (staminaVal > 0) {
-                dispatch(
-                    updateStamina(
-                        userInfo.stamina + staminaVal >= userInfo.staminaMax
-                            ? userInfo.staminaMax
-                            : userInfo.stamina + staminaVal,
-                    ),
+                updateStamina(
+                    stamina + staminaVal >= staminaMax
+                        ? staminaMax
+                        : stamina + staminaVal,
                 );
             }
         } else {
             if (staminaVal > 0) {
                 /* Update Stamina */
-                dispatch(
-                    updateStamina(
-                        userInfo.stamina + staminaVal >= userInfo.staminaMax
-                            ? userInfo.staminaMax
-                            : userInfo.stamina + staminaVal,
-                    ),
+
+                updateStamina(
+                    stamina + staminaVal >= staminaMax
+                        ? staminaMax
+                        : stamina + staminaVal,
                 );
                 /* Update remaining time Timestamp */
                 const c = new Date();
                 c.setMinutes(c.getMinutes() - (minutes % 5));
                 c.setSeconds(c.getSeconds() - seconds);
-                dispatch(updateTimestampStamina(c.toISOString()));
+                updateStaminaTimestamp(c.toISOString());
 
                 /* Start Stamina Timer */
                 startTimer(fiveMin - (new Date().getTime() - c.getTime()));
@@ -157,7 +207,7 @@ export function TopStatus() {
                 startTimer(
                     fiveMin -
                         (new Date().getTime() -
-                            new Date(userInfo.staminaTimestamp).getTime()),
+                            new Date(staminaTimestamp).getTime()),
                 );
             }
         }
@@ -167,17 +217,15 @@ export function TopStatus() {
         const staminaAdded = 10;
 
         /* Start Timer */
-        if (userInfo.stamina + staminaAdded < userInfo.staminaMax) {
-            dispatch(updateTimestampStamina(new Date().toISOString()));
+        if (stamina + staminaAdded < staminaMax) {
+            updateStaminaTimestamp(new Date().toISOString());
             setStaminaTimer(fiveMin);
         }
 
-        dispatch(
-            updateStamina(
-                userInfo.stamina + staminaAdded >= userInfo.staminaMax
-                    ? userInfo.staminaMax
-                    : userInfo.stamina + staminaAdded,
-            ),
+        updateStamina(
+            stamina + staminaAdded >= staminaMax
+                ? staminaMax
+                : stamina + staminaAdded,
         );
     }
 
@@ -212,7 +260,7 @@ export function TopStatus() {
             fadeDuration={0}>
             <View style={styles.innerTopContainer}>
                 <IconText
-                    text={userInfo.level ? userInfo.level.toString() : ''}
+                    text={level ? level.toString() : ''}
                     image={'frame_round_small'}
                     containerStyle={styles.levelContainer}
                     textContainerStyle={styles.levelTextContainer}
@@ -222,7 +270,7 @@ export function TopStatus() {
                     style={styles.username}
                     adjustsFontSizeToFit={true}
                     numberOfLines={1}>
-                    {userInfo.username}
+                    {username}
                 </Text>
                 <ImageBackground
                     style={styles.currencyContainer}
@@ -238,7 +286,7 @@ export function TopStatus() {
                         style={styles.currencyValue}
                         adjustsFontSizeToFit={true}
                         numberOfLines={1}>
-                        {userInfo.shards}
+                        {shards}
                     </Text>
                 </ImageBackground>
                 <ImageBackground
@@ -255,7 +303,7 @@ export function TopStatus() {
                         style={styles.currencyValue}
                         adjustsFontSizeToFit={true}
                         numberOfLines={1}>
-                        {userInfo.diamonds}
+                        {diamonds}
                     </Text>
                     <PlusButton style={styles.plusButton} onPress={() => {}} />
                 </ImageBackground>
@@ -273,10 +321,8 @@ export function TopStatus() {
                         style={styles.experience}
                         adjustsFontSizeToFit={true}
                         numberOfLines={1}>
-                        {experienceJson.userMaxExp[userInfo.level - 1]
-                            ? userInfo.exp +
-                              '/' +
-                              experienceJson.userMaxExp[userInfo.level - 1]
+                        {experienceJson.userMaxExp[level - 1]
+                            ? exp + '/' + experienceJson.userMaxExp[level - 1]
                             : ''}
                     </Text>
                 </View>
@@ -293,9 +339,7 @@ export function TopStatus() {
                         style={styles.staminaValue}
                         adjustsFontSizeToFit={true}
                         numberOfLines={1}>
-                        {userInfo.staminaMax
-                            ? userInfo.stamina + '/' + userInfo.staminaMax
-                            : ''}
+                        {staminaMax ? stamina + '/' + staminaMax : ''}
                     </Text>
                     <View style={styles.staminaIconContainer}>
                         <Image
@@ -311,17 +355,14 @@ export function TopStatus() {
             <View style={styles.progressBarContainer}>
                 <View style={styles.experienceBarContainer}>
                     <ProgressBar
-                        progress={
-                            userInfo.exp /
-                            experienceJson.userMaxExp[userInfo.level - 1]
-                        }
+                        progress={exp / experienceJson.userMaxExp[level - 1]}
                         image={'progress_bar_orange'}
                         style={styles.experienceBar}
                     />
                 </View>
                 <View style={styles.staminaBarContainer}>
                     <ProgressBar
-                        progress={userInfo.stamina / userInfo.staminaMax}
+                        progress={stamina / staminaMax}
                         image={'progress_bar_stamina'}
                         style={styles.staminaBar}
                     />

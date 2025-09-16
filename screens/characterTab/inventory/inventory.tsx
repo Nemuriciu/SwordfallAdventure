@@ -24,14 +24,6 @@ import {marshall, unmarshall} from '@aws-sdk/util-dynamodb';
 import {USER_ID} from '../../../App';
 import {dynamoDb} from '../../../database';
 import {Category, isItem, Item} from '../../../types/item';
-import {useDispatch, useSelector} from 'react-redux';
-import {RootState} from '../../../redux/store.tsx';
-import {
-    inventoryAddItems,
-    inventoryUpdate,
-} from '../../../redux/slices/inventorySlice.tsx';
-import {ItemDetails} from '../../../components/itemDetails.tsx';
-import {itemDetailsShow} from '../../../redux/slices/itemDetailsSlice.tsx';
 import {strings} from '../../../utils/strings.ts';
 import {BreakAllModal} from './breakAllModal.tsx';
 import Toast from 'react-native-simple-toast';
@@ -41,34 +33,42 @@ import {
     clearInventory,
     sortInventoryList,
 } from '../../../utils/arrayUtils.ts';
+import {itemDetailsStore} from '../../../_zustand/itemDetailsStore.tsx';
+import {inventoryStore} from '../../../_zustand/inventoryStore.tsx';
+import {userInfoStore} from '../../../_zustand/userInfoStore.tsx';
 
 const COLUMN_NR = 6;
 
 export function Inventory() {
-    const userInfo = useSelector((state: RootState) => state.userInfo);
-    const inventory = useSelector((state: RootState) => state.inventory);
+    const level = userInfoStore(state => state.level);
+
+    const inventoryList = inventoryStore(state => state.inventoryList);
+    const inventoryUpdate = inventoryStore(state => state.inventoryUpdate);
+    const inventoryAddItems = inventoryStore(state => state.inventoryAddItems);
     const [usedSlots, setUsedSlots] = useState<number>(
-        inventory.list.filter(item => isItem(item)).length,
+        inventoryList.filter(item => isItem(item)).length,
     );
+
     const [breakAllVisible, setBreakAllVisible] = useState(false);
     const [breakAllRarity, setBreakAllRarity] = useState('');
     const [disabled, setDisabled] = useState(false);
     const didMount = useRef(2);
-    const dispatch = useDispatch();
+
+    const itemShow = itemDetailsStore(state => state.itemDetailsShow);
 
     useEffect(() => {
         fetchInventoryDB();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     useEffect(() => {
-        setUsedSlots(inventory.list.filter(item => isItem(item)).length);
+        setUsedSlots(inventoryList.filter(item => isItem(item)).length);
         if (!didMount.current) {
             updateInventoryDB();
         } else {
             didMount.current -= 1;
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [inventory]);
+    }, [inventoryList]);
 
     function fetchInventoryDB() {
         const params = {
@@ -81,7 +81,7 @@ export function Inventory() {
                 console.log(err);
             } else {
                 // @ts-ignore
-                dispatch(inventoryUpdate(unmarshall(data.Item).inventory.list));
+                inventoryUpdate(unmarshall(data.Item).inventory.inventoryList);
             }
         });
     }
@@ -90,8 +90,8 @@ export function Inventory() {
         const params = {
             TableName: 'users',
             Key: marshall({id: USER_ID}),
-            UpdateExpression: 'set inventory = :val',
-            ExpressionAttributeValues: marshall({':val': inventory}),
+            UpdateExpression: 'set inventory.inventoryList = :val',
+            ExpressionAttributeValues: marshall({':val': inventoryList}),
         };
         dynamoDb.updateItem(params, function (err) {
             if (err) {
@@ -102,42 +102,43 @@ export function Inventory() {
 
     function addItemOnPress() {
         const items = [getRandomEquip('common', 3)];
-        if (inventory.list.length - usedSlots > items.length) {
-            dispatch(inventoryAddItems(items));
+        if (inventoryList.length - usedSlots > items.length) {
+            inventoryAddItems(items);
         }
     }
 
     function sortInventory() {
-        let inventoryClone = cloneDeep(inventory.list);
+        let inventoryClone = cloneDeep(inventoryList);
         sortInventoryList(inventoryClone);
 
-        if (!areListsIdentical(inventoryClone, inventory.list)) {
-            dispatch(inventoryUpdate(inventoryClone));
+        if (!areListsIdentical(inventoryClone, inventoryList)) {
+            inventoryUpdate(inventoryClone);
         }
     }
 
     function clearInventoryList() {
         if (usedSlots > 0) {
-            dispatch(inventoryUpdate(clearInventory(inventory.list)));
+            inventoryUpdate(clearInventory(inventoryList));
         }
     }
 
     function slotPress(item: {} | Item, index: number) {
         if (!disabled) {
             setDisabled(true);
+            // dispatch(itemDetailsShow([item, index]));
 
-            dispatch(itemDetailsShow([item, index]));
+            itemShow(item, index);
 
             setTimeout(() => {
                 setDisabled(false);
-            }, 1000);
+            }, 250);
         }
     }
 
     function showBreakAll(rarity: string) {
         /* Check at least one equipment exists */
-        for (let i = 0; i < inventory.list.length; i++) {
-            const item = inventory.list[i];
+        for (let i = 0; i < inventoryList.length; i++) {
+            const item = inventoryList[i];
             if (isItem(item)) {
                 if (
                     getItemCategory(item.id) === Category.equipment &&
@@ -172,7 +173,6 @@ export function Inventory() {
             source={getImage('background_outer')}
             resizeMode={'stretch'}
             fadeDuration={0}>
-            <ItemDetails />
             <BreakAllModal
                 visible={breakAllVisible}
                 setVisible={setBreakAllVisible}
@@ -192,14 +192,14 @@ export function Inventory() {
                         // eslint-disable-next-line react-native/no-inline-styles
                         {
                             color:
-                                usedSlots / inventory.list.length === 1
+                                usedSlots / inventoryList.length === 1
                                     ? 'red'
-                                    : usedSlots / inventory.list.length >= 0.8
+                                    : usedSlots / inventoryList.length >= 0.8
                                     ? 'yellow'
                                     : 'white',
                         },
                     ]}>
-                    {usedSlots + '/' + inventory.list.length}
+                    {usedSlots + '/' + inventoryList.length}
                 </Text>
                 <CustomButton
                     type={ButtonType.Orange}
@@ -212,7 +212,7 @@ export function Inventory() {
             <View style={styles.inventoryContainer}>
                 <FlatList
                     style={styles.inventoryFlatList}
-                    data={inventory.list}
+                    data={inventoryList}
                     renderItem={({item, index}) => (
                         <TouchableOpacity
                             onPress={() => slotPress(item, index)}
@@ -226,8 +226,7 @@ export function Inventory() {
                                         : getImage('icon_slot')
                                 }
                                 fadeDuration={0}>
-                                {isItem(item) &&
-                                canConvert(item, userInfo.level) ? (
+                                {isItem(item) && canConvert(item, level) ? (
                                     <Image
                                         style={styles.inventorySlotConvert}
                                         source={getImage('icon_convert')}

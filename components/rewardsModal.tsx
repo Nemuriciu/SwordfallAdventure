@@ -13,49 +13,59 @@ import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '../redux/store.tsx';
 import {getImage} from '../assets/images/_index';
 import {CloseButton} from './buttons/closeButton.tsx';
-import {rewardsModalHide} from '../redux/slices/rewardsModalSlice.tsx';
 import {getItemImg} from '../parsers/itemParser.tsx';
 import {strings} from '../utils/strings.ts';
 import {isFull} from '../utils/arrayUtils.ts';
-import {inventoryAddItems} from '../redux/slices/inventorySlice.tsx';
-import {updateExp, updateShards} from '../redux/slices/userInfoSlice.tsx';
 import {colors} from '../utils/colors.ts';
 import Animated, {BounceIn, BounceOut} from 'react-native-reanimated';
 import {updateGatherExp} from '../redux/slices/gatherInfoSlice.tsx';
+import {rewardsStore} from '../_zustand/rewardsStore.tsx';
+import {inventoryStore} from '../_zustand/inventoryStore.tsx';
+import {userInfoStore} from '../_zustand/userInfoStore.tsx';
 
 export function RewardsModal() {
-    const userInfo = useSelector((state: RootState) => state.userInfo);
+    const exp = userInfoStore(state => state.exp);
+    const shards = userInfoStore(state => state.shards);
+    const updateExp = userInfoStore(state => state.updateExp);
+    const updateShards = userInfoStore(state => state.updateShards);
+
     const gatherInfo = useSelector((state: RootState) => state.gatherInfo);
-    const inventory = useSelector((state: RootState) => state.inventory);
-    const rewardsModal = useSelector((state: RootState) => state.rewardsModal);
+
+    const inventoryList = inventoryStore(state => state.inventoryList);
+    const inventoryAddItems = inventoryStore(state => state.inventoryAddItems);
+
+    const modalVisible = rewardsStore(state => state.modalVisible);
+    const rewards = rewardsStore(state => state.rewards);
+    const rewardsExp = rewardsStore(state => state.exp);
+    const rewardsShards = rewardsStore(state => state.shards);
+    const gatheringExp = rewardsStore(state => state.gatheringExp);
+    const title = rewardsStore(state => state.title);
+    const rewardsHide = rewardsStore(state => state.rewardsHide);
+
     const levelUp = useSelector((state: RootState) => state.levelUp);
     const dispatch = useDispatch();
 
     useEffect(() => {
-        if (rewardsModal.modalVisible) {
-            if (!isFull(inventory.list)) {
-                if (rewardsModal.rewards.length) {
-                    dispatch(inventoryAddItems(rewardsModal.rewards));
+        if (modalVisible) {
+            if (!isFull(inventoryList)) {
+                if (rewards.length) {
+                    inventoryAddItems(rewards);
                 }
-                if (rewardsModal.experience) {
-                    dispatch(updateExp(userInfo.exp + rewardsModal.experience));
+                if (rewardsExp) {
+                    updateExp(exp + rewardsExp);
                 }
-                if (rewardsModal.shards) {
+                if (rewardsShards) {
+                    updateShards(shards + rewardsShards);
+                }
+                if (gatheringExp) {
                     dispatch(
-                        updateShards(userInfo.shards + rewardsModal.shards),
-                    );
-                }
-                if (rewardsModal.gatheringExp) {
-                    dispatch(
-                        updateGatherExp(
-                            gatherInfo.experience + rewardsModal.gatheringExp,
-                        ),
+                        updateGatherExp(gatherInfo.experience + gatheringExp),
                     );
                 }
             }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [rewardsModal.modalVisible]);
+    }, [modalVisible]);
 
     // @ts-ignore
     const renderItem = ({item}) => (
@@ -72,9 +82,10 @@ export function RewardsModal() {
     // noinspection RequiredAttributes
     return (
         <Modal
-            animationIn={'zoomIn'}
+            animationIn={'fadeIn'}
             animationOut={'fadeOut'}
-            isVisible={rewardsModal.modalVisible}
+            animationOutTiming={200}
+            isVisible={modalVisible}
             backdropTransitionOutTiming={0}
             useNativeDriver={true}>
             {/* Level Up Icon */}
@@ -101,15 +112,13 @@ export function RewardsModal() {
                         fadeDuration={0}>
                         <View style={styles.innerContainer}>
                             <Text style={styles.title}>
-                                {rewardsModal.title
-                                    ? rewardsModal.title
-                                    : strings.rewards}
+                                {title ? title : strings.rewards}
                             </Text>
-                            {rewardsModal.rewards.length ? (
+                            {rewards.length ? (
                                 <FlatList
                                     style={styles.flatList}
                                     horizontal
-                                    data={rewardsModal.rewards}
+                                    data={rewards}
                                     keyExtractor={(_item, index) =>
                                         index.toString()
                                     }
@@ -117,7 +126,7 @@ export function RewardsModal() {
                                     overScrollMode={'never'}
                                 />
                             ) : null}
-                            {rewardsModal.rewards.length === 0 ? (
+                            {rewards.length === 0 ? (
                                 <Text style={styles.noRewardText}>
                                     {strings.no_items_dropped}
                                 </Text>
@@ -129,37 +138,37 @@ export function RewardsModal() {
                                 fadeDuration={0}
                             />
                             <View style={styles.bottomContainer}>
-                                {rewardsModal.gatheringExp ? (
+                                {gatheringExp ? (
                                     <View style={styles.gatheringExpContainer}>
                                         <Text style={styles.gatheringExpLabel}>
                                             Gathering Experience:
                                         </Text>
                                         <Text style={styles.gatheringExpText}>
-                                            {rewardsModal.gatheringExp}
+                                            {gatheringExp}
                                         </Text>
                                     </View>
                                 ) : null}
                                 <View style={styles.shardsExpContainer}>
-                                    {rewardsModal.shards ? (
+                                    {rewardsShards ? (
                                         <Image
                                             style={styles.shardsIcon}
                                             source={getImage('icon_shards')}
                                             fadeDuration={0}
                                         />
                                     ) : null}
-                                    {rewardsModal.shards ? (
+                                    {rewardsShards ? (
                                         <Text style={styles.shardsText}>
-                                            {rewardsModal.shards}
+                                            {rewardsShards}
                                         </Text>
                                     ) : null}
-                                    {rewardsModal.experience ? (
+                                    {rewardsExp ? (
                                         <Text style={styles.expIcon}>
                                             {strings.xp}
                                         </Text>
                                     ) : null}
-                                    {rewardsModal.experience ? (
+                                    {rewardsExp ? (
                                         <Text style={styles.expText}>
-                                            {rewardsModal.experience}
+                                            {rewardsExp}
                                         </Text>
                                     ) : null}
                                 </View>
@@ -168,7 +177,7 @@ export function RewardsModal() {
 
                         <CloseButton
                             onPress={() => {
-                                dispatch(rewardsModalHide());
+                                rewardsHide();
                             }}
                             style={styles.closeButton}
                         />

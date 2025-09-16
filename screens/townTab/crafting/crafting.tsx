@@ -6,8 +6,7 @@ import {
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {getImage} from '../../../assets/images/_index';
-import {useDispatch, useSelector} from 'react-redux';
-import {RootState} from '../../../redux/store.tsx';
+import {useDispatch} from 'react-redux';
 import {ButtonGroup} from '@rneui/themed';
 import {strings} from '../../../utils/strings.ts';
 import {colors} from '../../../utils/colors.ts';
@@ -19,9 +18,11 @@ import {
 } from '../../../parsers/craftingParser.tsx';
 import {CraftingDetails} from './craftingDetails.tsx';
 import {craftingDetailsShow} from '../../../redux/slices/craftingDetailsSlice.tsx';
+import {userInfoStore} from '../../../_zustand/userInfoStore.tsx';
 
 export function Crafting() {
-    const userInfo = useSelector((state: RootState) => state.userInfo);
+    const level = userInfoStore(state => state.level);
+
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [equipmentList, setEquipmentList] = useState<[Item[], Item[][]]>([
         [],
@@ -35,9 +36,9 @@ export function Crafting() {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        setEquipmentList(getCraftingEquipmentList(userInfo.level));
-        setConsumablesList(getCraftingConsumablesList(userInfo.level));
-    }, [userInfo.level]);
+        setEquipmentList(getCraftingEquipmentList(level));
+        setConsumablesList(getCraftingConsumablesList(level));
+    }, [level]);
 
     function onClick(item: Item, materials: Item[], index: number) {
         if (!disabled) {

@@ -37,6 +37,7 @@ import {USER_ID} from '../../../App';
 import {dynamoDb} from '../../../database';
 import {rewardsModalInit} from '../../../redux/slices/rewardsModalSlice.tsx';
 import {AbandonModal} from './abandonModal.tsx';
+import {userInfoStore} from '../../../_zustand/userInfoStore.tsx';
 
 export const QUESTS_AMOUNT: number = 8;
 export const QUESTS_HUNTING_AMOUNT: number = 5;
@@ -44,7 +45,8 @@ export const QUESTS_GATHERING_AMOUNT: number = 2;
 export const QUESTS_CRAFTING_AMOUNT: number = 1;
 
 export function Quests() {
-    const userInfo = useSelector((state: RootState) => state.userInfo);
+    const level = userInfoStore(state => state.level);
+
     const quests = useSelector((state: RootState) => state.quests);
     const dispatch = useDispatch();
     const [refreshFetched, setRefreshFetched] = useState(false);
@@ -161,7 +163,7 @@ export function Quests() {
         dispatch(
             rewardsModalInit({
                 rewards: questsList[index].rewards,
-                experience: getQuestExp(questsList[index], userInfo.level),
+                experience: getQuestExp(questsList[index], level),
                 shards: getQuestShards(questsList[index]),
             }),
         );
@@ -197,15 +199,15 @@ export function Quests() {
         }
 
         for (let i = huntingCount; i < QUESTS_HUNTING_AMOUNT; i++) {
-            questsList.push(generateQuest('hunting', userInfo.level));
+            questsList.push(generateQuest('hunting', level));
         }
 
         for (let i = gatheringCount; i < QUESTS_GATHERING_AMOUNT; i++) {
-            questsList.push(generateQuest('gathering', userInfo.level));
+            questsList.push(generateQuest('gathering', level));
         }
 
         for (let i = craftingCount; i < QUESTS_CRAFTING_AMOUNT; i++) {
-            questsList.push(generateQuest('crafting', userInfo.level));
+            questsList.push(generateQuest('crafting', level));
         }
 
         dispatch(questsSetList(questsList));
@@ -299,7 +301,7 @@ export function Quests() {
                     {/* Shards & Exp */}
                     <View style={styles.shardsExpContainer}>
                         <View style={styles.shardsContainer}>
-                            {userInfo.level ? (
+                            {level ? (
                                 <Image
                                     style={styles.shardsIcon}
                                     source={getImage('icon_shards')}
@@ -307,7 +309,7 @@ export function Quests() {
                                     fadeDuration={0}
                                 />
                             ) : null}
-                            {userInfo.level ? (
+                            {level ? (
                                 <Text
                                     style={styles.shardsText}
                                     adjustsFontSizeToFit={true}
@@ -317,7 +319,7 @@ export function Quests() {
                             ) : null}
                         </View>
                         <View style={styles.expContainer}>
-                            {userInfo.level ? (
+                            {level ? (
                                 <Text
                                     style={styles.expIcon}
                                     adjustsFontSizeToFit={true}
@@ -325,12 +327,12 @@ export function Quests() {
                                     {strings.xp}
                                 </Text>
                             ) : null}
-                            {userInfo.level ? (
+                            {level ? (
                                 <Text
                                     style={styles.expText}
                                     adjustsFontSizeToFit={true}
                                     numberOfLines={1}>
-                                    {getQuestExp(item, userInfo.level)}
+                                    {getQuestExp(item, level)}
                                 </Text>
                             ) : null}
                         </View>
