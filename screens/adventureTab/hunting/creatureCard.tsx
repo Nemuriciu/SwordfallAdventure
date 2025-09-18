@@ -13,11 +13,11 @@ import {
 } from '../../../parsers/creatureParser.tsx';
 import {getItemColor} from '../../../parsers/itemParser.tsx';
 import {getResistancePercent} from '../../../parsers/attributeParser.tsx';
-import {useDispatch, useSelector} from 'react-redux';
-import {combatShow} from '../../../redux/slices/combatSlice.tsx';
-import {RootState} from '../../../redux/store.tsx';
 import Toast from 'react-native-simple-toast';
-import {userInfoStore} from '../../../_zustand/userInfoStore.tsx';
+import {userInfoStore} from '../../../store_zustand/userInfoStore.tsx';
+import {combatStore} from '../../../store_zustand/combatStore.tsx';
+import {attributesStore} from '../../../store_zustand/attributesStore.tsx';
+import {Stats} from '../../../types/stats.ts';
 
 interface props {
     creature: Creature;
@@ -27,10 +27,24 @@ interface props {
 export function CreatureCard({creature, index}: props) {
     const stamina = userInfoStore(state => state.stamina);
     const updateStamina = userInfoStore(state => state.updateStamina);
+    const combatShow = combatStore(state => state.combatShow);
 
-    const attributes = useSelector((state: RootState) => state.attributes);
+    const health = attributesStore(state => state.health);
+    const physicalAtk = attributesStore(state => state.physicalAtk);
+    const magicalAtk = attributesStore(state => state.magicalAtk);
+    const physicalRes = attributesStore(state => state.physicalRes);
+    const magicalRes = attributesStore(state => state.magicalRes);
+    const critical = attributesStore(state => state.critical);
+    const dodge = attributesStore(state => state.dodge);
+    const bonusHealth = attributesStore(state => state.bonusHealth);
+    const bonusPhysicalAtk = attributesStore(state => state.bonusPhysicalAtk);
+    const bonusMagicalAtk = attributesStore(state => state.bonusMagicalAtk);
+    const bonusPhysicalRes = attributesStore(state => state.bonusPhysicalRes);
+    const bonusMagicalRes = attributesStore(state => state.bonusMagicalRes);
+    const bonusCritical = attributesStore(state => state.bonusCritical);
+    const bonusDodge = attributesStore(state => state.bonusDodge);
+
     const [disabled, setDisabled] = useState(false);
-    const dispatch = useDispatch();
 
     useEffect(() => {}, []);
 
@@ -40,9 +54,23 @@ export function CreatureCard({creature, index}: props) {
 
             const staminaCost: number = 10; //TODO:
             if (stamina >= staminaCost) {
-                dispatch(
-                    combatShow([creature, index, attributes, creature.stats]),
-                );
+                const attributes: Stats = {
+                    health: health,
+                    physicalAtk: physicalAtk,
+                    magicalAtk: magicalAtk,
+                    physicalRes: physicalRes,
+                    magicalRes: magicalRes,
+                    critical: critical,
+                    dodge: dodge,
+                    bonusHealth: bonusHealth,
+                    bonusPhysicalAtk: bonusPhysicalAtk,
+                    bonusMagicalAtk: bonusMagicalAtk,
+                    bonusPhysicalRes: bonusPhysicalRes,
+                    bonusMagicalRes: bonusMagicalRes,
+                    bonusCritical: bonusCritical,
+                    bonusDodge: bonusDodge,
+                };
+                combatShow(creature, index, attributes, creature.stats);
                 updateStamina(stamina - staminaCost);
             } else {
                 //TODO: localization

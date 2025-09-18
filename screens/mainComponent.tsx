@@ -17,14 +17,13 @@ import {getImage} from '../assets/images/_index';
 import {RewardsModal} from '../components/rewardsModal';
 import {Combat} from './adventureTab/hunting/combat';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {store} from '../redux/store.tsx';
 import experienceJson from '../assets/json/experience.json';
-import {setLevelUpVisibility} from '../redux/slices/levelUpSlice.tsx';
 import {colors} from '../utils/colors.ts';
 import {ItemDetails} from '../components/itemDetails.tsx';
-import {userInfoStore} from '../_zustand/userInfoStore.tsx';
+import {userInfoStore} from '../store_zustand/userInfoStore.tsx';
 
 const Tab = createBottomTabNavigator();
+const setLevelUpVisibility = userInfoStore(state => state.setLevelUpVisibility);
 
 export function MainComponent() {
     const level = userInfoStore(state => state.level);
@@ -149,13 +148,13 @@ export function MainComponent() {
         </View>
     );
 }
-// TODO: Create separate level up Slice in redux
 export const triggerLevelUp = (exp: number) => {
-    store.dispatch(setLevelUpVisibility(true));
+    setLevelUpVisibility(true);
+    console.log(exp);
     //TODO:
 
     setTimeout(() => {
-        store.dispatch(setLevelUpVisibility(false));
+        setLevelUpVisibility(false);
     }, 3000);
 };
 

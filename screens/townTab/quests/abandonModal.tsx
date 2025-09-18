@@ -1,7 +1,6 @@
 import React, {useState} from 'react';
 import {StyleSheet, View, ImageBackground, Text} from 'react-native';
 import Modal from 'react-native-modal';
-import {useDispatch, useSelector} from 'react-redux';
 import {getImage} from '../../../assets/images/_index';
 import SpannableBuilder from '@mj-studio/react-native-spannable-string';
 import {
@@ -9,10 +8,9 @@ import {
     CustomButton,
 } from '../../../components/buttons/customButton.tsx';
 import {strings} from '../../../utils/strings.ts';
-import {RootState} from '../../../redux/store.tsx';
 import cloneDeep from 'lodash.clonedeep';
 import {sortQuests} from '../../../parsers/questParser.tsx';
-import {questsSetList} from '../../../redux/slices/questsSlice.tsx';
+import {questsStore} from '../../../store_zustand/questsStore.tsx';
 
 interface props {
     visible: boolean;
@@ -21,29 +19,28 @@ interface props {
 }
 
 export function AbandonModal({visible, setVisible, index}: props) {
-    const quests = useSelector((state: RootState) => state.quests);
-    const dispatch = useDispatch();
+    const questsList = questsStore(state => state.questsList);
+    const questsSetList = questsStore(state => state.questsSetList);
+
     const [disabled, setDisabled] = useState(false);
     SpannableBuilder.getInstanceWithComponent(Text);
 
     function abandonQuest() {
         setDisabled(true);
 
-        const questsList = cloneDeep(quests.questsList);
-        questsList[index].isActive = false;
-        questsList[index].progress = 0;
+        const _questsList = cloneDeep(questsList);
+        _questsList[index].isActive = false;
+        _questsList[index].progress = 0;
 
-        sortQuests(questsList);
-        dispatch(questsSetList(questsList));
+        sortQuests(_questsList);
+        questsSetList(_questsList);
 
         /* Hide Abandon Modal */
-        setTimeout(() => {
-            setVisible(false);
-        }, 100);
+        setVisible(false);
 
         setTimeout(() => {
             setDisabled(false);
-        }, 500);
+        }, 250);
     }
 
     const Title = () => {

@@ -10,8 +10,6 @@ import {
     TextInput,
 } from 'react-native';
 import Modal from 'react-native-modal';
-import {useDispatch, useSelector} from 'react-redux';
-import {RootState} from '../../../redux/store.tsx';
 import {getImage} from '../../../assets/images/_index';
 import {
     ButtonType,
@@ -28,16 +26,13 @@ import {
     getSkillPrimaryEffect,
     getSkillSecondaryEffect,
 } from '../../../parsers/skillParser.tsx';
-import {
-    skillsDetailsHide,
-    skillsDetailsUpdateSkill,
-} from '../../../redux/slices/skillsDetailsSlice.tsx';
 import {colors} from '../../../utils/colors.ts';
 import cloneDeep from 'lodash.clonedeep';
 import {Skill} from '../../../types/skill.ts';
-import {skillsUpdateSkill} from '../../../redux/slices/skillsSlice.tsx';
 import SpannableBuilder from '@mj-studio/react-native-spannable-string';
-import {userInfoStore} from '../../../_zustand/userInfoStore.tsx';
+import {userInfoStore} from '../../../store_zustand/userInfoStore.tsx';
+import {skillsStore} from '../../../store_zustand/skillsStore.tsx';
+import {skillDetailsStore} from '../../../store_zustand/skillDetailsStore.tsx';
 
 interface props {
     description: string;
@@ -50,28 +45,34 @@ export function SkillsDetails() {
     const skillPoints = userInfoStore(state => state.skillPoints);
     const updateSkillPoints = userInfoStore(state => state.updateSkillPoints);
 
-    const skillsDetails = useSelector(
-        (state: RootState) => state.skillsDetails,
+    const modalVisible = skillDetailsStore(state => state.modalVisible);
+    const skill = skillDetailsStore(state => state.skill);
+    const skillsDetailsHide = skillDetailsStore(
+        state => state.skillsDetailsHide,
     );
+    const skillsDetailsUpdateSkill = skillDetailsStore(
+        state => state.skillsDetailsUpdateSkill,
+    );
+    const skillsUpdateSkill = skillsStore(state => state.skillsUpdateSkill);
+
     const [pointsAvailable, setPointsAvailable] = useState(0);
     const [pointsSpent, setPointsSpent] = useState(0);
     const [disabled, setDisabled] = useState(false);
-    const dispatch = useDispatch();
     SpannableBuilder.getInstanceWithComponent(Text);
 
     useEffect(() => {
-        if (skillsDetails.skill !== null) {
-            setPointsSpent(skillsDetails.skill.points);
+        if (skill !== null) {
+            setPointsSpent(skill.points);
             setPointsAvailable(skillPoints);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [skillsDetails.skill]);
+    }, [skill]);
 
     function addPoints() {
-        if (skillsDetails.skill) {
+        if (skill) {
             if (
                 pointsAvailable > 0 &&
-                pointsSpent !== getSkillMaxPoints(skillsDetails.skill.id)
+                pointsSpent !== getSkillMaxPoints(skill.id)
             ) {
                 setPointsSpent(pointsSpent + 1);
                 setPointsAvailable(pointsAvailable - 1);
@@ -80,7 +81,7 @@ export function SkillsDetails() {
     }
 
     function removePoints() {
-        if (skillsDetails.skill) {
+        if (skill) {
             if (pointsSpent > 0) {
                 setPointsSpent(pointsSpent - 1);
                 setPointsAvailable(pointsAvailable + 1);
@@ -92,18 +93,14 @@ export function SkillsDetails() {
         if (!disabled) {
             setDisabled(true);
 
-            const skill = cloneDeep(skillsDetails.skill) as Skill;
-            skill.points = pointsSpent;
+            const _skill = cloneDeep(skill) as Skill;
+            _skill.points = pointsSpent;
             /* Update Player Available Skill Points */
             updateSkillPoints(pointsAvailable);
             /* Update Skill Points spent */
-            setTimeout(() => {
-                dispatch(skillsUpdateSkill([skill.id, skill]));
-            }, 100);
+            skillsUpdateSkill(_skill.id, _skill);
             /* Update Selected Skill */
-            setTimeout(() => {
-                dispatch(skillsDetailsUpdateSkill(skill));
-            }, 200);
+            skillsDetailsUpdateSkill(_skill);
 
             setTimeout(() => {
                 setDisabled(false);
@@ -114,9 +111,7 @@ export function SkillsDetails() {
     const CooldownText = () => {
         return SpannableBuilder.getInstance(styles.cooldown)
             .appendColored(strings.cooldown + ': ', colors.dex_color)
-            .append(
-                getSkillCooldown((skillsDetails.skill as Skill).id) + ' turns',
-            )
+            .append(getSkillCooldown((skill as Skill).id) + ' turns')
             .build();
     };
 
@@ -257,14 +252,15 @@ export function SkillsDetails() {
     // noinspection RequiredAttributes
     return (
         <Modal
-            animationIn={'zoomIn'}
+            animationIn={'fadeIn'}
             animationOut={'fadeOut'}
-            isVisible={skillsDetails.modalVisible}
+            animationOutTiming={200}
+            isVisible={modalVisible}
             backdropTransitionOutTiming={0}
             useNativeDriver={true}>
             <View style={styles.modalAlpha}>
                 <View style={styles.container}>
-                    {skillsDetails.skill && (
+                    {skill && (
                         <ImageBackground
                             style={styles.background}
                             source={getImage('background_details')}
@@ -282,9 +278,7 @@ export function SkillsDetails() {
                                             style={styles.frame}>
                                             <Image
                                                 source={getImage(
-                                                    getSkillImg(
-                                                        skillsDetails.skill.id,
-                                                    ),
+                                                    getSkillImg(skill.id),
                                                 )}
                                                 resizeMode={'stretch'}
                                                 fadeDuration={0}
@@ -294,9 +288,7 @@ export function SkillsDetails() {
                                     </View>
                                     <View>
                                         <Text style={styles.name}>
-                                            {getSkillName(
-                                                skillsDetails.skill.id,
-                                            )}
+                                            {getSkillName(skill.id)}
                                         </Text>
                                         <Text
                                             style={[
@@ -304,8 +296,7 @@ export function SkillsDetails() {
                                                 {
                                                     color:
                                                         pointsSpent !==
-                                                        skillsDetails.skill
-                                                            .points
+                                                        skill.points
                                                             ? 'yellow'
                                                             : 'white',
                                                 },
@@ -313,9 +304,7 @@ export function SkillsDetails() {
                                             {'Rank  ' +
                                                 pointsSpent +
                                                 ' / ' +
-                                                getSkillMaxPoints(
-                                                    skillsDetails.skill.id,
-                                                )}
+                                                getSkillMaxPoints(skill.id)}
                                         </Text>
                                     </View>
                                 </View>
@@ -323,21 +312,19 @@ export function SkillsDetails() {
                                     {pointsSpent > 0 && (
                                         <Description
                                             description={getSkillDescription(
-                                                skillsDetails.skill.id,
+                                                skill.id,
                                             )}
                                             primaryEffect={getSkillPrimaryEffect(
-                                                skillsDetails.skill.id,
+                                                skill.id,
                                             )}
                                             secondaryEffect={getSkillSecondaryEffect(
-                                                skillsDetails.skill.id,
+                                                skill.id,
                                             )}
                                             next={false}
                                         />
                                     )}
                                     {pointsSpent <
-                                        getSkillMaxPoints(
-                                            skillsDetails.skill.id,
-                                        ) && (
+                                        getSkillMaxPoints(skill.id) && (
                                         <ImageBackground
                                             style={styles.nextRankImage}
                                             source={getImage(
@@ -354,26 +341,23 @@ export function SkillsDetails() {
                                         </ImageBackground>
                                     )}
                                     {pointsSpent <
-                                        getSkillMaxPoints(
-                                            skillsDetails.skill.id,
-                                        ) && (
+                                        getSkillMaxPoints(skill.id) && (
                                         <Description
                                             description={getSkillDescription(
-                                                skillsDetails.skill.id,
+                                                skill.id,
                                             )}
                                             primaryEffect={getSkillPrimaryEffect(
-                                                skillsDetails.skill.id,
+                                                skill.id,
                                             )}
                                             secondaryEffect={getSkillSecondaryEffect(
-                                                skillsDetails.skill.id,
+                                                skill.id,
                                             )}
                                             next={true}
                                         />
                                     )}
-                                    {skillsDetails.skill &&
-                                        getSkillCooldown(
-                                            skillsDetails.skill.id,
-                                        ) && <CooldownText />}
+                                    {skill && getSkillCooldown(skill.id) && (
+                                        <CooldownText />
+                                    )}
                                 </View>
                                 <View style={styles.separatorContainer}>
                                     <Image
@@ -393,8 +377,7 @@ export function SkillsDetails() {
                                         disabled={
                                             disabled
                                                 ? true
-                                                : skillsDetails.skill.points ===
-                                                  pointsSpent
+                                                : skill.points === pointsSpent
                                         }
                                     />
                                     {/* Points Spent */}
@@ -449,9 +432,7 @@ export function SkillsDetails() {
                                                             {
                                                                 color:
                                                                     pointsSpent !==
-                                                                    skillsDetails
-                                                                        .skill
-                                                                        .points
+                                                                    skill.points
                                                                         ? 'yellow'
                                                                         : 'white',
                                                             },
@@ -459,8 +440,7 @@ export function SkillsDetails() {
                                                         value={pointsSpent.toString()}
                                                         editable={false}
                                                         maxLength={getSkillMaxPoints(
-                                                            skillsDetails.skill
-                                                                .id,
+                                                            skill.id,
                                                         )}
                                                     />
                                                     <TouchableOpacity
@@ -474,9 +454,7 @@ export function SkillsDetails() {
                                                                 0 ||
                                                             pointsSpent ===
                                                                 getSkillMaxPoints(
-                                                                    skillsDetails
-                                                                        .skill
-                                                                        .id,
+                                                                    skill.id,
                                                                 )
                                                         }>
                                                         <Image
@@ -488,9 +466,7 @@ export function SkillsDetails() {
                                                                     0 ||
                                                                 pointsSpent ===
                                                                     getSkillMaxPoints(
-                                                                        skillsDetails
-                                                                            .skill
-                                                                            .id,
+                                                                        skill.id,
                                                                     )
                                                                     ? getImage(
                                                                           'icon_right_arrow_disabled',
@@ -520,7 +496,7 @@ export function SkillsDetails() {
                                 </View>
                                 <CloseButton
                                     onPress={() => {
-                                        dispatch(skillsDetailsHide());
+                                        skillsDetailsHide();
                                     }}
                                     style={styles.closeButton}
                                 />

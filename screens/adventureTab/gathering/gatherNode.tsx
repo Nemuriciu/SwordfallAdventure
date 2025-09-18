@@ -17,15 +17,13 @@ import {
     ButtonType,
     CustomButton,
 } from '../../../components/buttons/customButton.tsx';
-import {useDispatch, useSelector} from 'react-redux';
-import {RootState} from '../../../redux/store.tsx';
-import {setGatherInfo} from '../../../redux/slices/gatherInfoSlice.tsx';
 import ProgressBar from '../../../components/progressBar.tsx';
-import {rewardsModalInit} from '../../../redux/slices/rewardsModalSlice.tsx';
 import Toast from 'react-native-simple-toast';
 import {isQuestComplete, sortQuests} from '../../../parsers/questParser.tsx';
-import {questsSetList} from '../../../redux/slices/questsSlice.tsx';
-import {userInfoStore} from '../../../_zustand/userInfoStore.tsx';
+import {userInfoStore} from '../../../store_zustand/userInfoStore.tsx';
+import {rewardsStore} from '../../../store_zustand/rewardsStore.tsx';
+import {gatheringStore} from '../../../store_zustand/gatheringStore.tsx';
+import {questsStore} from '../../../store_zustand/questsStore.tsx';
 
 interface props {
     node: Node;
@@ -37,21 +35,29 @@ export function GatherNode({node, index}: props) {
     const level = userInfoStore(state => state.level);
     const stamina = userInfoStore(state => state.stamina);
     const updateStamina = userInfoStore(state => state.updateStamina);
+    const rewardsInit = rewardsStore(state => state.rewardsInit);
 
-    const gatherInfo = useSelector((state: RootState) => state.gatherInfo);
-    const quests = useSelector((state: RootState) => state.quests);
+    const gatherLevel = gatheringStore(state => state.level);
+    const gatherExp = gatheringStore(state => state.exp);
+    const isGathering = gatheringStore(state => state.isGathering);
+    const nodeIndex = gatheringStore(state => state.nodeIndex);
+    const gatherTimestamp = gatheringStore(state => state.timestamp);
+    const nodes = gatheringStore(state => state.nodes);
+    const setGatherInfo = gatheringStore(state => state.setGatherInfo);
+
+    const questsList = questsStore(state => state.questsList);
+    const questsSetList = questsStore(state => state.questsSetList);
+
     const [timer, setTimer] = useState(1);
     const [nodeTime, setNodeTime] = useState(1);
     const [disabled, setDisabled] = useState(false);
     const [disabled_2, setDisabled_2] = useState(false);
-    const dispatch = useDispatch();
 
     useEffect(() => {
-        if (gatherInfo.isGathering && gatherInfo.nodeIndex === index) {
-            const node_time =
-                gatherInfo.nodes[gatherInfo.nodeIndex].time * 60000;
+        if (isGathering && nodeIndex === index) {
+            const node_time = nodes[nodeIndex].time * 60000;
             const timeLeft =
-                new Date().getTime() - new Date(gatherInfo.timestamp).getTime();
+                new Date().getTime() - new Date(gatherTimestamp).getTime();
 
             setNodeTime(node_time);
             setTimer(node_time - timeLeft);
@@ -65,17 +71,21 @@ export function GatherNode({node, index}: props) {
             };
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [gatherInfo]);
+    }, [
+        gatherLevel,
+        gatherExp,
+        isGathering,
+        nodeIndex,
+        gatherTimestamp,
+        nodes,
+    ]);
 
     function isGatheringReady() {
-        if (gatherInfo.isGathering) {
+        if (isGathering) {
             const currentTime = new Date().getTime();
-            const timestamp = new Date(gatherInfo.timestamp).getTime();
+            const timestamp = new Date(gatherTimestamp).getTime();
 
-            return (
-                currentTime - timestamp >=
-                gatherInfo.nodes[gatherInfo.nodeIndex].time * 60000
-            );
+            return currentTime - timestamp >= nodes[nodeIndex].time * 60000;
         }
     }
 
@@ -85,15 +95,13 @@ export function GatherNode({node, index}: props) {
 
             if (stamina >= staminaCost) {
                 updateStamina(stamina - staminaCost);
-                dispatch(
-                    setGatherInfo({
-                        level: gatherInfo.level,
-                        experience: gatherInfo.experience,
-                        isGathering: true,
-                        nodeIndex: index,
-                        timestamp: new Date().toISOString(),
-                        nodes: gatherInfo.nodes,
-                    }),
+                setGatherInfo(
+                    gatherLevel,
+                    gatherExp,
+                    true,
+                    index,
+                    new Date().toISOString(),
+                    nodes,
                 );
             } else {
                 //TODO: localization
@@ -110,30 +118,18 @@ export function GatherNode({node, index}: props) {
         if (!disabled_2) {
             setDisabled_2(true);
             /* Generate Rewards */
-            dispatch(
-                rewardsModalInit({
-                    rewards: getNodeRewards(
-                        gatherInfo.nodes[gatherInfo.nodeIndex],
-                        level,
-                    ),
-                    experience: getNodeExperience(
-                        gatherInfo.nodes[gatherInfo.nodeIndex],
-                        level,
-                    ),
-                    gatheringExp: getNodeGatheringExp(
-                        gatherInfo.nodes[gatherInfo.nodeIndex],
-                        level,
-                    ),
-                    shards: getNodeShards(
-                        gatherInfo.nodes[gatherInfo.nodeIndex],
-                    ),
-                }),
+            rewardsInit(
+                getNodeRewards(nodes[nodeIndex], level),
+                getNodeExperience(nodes[nodeIndex], level),
+                getNodeGatheringExp(nodes[nodeIndex], level),
+                getNodeShards(nodes[nodeIndex]),
             );
-            /* Update Quests */
-            const questsList = cloneDeep(quests.questsList);
 
-            for (let i = 0; i < questsList.length; i++) {
-                let quest = questsList[i];
+            /* Update Quests */
+            const _questsList = cloneDeep(questsList);
+
+            for (let i = 0; i < _questsList.length; i++) {
+                let quest = _questsList[i];
                 if (
                     quest.isActive &&
                     !isQuestComplete(quest) &&
@@ -147,22 +143,20 @@ export function GatherNode({node, index}: props) {
                     }
                 }
             }
-            sortQuests(questsList);
-            dispatch(questsSetList(questsList));
+            sortQuests(_questsList);
+            questsSetList(_questsList);
 
-            /* Remove Node from inventoryList */
-            const nodeList = cloneDeep(gatherInfo.nodes);
+            /* Remove Node from list */
+            const nodeList = cloneDeep(nodes);
             nodeList.splice(index, 1);
 
-            dispatch(
-                setGatherInfo({
-                    level: gatherInfo.level,
-                    experience: gatherInfo.experience,
-                    isGathering: false,
-                    nodeIndex: -1,
-                    timestamp: new Date().toISOString(),
-                    nodes: nodeList,
-                }),
+            setGatherInfo(
+                gatherLevel,
+                gatherExp,
+                false,
+                -1,
+                new Date().toISOString(),
+                nodeList,
             );
 
             setTimeout(() => {
@@ -201,24 +195,18 @@ export function GatherNode({node, index}: props) {
                 <Text style={styles.time}>{'Time: ' + node.time + ' min'}</Text>
             </View>
             <View style={styles.rightContainer}>
-                {gatherInfo.isGathering &&
-                    gatherInfo.nodeIndex === index &&
-                    !isGatheringReady() && (
-                        <ProgressBar
-                            progress={1 - timer / nodeTime}
-                            image={'progress_bar_orange'}
-                            style={styles.progressBar}
-                        />
-                    )}
-                {gatherInfo.isGathering &&
-                    gatherInfo.nodeIndex === index &&
-                    !isGatheringReady() && (
-                        <Text style={styles.progressText}>
-                            {formatTime(timer)}
-                        </Text>
-                    )}
+                {isGathering && nodeIndex === index && !isGatheringReady() && (
+                    <ProgressBar
+                        progress={1 - timer / nodeTime}
+                        image={'progress_bar_orange'}
+                        style={styles.progressBar}
+                    />
+                )}
+                {isGathering && nodeIndex === index && !isGatheringReady() && (
+                    <Text style={styles.progressText}>{formatTime(timer)}</Text>
+                )}
 
-                {!gatherInfo.isGathering && (
+                {!isGathering && (
                     <CustomButton
                         type={ButtonType.Orange}
                         title={'Gather'}
@@ -227,7 +215,7 @@ export function GatherNode({node, index}: props) {
                         style={styles.gatherButton}
                     />
                 )}
-                {isGatheringReady() && gatherInfo.nodeIndex === index && (
+                {isGathering && isGatheringReady() && nodeIndex === index && (
                     <CustomButton
                         type={ButtonType.Green}
                         title={'Claim'}
@@ -236,7 +224,7 @@ export function GatherNode({node, index}: props) {
                         style={styles.gatherButton}
                     />
                 )}
-                {!gatherInfo.isGathering && (
+                {!isGathering && (
                     <View style={styles.staminaContainer}>
                         <Text style={styles.staminaText}>{staminaCost}</Text>
                         <Image

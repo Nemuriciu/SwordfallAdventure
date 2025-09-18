@@ -33,9 +33,9 @@ import {
     clearInventory,
     sortInventoryList,
 } from '../../../utils/arrayUtils.ts';
-import {itemDetailsStore} from '../../../_zustand/itemDetailsStore.tsx';
-import {inventoryStore} from '../../../_zustand/inventoryStore.tsx';
-import {userInfoStore} from '../../../_zustand/userInfoStore.tsx';
+import {itemDetailsStore} from '../../../store_zustand/itemDetailsStore.tsx';
+import {inventoryStore} from '../../../store_zustand/inventoryStore.tsx';
+import {userInfoStore} from '../../../store_zustand/userInfoStore.tsx';
 
 const COLUMN_NR = 6;
 

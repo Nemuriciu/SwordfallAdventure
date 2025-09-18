@@ -10,6 +10,7 @@ export interface UserInfoState {
     shards: number;
     diamonds: number;
     staminaTimestamp: string;
+    levelUpVisibility: boolean;
     setUserInfo: (
         username: string,
         level: number,
@@ -31,6 +32,7 @@ export interface UserInfoState {
     updateShards: (shards: number) => void;
     updateDiamonds: (diamonds: number) => void;
     increaseLevel: (expTrunc: number) => void;
+    setLevelUpVisibility: (visibility: boolean) => void;
 }
 
 export const userInfoStore = create<UserInfoState>()(set => ({
@@ -43,6 +45,7 @@ export const userInfoStore = create<UserInfoState>()(set => ({
     shards: 0,
     diamonds: 0,
     staminaTimestamp: '',
+    levelUpVisibility: false,
     setUserInfo: (
         username: string,
         level: number,
@@ -85,5 +88,9 @@ export const userInfoStore = create<UserInfoState>()(set => ({
             stamina: state.staminaMax,
             staminaTimestamp: new Date().toISOString(),
             // skillPoints: state.skillPoints + 1, // TODO: when you enable it
+        })),
+    setLevelUpVisibility: (visibility: boolean) =>
+        set(() => ({
+            levelUpVisibility: visibility,
         })),
 }));

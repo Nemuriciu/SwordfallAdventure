@@ -1,8 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {StyleSheet, Text, View, ImageBackground, Image} from 'react-native';
 import Modal from 'react-native-modal';
-import {useDispatch, useSelector} from 'react-redux';
-import {RootState} from '../redux/store.tsx';
 import {isItem, Item} from '../types/item.ts';
 import {
     canConvert,
@@ -22,16 +20,6 @@ import {ButtonType, CustomButton} from './buttons/customButton.tsx';
 import {colors} from '../utils/colors.ts';
 import {getStats} from '../parsers/attributeParser.tsx';
 import {CloseButton} from './buttons/closeButton.tsx';
-import {
-    equipBoots,
-    equipChest,
-    equipGloves,
-    equipHelmet,
-    equipOffhand,
-    equipPants,
-    equipWeapon,
-    equippedItemUpgrade,
-} from '../redux/slices/equipmentSlice.tsx';
 import {strings} from '../utils/strings.ts';
 import {
     getInventoryIndex,
@@ -42,12 +30,15 @@ import Toast from 'react-native-simple-toast';
 import {emptyStats, Stats} from '../types/stats.ts';
 import {DiscardModal} from '../screens/characterTab/inventory/discardModal.tsx';
 import {ConvertModal} from '../screens/characterTab/inventory/convertModal.tsx';
-import {itemDetailsStore} from '../_zustand/itemDetailsStore.tsx';
-import {inventoryStore} from '../_zustand/inventoryStore.tsx';
-import {rewardsStore} from '../_zustand/rewardsStore.tsx';
-import {userInfoStore} from '../_zustand/userInfoStore.tsx';
+import {itemDetailsStore} from '../store_zustand/itemDetailsStore.tsx';
+import {inventoryStore} from '../store_zustand/inventoryStore.tsx';
+import {rewardsStore} from '../store_zustand/rewardsStore.tsx';
+import {userInfoStore} from '../store_zustand/userInfoStore.tsx';
+import {equipmentStore} from '../store_zustand/equipmentStore.tsx';
 
 export function ItemDetails() {
+    const rewardsInit = rewardsStore(state => state.rewardsInit);
+
     const level = userInfoStore(state => state.level);
     const shards = userInfoStore(state => state.shards);
     const updateShards = userInfoStore(state => state.updateShards);
@@ -73,16 +64,30 @@ export function ItemDetails() {
         state => state.inventoryRemoveMultipleItemsAt,
     );
 
-    const rewardsInit = rewardsStore(state => state.rewardsInit);
+    const helmet = equipmentStore(state => state.helmet);
+    const weapon = equipmentStore(state => state.weapon);
+    const chest = equipmentStore(state => state.chest);
+    const offhand = equipmentStore(state => state.offhand);
+    const gloves = equipmentStore(state => state.gloves);
+    const pants = equipmentStore(state => state.pants);
+    const boots = equipmentStore(state => state.boots);
+    const equipHelmet = equipmentStore(state => state.equipHelmet);
+    const equipWeapon = equipmentStore(state => state.equipWeapon);
+    const equipChest = equipmentStore(state => state.equipChest);
+    const equipOffhand = equipmentStore(state => state.equipOffhand);
+    const equipGloves = equipmentStore(state => state.equipGloves);
+    const equipPants = equipmentStore(state => state.equipPants);
+    const equipBoots = equipmentStore(state => state.equipBoots);
+    const equippedItemUpgrade = equipmentStore(
+        state => state.equippedItemUpgrade,
+    );
 
-    const equipment = useSelector((state: RootState) => state.equipment);
     const [equippedItem, setEquippedItem] = useState<Item | {}>({});
     const [itemStats, setItemStats] = useState<Stats>(emptyStats);
     const [equippedStats, setEquippedStats] = useState<Stats>(emptyStats);
     const [discardVisible, setDiscardVisible] = useState(false);
     const [convertVisible, setConvertVisible] = useState(false);
     const [disabled, setDisabled] = useState(false);
-    const dispatch = useDispatch();
 
     useEffect(() => {
         setEquippedItem({});
@@ -94,45 +99,45 @@ export function ItemDetails() {
                 if (index !== -1) {
                     switch (getItemType(item.id)) {
                         case 'helmet':
-                            if (isItem(equipment.helmet)) {
-                                setEquippedItem(equipment.helmet);
-                                setEquippedStats(getStats(equipment.helmet));
+                            if (isItem(helmet)) {
+                                setEquippedItem(helmet);
+                                setEquippedStats(getStats(helmet));
                             }
                             break;
                         case 'weapon':
-                            if (isItem(equipment.weapon)) {
-                                setEquippedItem(equipment.weapon);
-                                setEquippedStats(getStats(equipment.weapon));
+                            if (isItem(weapon)) {
+                                setEquippedItem(weapon);
+                                setEquippedStats(getStats(weapon));
                             }
                             break;
                         case 'chest':
-                            if (isItem(equipment.chest)) {
-                                setEquippedItem(equipment.chest);
-                                setEquippedStats(getStats(equipment.chest));
+                            if (isItem(chest)) {
+                                setEquippedItem(chest);
+                                setEquippedStats(getStats(chest));
                             }
                             break;
                         case 'offhand':
-                            if (isItem(equipment.offhand)) {
-                                setEquippedItem(equipment.offhand);
-                                setEquippedStats(getStats(equipment.offhand));
+                            if (isItem(offhand)) {
+                                setEquippedItem(offhand);
+                                setEquippedStats(getStats(offhand));
                             }
                             break;
                         case 'gloves':
-                            if (isItem(equipment.gloves)) {
-                                setEquippedItem(equipment.gloves);
-                                setEquippedStats(getStats(equipment.gloves));
+                            if (isItem(gloves)) {
+                                setEquippedItem(gloves);
+                                setEquippedStats(getStats(gloves));
                             }
                             break;
                         case 'pants':
-                            if (isItem(equipment.pants)) {
-                                setEquippedItem(equipment.pants);
-                                setEquippedStats(getStats(equipment.pants));
+                            if (isItem(pants)) {
+                                setEquippedItem(pants);
+                                setEquippedStats(getStats(pants));
                             }
                             break;
                         case 'boots':
-                            if (isItem(equipment.boots)) {
-                                setEquippedItem(equipment.boots);
-                                setEquippedStats(getStats(equipment.boots));
+                            if (isItem(boots)) {
+                                setEquippedItem(boots);
+                                setEquippedStats(getStats(boots));
                             }
                             break;
                     }
@@ -140,7 +145,7 @@ export function ItemDetails() {
             }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [item]);
+    }, [item, index]);
 
     function upgradeItem() {
         if (isItem(item)) {
@@ -156,7 +161,7 @@ export function ItemDetails() {
                 if (index !== -1) {
                     inventoryUpgradeItemAt(index);
                 } else {
-                    dispatch(equippedItemUpgrade(item));
+                    equippedItemUpgrade(item);
                 }
             }
         }
@@ -172,32 +177,32 @@ export function ItemDetails() {
 
                 switch (type) {
                     case 'helmet':
-                        itemRemoved = equipment.helmet;
-                        dispatch(equipHelmet(item));
+                        itemRemoved = helmet;
+                        equipHelmet(item);
                         break;
                     case 'weapon':
-                        itemRemoved = equipment.weapon;
-                        dispatch(equipWeapon(item));
+                        itemRemoved = weapon;
+                        equipWeapon(item);
                         break;
                     case 'chest':
-                        itemRemoved = equipment.chest;
-                        dispatch(equipChest(item));
+                        itemRemoved = chest;
+                        equipChest(item);
                         break;
                     case 'offhand':
-                        itemRemoved = equipment.offhand;
-                        dispatch(equipOffhand(item));
+                        itemRemoved = offhand;
+                        equipOffhand(item);
                         break;
                     case 'gloves':
-                        itemRemoved = equipment.gloves;
-                        dispatch(equipGloves(item));
+                        itemRemoved = gloves;
+                        equipGloves(item);
                         break;
                     case 'pants':
-                        itemRemoved = equipment.pants;
-                        dispatch(equipPants(item));
+                        itemRemoved = pants;
+                        equipPants(item);
                         break;
                     case 'boots':
-                        itemRemoved = equipment.boots;
-                        dispatch(equipBoots(item));
+                        itemRemoved = boots;
+                        equipBoots(item);
                         break;
                 }
 
@@ -212,7 +217,7 @@ export function ItemDetails() {
 
             setTimeout(() => {
                 setDisabled(false);
-            }, 300);
+            }, 250);
         }
     }
 
@@ -230,32 +235,32 @@ export function ItemDetails() {
 
                     switch (type) {
                         case 'helmet':
-                            itemRemoved = equipment.helmet;
-                            dispatch(equipHelmet({}));
+                            itemRemoved = helmet;
+                            equipHelmet({});
                             break;
                         case 'weapon':
-                            itemRemoved = equipment.weapon;
-                            dispatch(equipWeapon({}));
+                            itemRemoved = weapon;
+                            equipWeapon({});
                             break;
                         case 'chest':
-                            itemRemoved = equipment.chest;
-                            dispatch(equipChest({}));
+                            itemRemoved = chest;
+                            equipChest({});
                             break;
                         case 'offhand':
-                            itemRemoved = equipment.offhand;
-                            dispatch(equipOffhand({}));
+                            itemRemoved = offhand;
+                            equipOffhand({});
                             break;
                         case 'gloves':
-                            itemRemoved = equipment.gloves;
-                            dispatch(equipGloves({}));
+                            itemRemoved = gloves;
+                            equipGloves({});
                             break;
                         case 'pants':
-                            itemRemoved = equipment.pants;
-                            dispatch(equipPants({}));
+                            itemRemoved = pants;
+                            equipPants({});
                             break;
                         case 'boots':
-                            itemRemoved = equipment.boots;
-                            dispatch(equipBoots({}));
+                            itemRemoved = boots;
+                            equipBoots({});
                             break;
                     }
 
@@ -266,7 +271,7 @@ export function ItemDetails() {
 
             setTimeout(() => {
                 setDisabled(false);
-            }, 300);
+            }, 250);
         }
     }
 
@@ -287,8 +292,6 @@ export function ItemDetails() {
                 );
                 /* Remove Key and Chest */
                 inventoryRemoveMultipleItemsAt([keyIndex, index], [1, 1]);
-                // inventoryRemoveItemAt(keyIndex, 1);
-                // inventoryRemoveItemAt(index, 1);
                 /* Show Rewards Modal */
                 rewardsInit(
                     rewards,

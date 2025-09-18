@@ -1,5 +1,6 @@
-import {View} from 'react-native';
+import {ImageBackground, StyleSheet} from 'react-native';
 import React from 'react';
+import {getImage} from '../../assets/images/_index';
 //import {TabView, SceneMap} from 'react-native-tab-view';
 
 /*const renderScene = SceneMap({
@@ -26,14 +27,16 @@ export function SettingsTab() {
             initialLayout={{ width: layout.width }}
             swipeEnabled={false}
         />*/
-        <View />
+        <ImageBackground
+            style={styles.container}
+            source={getImage('background_outer')}
+            resizeMode={'stretch'}
+        />
     );
 }
 
-/*const styles = StyleSheet.create({
+const styles = StyleSheet.create({
     container: {
         flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
     },
-});*/
+});

@@ -11,8 +11,6 @@ import {
 } from 'react-native';
 import Modal from 'react-native-modal';
 import Tooltip from 'react-native-walkthrough-tooltip';
-import {useDispatch, useSelector} from 'react-redux';
-import {RootState} from '../../../redux/store.tsx';
 import {getImage} from '../../../assets/images/_index';
 import {
     getCombatExperience,
@@ -27,11 +25,6 @@ import {colors} from '../../../utils/colors.ts';
 import ProgressBar from '../../../components/progressBar.tsx';
 import {strings} from '../../../utils/strings.ts';
 import {LogText} from './logText.tsx';
-import {
-    combatHide,
-    combatSetLog,
-    combatUpdate,
-} from '../../../redux/slices/combatSlice.tsx';
 import {rand} from '../../../parsers/itemParser.tsx';
 import {Creature} from '../../../types/creature.ts';
 import cloneDeep from 'lodash.clonedeep';
@@ -39,8 +32,6 @@ import {
     ButtonType,
     CustomButton,
 } from '../../../components/buttons/customButton.tsx';
-import {huntingUpdate} from '../../../redux/slices/huntingSlice.tsx';
-import {questsSetList} from '../../../redux/slices/questsSlice.tsx';
 import {isQuestComplete, sortQuests} from '../../../parsers/questParser.tsx';
 import {
     getSkillCooldown,
@@ -56,50 +47,82 @@ import {Skill} from '../../../types/skill.ts';
 import {Effect, EffectType, isBuff, isDOT} from '../../../types/effect.ts';
 import {Stats} from '../../../types/stats.ts';
 import {EffectTooltip} from './effectTooltip.tsx';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {rewardsStore} from '../../../_zustand/rewardsStore.tsx';
-import {userInfoStore} from '../../../_zustand/userInfoStore.tsx';
+import {rewardsStore} from '../../../store_zustand/rewardsStore.tsx';
+import {userInfoStore} from '../../../store_zustand/userInfoStore.tsx';
+import {huntingStore} from '../../../store_zustand/huntingStore.tsx';
+import {combatStore} from '../../../store_zustand/combatStore.tsx';
+import {questsStore} from '../../../store_zustand/questsStore.tsx';
+import {attributesStore} from '../../../store_zustand/attributesStore.tsx';
+import {skillsStore} from '../../../store_zustand/skillsStore.tsx';
 
-// TODO: Remove creature from inventoryList after starting combat (not after ending it)
 export function Combat() {
+    const rewardsInit = rewardsStore(state => state.rewardsInit);
+
     const username = userInfoStore(state => state.username);
     const level = userInfoStore(state => state.level);
 
-    const attributes = useSelector((state: RootState) => state.attributes);
-    const quests = useSelector((state: RootState) => state.quests);
-    const hunting = useSelector((state: RootState) => state.hunting);
-    const combat = useSelector((state: RootState) => state.combat);
-    const skills = useSelector((state: RootState) => state.skills);
+    const health = attributesStore(state => state.health);
+    const bonusHealth = attributesStore(state => state.bonusHealth);
+
+    const depth = huntingStore(state => state.depth);
+    const killCount = huntingStore(state => state.killCount);
+    const creatureList = huntingStore(state => state.creatureList);
+    const creatureLevel = huntingStore(state => state.creatureLevel);
+    const huntingUpdate = huntingStore(state => state.huntingUpdate);
+    const huntingUpdateCreatureList = huntingStore(
+        state => state.huntingUpdateCreatureList,
+    );
+
+    const modalVisible = combatStore(state => state.modalVisible);
+    const creature = combatStore(state => state.creature);
+    const index = combatStore(state => state.index);
+    const statsPlayer = combatStore(state => state.statsPlayer);
+    const statsEnemy = combatStore(state => state.statsEnemy);
+    const effectsPlayer = combatStore(state => state.effectsPlayer);
+    const effectsEnemy = combatStore(state => state.effectsEnemy);
+    const combatLog = combatStore(state => state.combatLog);
+    const playerTurn = combatStore(state => state.playerTurn);
+    const combatUpdate = combatStore(state => state.combatUpdate);
+    const combatSetLog = combatStore(state => state.combatSetLog);
+    const combatHide = combatStore(state => state.combatHide);
+
+    const spell_1 = skillsStore(state => state.spell_1);
+    const spell_2 = skillsStore(state => state.spell_2);
+    const spell_3 = skillsStore(state => state.spell_3);
+
+    const questsList = questsStore(state => state.questsList);
+    const questsSetList = questsStore(state => state.questsSetList);
+
     const [combatComplete, setCombatComplete] = useState(false);
     const [disabled, setDisabled] = useState(false);
     const [showTooltip, setShowTooltip] = useState('');
     const [cooldown_1, setCooldown_1] = useState(0);
     const [cooldown_2, setCooldown_2] = useState(0);
     const [cooldown_3, setCooldown_3] = useState(0);
-    const [creatureLevel, setCreatureLevel] = useState(0);
-    const dispatch = useDispatch();
     const didMount = useRef(1);
 
-    const rewardsInit = rewardsStore(state => state.rewardsInit);
-
     useEffect(() => {
-        // noinspection JSIgnoredPromiseFromCall
-        fetchCreatureLevel();
-    }, [combat.modalVisible]);
+        if (modalVisible) {
+            /* Remove Creature from Hunting List */
+            const _creatureList = cloneDeep(creatureList);
+            _creatureList.splice(index, 1);
+            setTimeout(() => {
+                huntingUpdateCreatureList(_creatureList);
+            }, 1000);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [modalVisible]);
 
     useEffect(() => {
         if (!didMount.current) {
-            if (combat.creature) {
+            if (creature) {
                 /* Continue Combat */
-                if (
-                    combat.statsPlayer.health > 0 &&
-                    combat.statsEnemy.health > 0
-                ) {
-                    if (!combat.playerTurn) {
+                if (statsPlayer.health > 0 && statsEnemy.health > 0) {
+                    if (!playerTurn) {
                         /* Enemy Attack */
                         setTimeout(() => {
-                            simulateAttack(combat.playerTurn, null, 'Physical'); //TODO:
-                        }, 400);
+                            simulateAttack(playerTurn, null, 'Physical'); //TODO:
+                        }, 300);
                     } else {
                         /* Reduce cooldowns */
                         setTimeout(() => {
@@ -110,46 +133,50 @@ export function Combat() {
                         /* Enable all action buttons */
                         setTimeout(() => {
                             setDisabled(false);
-                        }, 400);
+                        }, 300);
                     }
                     /* End Combat */
                 } else {
-                    const combatLog = cloneDeep(combat.combatLog);
-                    if (combat.statsEnemy.health <= 0) {
+                    const _combatLog = cloneDeep(combatLog);
+                    if (statsEnemy.health <= 0) {
                         /* Player Win */
-                        combatLog.push({
+                        _combatLog.push({
                             username: username,
                             opponent: getCreatureName(
-                                (combat.creature as Creature).id,
+                                (creature as Creature).id,
                             ),
                             turn: false,
                             atkType: 'Win',
                             damage: 0,
                         });
                         /* Show Victory Log */
-                        dispatch(combatSetLog(combatLog));
-                        /* Display Rewards */
-                        rewardsInit(
-                            getCombatRewards(
-                                (combat.creature as Creature).rarity,
-                                (combat.creature as Creature).level,
-                            ),
-                            getCombatExperience(
-                                (combat.creature as Creature).rarity,
-                                (combat.creature as Creature).level,
-                            ),
-                            getCombatShards(
-                                (combat.creature as Creature).rarity,
-                                hunting.depth,
-                            ),
-                        );
-                        /* Set Combat Complete TODO: */
-                        setCombatComplete(true);
-                        /* Update Quests */
-                        const questsList = cloneDeep(quests.questsList);
+                        combatSetLog(_combatLog);
+                        /* Combat Complete & Display Rewards */
+                        setTimeout(() => {
+                            /* Combat Complete */
+                            setCombatComplete(true);
+                            /* Display Rewards */
+                            rewardsInit(
+                                getCombatRewards(
+                                    (creature as Creature).rarity,
+                                    (creature as Creature).level,
+                                ),
+                                getCombatExperience(
+                                    (creature as Creature).rarity,
+                                    (creature as Creature).level,
+                                ),
+                                getCombatShards(
+                                    (creature as Creature).rarity,
+                                    depth,
+                                ),
+                            );
+                        }, 250);
 
-                        for (let i = 0; i < questsList.length; i++) {
-                            let quest = questsList[i];
+                        /* Update Quests */
+                        const _questsList = cloneDeep(questsList);
+
+                        for (let i = 0; i < _questsList.length; i++) {
+                            let quest = _questsList[i];
                             if (
                                 quest.isActive &&
                                 !isQuestComplete(quest) &&
@@ -158,7 +185,7 @@ export function Combat() {
                                 if (
                                     quest.description.includes(
                                         getCreatureName(
-                                            (combat.creature as Creature).id,
+                                            (creature as Creature).id,
                                         ),
                                     )
                                 ) {
@@ -166,45 +193,35 @@ export function Combat() {
                                 }
                             }
                         }
-                        sortQuests(questsList);
-                        setTimeout(() => {
-                            dispatch(questsSetList(questsList));
-                        }, 1500);
+                        sortQuests(_questsList);
+                        questsSetList(_questsList);
 
-                        /* Remove Creature from inventoryList */
-                        const creatureList = cloneDeep(hunting.creatureList);
-                        creatureList.splice(combat.index, 1);
-
+                        const _creatureList = cloneDeep(creatureList);
                         /* Roll for chance to add new creature */
                         const r = Math.random();
-                        /* 10% chance to add 0 creatures */
+                        /* 10% chance to add 0 creatures (does not apply if list is empty) */
                         if (r <= 0.2) {
                             /* 20% chance to add 2 creatures */
-                            creatureList.unshift(
-                                getCreature(creatureLevel, hunting.depth),
-                                getCreature(creatureLevel, hunting.depth),
+                            _creatureList.unshift(
+                                getCreature(creatureLevel, depth),
+                                getCreature(creatureLevel, depth),
                             );
-                        } else if (r > 0.2 && r <= 0.9) {
+                        } else if (
+                            (r > 0.2 && r <= 0.9) ||
+                            !_creatureList.length
+                        ) {
                             /* 70% chance to add 1 creature */
-                            creatureList.unshift(
-                                getCreature(creatureLevel, hunting.depth),
+                            _creatureList.unshift(
+                                getCreature(creatureLevel, depth),
                             );
                         }
 
-                        setTimeout(() => {
-                            dispatch(
-                                huntingUpdate({
-                                    depth: hunting.depth,
-                                    creatureList: creatureList,
-                                    killCount: hunting.killCount + 1,
-                                }),
-                            );
-                        }, 1000);
-                    } else if (combat.statsPlayer.health <= 0) {
+                        huntingUpdate(depth, killCount + 1, _creatureList);
+                    } else if (statsPlayer.health <= 0) {
                         /* Enemy Win */
-                        combatLog.push({
+                        _combatLog.push({
                             username: getCreatureName(
-                                (combat.creature as Creature).id,
+                                (creature as Creature).id,
                             ),
                             opponent: username,
                             turn: true,
@@ -212,41 +229,24 @@ export function Combat() {
                             damage: 0,
                         });
                         /* Show Defeated Log */
-                        setTimeout(() => {
-                            dispatch(combatSetLog(combatLog));
-                        }, 100);
-
+                        combatSetLog(_combatLog);
+                        /* Combat Complete */
                         setTimeout(() => {
                             setCombatComplete(true);
                         }, 250);
 
-                        /* Remove Creature from inventoryList */
-                        const creatureList = cloneDeep(hunting.creatureList);
-                        creatureList.splice(combat.index, 1);
-
+                        const _creatureList = cloneDeep(creatureList);
                         /* Roll for chance to add new creature */
                         const r = Math.random();
-                        /* 10% chance to add 0 creatures */
-                        if (r <= 0.2) {
-                            /* 20% chance to add 2 creatures */
-                            creatureList.unshift(
-                                getCreature(level, hunting.depth),
-                                getCreature(level, hunting.depth),
-                            );
-                        } else if (r > 0.2 && r <= 0.9) {
-                            /* 70% chance to add 1 creature */
-                            creatureList.unshift(
-                                getCreature(level, hunting.depth),
+                        /* 25% chance to add 0 creatures (does not apply if list is empty) */
+                        /* 75% chance to add 1 creature */
+                        if (r <= 0.75 || !_creatureList.length) {
+                            _creatureList.unshift(
+                                getCreature(creatureLevel, depth),
                             );
                         }
 
-                        dispatch(
-                            huntingUpdate({
-                                depth: hunting.depth,
-                                creatureList: creatureList,
-                                killCount: hunting.killCount,
-                            }),
-                        );
+                        huntingUpdateCreatureList(_creatureList);
                     }
                 }
             }
@@ -254,30 +254,19 @@ export function Combat() {
             didMount.current -= 1;
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [combat.playerTurn]);
-
-    async function fetchCreatureLevel() {
-        try {
-            const level = await AsyncStorage.getItem('huntingCreatureLevel');
-            if (level !== null) {
-                setCreatureLevel(parseInt(level as string, 10));
-            }
-        } catch (e) {
-            console.error(e);
-        }
-    }
+    }, [playerTurn]);
 
     function simulateAttack(
         turn: boolean,
         spell: Skill | null,
         atkType: string,
     ) {
-        const statsPlayer = cloneDeep(combat.statsPlayer);
-        const statsEnemy = cloneDeep(combat.statsEnemy);
-        const combatLog = cloneDeep(combat.combatLog);
-        const creature = combat.creature as Creature;
-        let effectsPlayer = cloneDeep(combat.effectsPlayer);
-        let effectsEnemy = cloneDeep(combat.effectsEnemy);
+        const _statsPlayer = cloneDeep(statsPlayer);
+        const _statsEnemy = cloneDeep(statsEnemy);
+        const _combatLog = cloneDeep(combatLog);
+        const _creature = creature as Creature;
+        let _effectsPlayer = cloneDeep(effectsPlayer);
+        let _effectsEnemy = cloneDeep(effectsEnemy);
 
         /* Player Turn */
         if (turn) {
@@ -285,10 +274,10 @@ export function Combat() {
             /* Spell Attack */
             if (spell != null) {
                 /* Miss Spell */
-                if (Math.random() <= statsEnemy.dodge) {
-                    combatLog.push({
+                if (Math.random() <= _statsEnemy.dodge) {
+                    _combatLog.push({
                         username: username,
-                        opponent: getCreatureName(creature.id),
+                        opponent: getCreatureName(_creature.id),
                         turn: turn,
                         atkType: 'Spell' + atkType + 'Dodge',
                         damage: 0,
@@ -297,24 +286,24 @@ export function Combat() {
                 } else {
                     let damage: number = getSpellDamage(
                         spell,
-                        creature.level,
+                        _creature.level,
                         turn,
                     );
                     /* Check if critical hit */
-                    if (Math.random() <= statsPlayer.critical) {
+                    if (Math.random() <= _statsPlayer.critical) {
                         damage = Math.round(damage * 1.5);
-                        combatLog.push({
+                        _combatLog.push({
                             username: username,
-                            opponent: getCreatureName(creature.id),
+                            opponent: getCreatureName(_creature.id),
                             turn: turn,
                             atkType: 'Spell' + atkType + 'Crit',
                             damage: damage,
                             spellName: getSkillName(spell.id),
                         });
                     } else {
-                        combatLog.push({
+                        _combatLog.push({
                             username: username,
-                            opponent: getCreatureName(creature.id),
+                            opponent: getCreatureName(_creature.id),
                             turn: turn,
                             atkType: 'Spell' + atkType,
                             damage: damage,
@@ -322,55 +311,58 @@ export function Combat() {
                         });
                     }
 
-                    statsEnemy.health = Math.max(statsEnemy.health - damage, 0);
+                    _statsEnemy.health = Math.max(
+                        _statsEnemy.health - damage,
+                        0,
+                    );
                     /* Effects */
-                    if (statsEnemy.health > 0) {
+                    if (_statsEnemy.health > 0) {
                         /* Decrease/Remove Player Buffs */
-                        for (let i = 0; i < effectsPlayer.length; i++) {
-                            const effect = effectsPlayer[i];
+                        for (let i = 0; i < _effectsPlayer.length; i++) {
+                            const effect = _effectsPlayer[i];
 
                             if (isBuff(effect)) {
                                 if (effect.turns === 1) {
-                                    removeEffect(effect, statsPlayer);
+                                    removeEffect(effect, _statsPlayer);
                                 }
                                 effect.turns -= 1;
                             }
                         }
-                        effectsPlayer = effectsPlayer.filter(
+                        _effectsPlayer = _effectsPlayer.filter(
                             effect => effect.turns,
                         );
                         /* Decrease/Remove Enemy Debuffs */
-                        for (let i = 0; i < effectsEnemy.length; i++) {
-                            const effect = effectsEnemy[i];
+                        for (let i = 0; i < _effectsEnemy.length; i++) {
+                            const effect = _effectsEnemy[i];
 
                             if (!isBuff(effect) && !isDOT(effect)) {
                                 if (effect.turns === 1) {
-                                    removeEffect(effect, statsEnemy);
+                                    removeEffect(effect, _statsEnemy);
                                 }
                                 effect.turns -= 1;
                             }
                         }
-                        effectsEnemy = effectsEnemy.filter(
+                        _effectsEnemy = _effectsEnemy.filter(
                             effect => effect.turns,
                         );
                         /* Apply Spell secondary effect */
                         applySpellEffect(
                             spell,
-                            statsPlayer,
-                            statsEnemy,
-                            effectsPlayer,
-                            effectsEnemy,
-                            creature,
+                            _statsPlayer,
+                            _statsEnemy,
+                            _effectsPlayer,
+                            _effectsEnemy,
+                            _creature,
                             turn,
                         );
                     }
                 }
             } else {
                 /* Basic Attack */
-                if (Math.random() <= statsEnemy.dodge) {
-                    combatLog.push({
+                if (Math.random() <= _statsEnemy.dodge) {
+                    _combatLog.push({
                         username: username,
-                        opponent: getCreatureName(creature.id),
+                        opponent: getCreatureName(_creature.id),
                         turn: turn,
                         atkType: 'Dodge',
                         damage: 0,
@@ -378,67 +370,70 @@ export function Combat() {
                 } else {
                     let damage: number = getBasicDamage(
                         atkType,
-                        creature.level,
+                        _creature.level,
                         turn,
                     );
                     /* Check if critical hit */
-                    if (Math.random() <= statsPlayer.critical) {
+                    if (Math.random() <= _statsPlayer.critical) {
                         damage = Math.round(damage * 1.5);
-                        combatLog.push({
+                        _combatLog.push({
                             username: username,
-                            opponent: getCreatureName(creature.id),
+                            opponent: getCreatureName(_creature.id),
                             turn: turn,
                             atkType: atkType + 'Crit',
                             damage: damage,
                         });
                     } else {
-                        combatLog.push({
+                        _combatLog.push({
                             username: username,
-                            opponent: getCreatureName(creature.id),
+                            opponent: getCreatureName(_creature.id),
                             turn: turn,
                             atkType: atkType,
                             damage: damage,
                         });
                     }
 
-                    statsEnemy.health = Math.max(statsEnemy.health - damage, 0);
+                    _statsEnemy.health = Math.max(
+                        _statsEnemy.health - damage,
+                        0,
+                    );
                     /* Effects */
-                    if (statsEnemy.health > 0) {
+                    if (_statsEnemy.health > 0) {
                         /* Decrease/Remove Player Buffs */
-                        for (let i = 0; i < effectsPlayer.length; i++) {
-                            const effect = effectsPlayer[i];
+                        for (let i = 0; i < _effectsPlayer.length; i++) {
+                            const effect = _effectsPlayer[i];
 
                             if (isBuff(effect)) {
                                 if (effect.turns === 1) {
-                                    removeEffect(effect, statsPlayer);
+                                    removeEffect(effect, _statsPlayer);
                                 }
                                 effect.turns -= 1;
                             }
                         }
-                        effectsPlayer = effectsPlayer.filter(
+                        _effectsPlayer = _effectsPlayer.filter(
                             effect => effect.turns,
                         );
                         /* Decrease/Remove Enemy Debuffs */
-                        for (let i = 0; i < effectsEnemy.length; i++) {
-                            const effect = effectsEnemy[i];
+                        for (let i = 0; i < _effectsEnemy.length; i++) {
+                            const effect = _effectsEnemy[i];
 
                             if (!isBuff(effect) && !isDOT(effect)) {
                                 if (effect.turns === 1) {
-                                    removeEffect(effect, statsEnemy);
+                                    removeEffect(effect, _statsEnemy);
                                 }
                                 effect.turns -= 1;
                             }
                         }
-                        effectsEnemy = effectsEnemy.filter(
+                        _effectsEnemy = _effectsEnemy.filter(
                             effect => effect.turns,
                         );
                     }
                 }
             }
             /* Apply DOT damage on Player */
-            if (statsEnemy.health > 0) {
-                for (let i = 0; i < effectsPlayer.length; i++) {
-                    const effect = effectsPlayer[i];
+            if (_statsEnemy.health > 0) {
+                for (let i = 0; i < _effectsPlayer.length; i++) {
+                    const effect = _effectsPlayer[i];
 
                     if (isDOT(effect)) {
                         const damage = getDOTDamage(
@@ -447,13 +442,13 @@ export function Combat() {
                             level,
                             turn,
                         );
-                        statsPlayer.health = Math.max(
-                            statsPlayer.health - damage,
+                        _statsPlayer.health = Math.max(
+                            _statsPlayer.health - damage,
                             0,
                         );
-                        combatLog.push({
+                        _combatLog.push({
                             username: username,
-                            opponent: getCreatureName(creature.id),
+                            opponent: getCreatureName(_creature.id),
                             turn: turn,
                             atkType: effect.type,
                             damage: damage,
@@ -462,7 +457,7 @@ export function Combat() {
                     }
                 }
             }
-            effectsPlayer = effectsPlayer.filter(effect => effect.turns);
+            _effectsPlayer = _effectsPlayer.filter(effect => effect.turns);
         } else {
             /* Spell Attack */
             if (spell != null) {
@@ -551,9 +546,9 @@ export function Combat() {
                     }*/
             } else {
                 /* Basic Attack */
-                if (Math.random() <= statsPlayer.dodge) {
-                    combatLog.push({
-                        username: getCreatureName(creature.id),
+                if (Math.random() <= _statsPlayer.dodge) {
+                    _combatLog.push({
+                        username: getCreatureName(_creature.id),
                         opponent: username,
                         turn: turn,
                         atkType: 'Dodge',
@@ -562,18 +557,18 @@ export function Combat() {
                 } else {
                     let damage: number = getBasicDamage(atkType, level, turn);
                     /* Check if critical hit */
-                    if (Math.random() <= statsPlayer.critical) {
+                    if (Math.random() <= _statsPlayer.critical) {
                         damage = Math.round(damage * 1.5);
-                        combatLog.push({
-                            username: getCreatureName(creature.id),
+                        _combatLog.push({
+                            username: getCreatureName(_creature.id),
                             opponent: username,
                             turn: turn,
                             atkType: atkType + 'Crit',
                             damage: damage,
                         });
                     } else {
-                        combatLog.push({
-                            username: getCreatureName(creature.id),
+                        _combatLog.push({
+                            username: getCreatureName(_creature.id),
                             opponent: username,
                             turn: turn,
                             atkType: atkType,
@@ -581,61 +576,61 @@ export function Combat() {
                         });
                     }
 
-                    statsPlayer.health = Math.max(
-                        statsPlayer.health - damage,
+                    _statsPlayer.health = Math.max(
+                        _statsPlayer.health - damage,
                         0,
                     );
                     /* Effects */
-                    if (statsPlayer.health > 0) {
+                    if (_statsPlayer.health > 0) {
                         /* Decrease/Remove Enemy Buffs */
-                        for (let i = 0; i < effectsEnemy.length; i++) {
-                            const effect = effectsEnemy[i];
+                        for (let i = 0; i < _effectsEnemy.length; i++) {
+                            const effect = _effectsEnemy[i];
 
                             if (isBuff(effect)) {
                                 if (effect.turns === 1) {
-                                    removeEffect(effect, statsEnemy);
+                                    removeEffect(effect, _statsEnemy);
                                 }
                                 effect.turns -= 1;
                             }
                         }
-                        effectsEnemy = effectsEnemy.filter(
+                        _effectsEnemy = _effectsEnemy.filter(
                             effect => effect.turns,
                         );
                         /* Decrease/Remove Player Debuffs */
-                        for (let i = 0; i < effectsPlayer.length; i++) {
-                            const effect = effectsPlayer[i];
+                        for (let i = 0; i < _effectsPlayer.length; i++) {
+                            const effect = _effectsPlayer[i];
 
                             if (!isBuff(effect) && !isDOT(effect)) {
                                 if (effect.turns === 1) {
-                                    removeEffect(effect, statsPlayer);
+                                    removeEffect(effect, _statsPlayer);
                                 }
                                 effect.turns -= 1;
                             }
                         }
-                        effectsPlayer = effectsPlayer.filter(
+                        _effectsPlayer = _effectsPlayer.filter(
                             effect => effect.turns,
                         );
                     }
                 }
             }
             /* Apply DOT damage on Enemy */
-            if (statsPlayer.health > 0) {
-                for (let i = 0; i < effectsEnemy.length; i++) {
-                    const effect = effectsEnemy[i];
+            if (_statsPlayer.health > 0) {
+                for (let i = 0; i < _effectsEnemy.length; i++) {
+                    const effect = _effectsEnemy[i];
 
                     if (isDOT(effect)) {
                         const damage = getDOTDamage(
                             effect.value,
                             effect.type,
-                            (combat.creature as Creature).level,
+                            (creature as Creature).level,
                             turn,
                         );
-                        statsEnemy.health = Math.max(
-                            statsEnemy.health - damage,
+                        _statsEnemy.health = Math.max(
+                            _statsEnemy.health - damage,
                             0,
                         );
-                        combatLog.push({
-                            username: getCreatureName(creature.id),
+                        _combatLog.push({
+                            username: getCreatureName(_creature.id),
                             opponent: username,
                             turn: turn,
                             atkType: effect.type,
@@ -643,29 +638,27 @@ export function Combat() {
                         });
                         effect.turns -= 1;
 
-                        if (statsEnemy.health <= 0) {
+                        if (_statsEnemy.health <= 0) {
                             break;
                         }
                     }
                 }
             }
-            effectsEnemy = effectsEnemy.filter(effect => effect.turns);
+            _effectsEnemy = _effectsEnemy.filter(effect => effect.turns);
         }
 
-        dispatch(
-            combatUpdate([
-                statsPlayer,
-                statsEnemy,
-                effectsPlayer,
-                effectsEnemy,
-                combatLog,
-            ]),
+        combatUpdate(
+            _statsPlayer,
+            _statsEnemy,
+            _effectsPlayer,
+            _effectsEnemy,
+            _combatLog,
         );
     }
 
     function getBasicDamage(
         atkType: string,
-        level: number,
+        lvl: number,
         turn: boolean,
     ): number {
         let attack: number, resistance: number;
@@ -673,33 +666,25 @@ export function Combat() {
         if (turn) {
             attack =
                 atkType === 'Physical'
-                    ? combat.statsPlayer.physicalAtk +
-                      combat.statsPlayer.bonusPhysicalAtk
-                    : combat.statsPlayer.magicalAtk +
-                      combat.statsPlayer.bonusMagicalAtk;
+                    ? statsPlayer.physicalAtk + statsPlayer.bonusPhysicalAtk
+                    : statsPlayer.magicalAtk + statsPlayer.bonusMagicalAtk;
             resistance =
                 atkType === 'Physical'
-                    ? combat.statsEnemy.physicalRes +
-                      combat.statsEnemy.bonusPhysicalRes
-                    : combat.statsEnemy.magicalRes +
-                      combat.statsEnemy.bonusMagicalRes;
+                    ? statsEnemy.physicalRes + statsEnemy.bonusPhysicalRes
+                    : statsEnemy.magicalRes + statsEnemy.bonusMagicalRes;
         } else {
             attack =
                 atkType === 'Physical'
-                    ? combat.statsEnemy.physicalAtk +
-                      combat.statsEnemy.bonusPhysicalAtk
-                    : combat.statsEnemy.magicalAtk +
-                      combat.statsEnemy.bonusMagicalAtk;
+                    ? statsEnemy.physicalAtk + statsEnemy.bonusPhysicalAtk
+                    : statsEnemy.magicalAtk + statsEnemy.bonusMagicalAtk;
             resistance =
                 atkType === 'Physical'
-                    ? combat.statsPlayer.physicalRes +
-                      combat.statsPlayer.bonusPhysicalRes
-                    : combat.statsPlayer.magicalRes +
-                      combat.statsPlayer.bonusMagicalRes;
+                    ? statsPlayer.physicalRes + statsPlayer.bonusPhysicalRes
+                    : statsPlayer.magicalRes + statsPlayer.bonusMagicalRes;
         }
 
         let damage: number = Math.round(
-            attack - attack * (getResistancePercent(resistance, level) / 100),
+            attack - attack * (getResistancePercent(resistance, lvl) / 100),
         );
 
         return rand(Math.round(damage * 0.97), Math.round(damage * 1.03));
@@ -708,7 +693,7 @@ export function Combat() {
     function getDOTDamage(
         value: number,
         effectType: EffectType,
-        level: number,
+        lvl: number,
         turn: boolean,
     ): number {
         let resistance: number;
@@ -717,30 +702,22 @@ export function Combat() {
             resistance =
                 effectType === EffectType.Bleeding ||
                 effectType === EffectType.Poison
-                    ? combat.statsPlayer.physicalRes +
-                      combat.statsPlayer.bonusPhysicalRes
-                    : combat.statsPlayer.magicalRes +
-                      combat.statsPlayer.bonusMagicalRes;
+                    ? statsPlayer.physicalRes + statsPlayer.bonusPhysicalRes
+                    : statsPlayer.magicalRes + statsPlayer.bonusMagicalRes;
         } else {
             resistance =
                 effectType === EffectType.Bleeding ||
                 effectType === EffectType.Poison
-                    ? combat.statsEnemy.physicalRes +
-                      combat.statsEnemy.bonusPhysicalRes
-                    : combat.statsEnemy.magicalRes +
-                      combat.statsEnemy.bonusMagicalRes;
+                    ? statsEnemy.physicalRes + statsEnemy.bonusPhysicalRes
+                    : statsEnemy.magicalRes + statsEnemy.bonusMagicalRes;
         }
 
         return Math.round(
-            value - value * (getResistancePercent(resistance, level) / 100),
+            value - value * (getResistancePercent(resistance, lvl) / 100),
         );
     }
 
-    function getSpellDamage(
-        spell: Skill,
-        level: number,
-        turn: boolean,
-    ): number {
+    function getSpellDamage(spell: Skill, lvl: number, turn: boolean): number {
         let attack: number, resistance: number;
         const element = getSkillElement(spell.id);
         const primaryEffect = getSkillPrimaryEffect(spell.id) as number[];
@@ -748,36 +725,28 @@ export function Combat() {
         if (turn) {
             attack =
                 element === 'Physical'
-                    ? combat.statsPlayer.physicalAtk +
-                      combat.statsPlayer.bonusPhysicalAtk
-                    : combat.statsPlayer.magicalAtk +
-                      combat.statsPlayer.bonusMagicalAtk;
+                    ? statsPlayer.physicalAtk + statsPlayer.bonusPhysicalAtk
+                    : statsPlayer.magicalAtk + statsPlayer.bonusMagicalAtk;
             resistance =
                 element === 'Physical'
-                    ? combat.statsEnemy.physicalRes +
-                      combat.statsEnemy.bonusPhysicalRes
-                    : combat.statsEnemy.magicalRes +
-                      combat.statsEnemy.bonusMagicalRes;
+                    ? statsEnemy.physicalRes + statsEnemy.bonusPhysicalRes
+                    : statsEnemy.magicalRes + statsEnemy.bonusMagicalRes;
         } else {
             attack =
                 element === 'Physical'
-                    ? combat.statsEnemy.physicalAtk +
-                      combat.statsEnemy.bonusPhysicalAtk
-                    : combat.statsEnemy.magicalAtk +
-                      combat.statsEnemy.bonusMagicalAtk;
+                    ? statsEnemy.physicalAtk + statsEnemy.bonusPhysicalAtk
+                    : statsEnemy.magicalAtk + statsEnemy.bonusMagicalAtk;
             resistance =
                 element === 'Physical'
-                    ? combat.statsPlayer.physicalRes +
-                      combat.statsPlayer.bonusPhysicalRes
-                    : combat.statsPlayer.magicalRes +
-                      combat.statsPlayer.bonusMagicalRes;
+                    ? statsPlayer.physicalRes + statsPlayer.bonusPhysicalRes
+                    : statsPlayer.magicalRes + statsPlayer.bonusMagicalRes;
         }
 
         let damage: number = Math.round(
             primaryEffect[0] * attack -
                 primaryEffect[0] *
                     attack *
-                    (getResistancePercent(resistance, level) / 100),
+                    (getResistancePercent(resistance, lvl) / 100),
         );
 
         return rand(Math.round(damage * 0.97), Math.round(damage * 1.03));
@@ -785,11 +754,11 @@ export function Combat() {
 
     function applySpellEffect(
         spell: Skill,
-        statsPlayer: Stats,
-        statsEnemy: Stats,
-        effectsPlayer: Effect[],
-        effectsEnemy: Effect[],
-        creature: Creature,
+        _statsPlayer: Stats,
+        _statsEnemy: Stats,
+        _effectsPlayer: Effect[],
+        _effectsEnemy: Effect[],
+        _creature: Creature,
         turn: boolean,
     ) {
         const skillSecondary = getSkillSecondaryEffect(spell.id);
@@ -816,64 +785,59 @@ export function Combat() {
                 if (turn) {
                     effect.value =
                         secondaryEffect *
-                        (combat.statsPlayer.physicalAtk +
-                            combat.statsPlayer.bonusPhysicalAtk);
-                    effectsEnemy.push(effect);
+                        (_statsPlayer.physicalAtk +
+                            _statsPlayer.bonusPhysicalAtk);
+                    _effectsEnemy.push(effect);
                 } else {
                     effect.value =
                         secondaryEffect *
-                        (combat.statsEnemy.physicalAtk +
-                            combat.statsEnemy.bonusPhysicalAtk);
-                    effectsPlayer.push(effect);
+                        (_statsEnemy.physicalAtk +
+                            _statsEnemy.bonusPhysicalAtk);
+                    _effectsPlayer.push(effect);
                 }
                 break;
             case EffectType.Poison:
                 if (turn) {
                     effect.value =
                         secondaryEffect *
-                        (combat.statsPlayer.physicalAtk +
-                            combat.statsPlayer.bonusPhysicalAtk);
-                    effectsEnemy.push(effect);
+                        (_statsPlayer.physicalAtk +
+                            _statsPlayer.bonusPhysicalAtk);
+                    _effectsEnemy.push(effect);
                 } else {
                     effect.value =
                         secondaryEffect *
-                        (combat.statsEnemy.physicalAtk +
-                            combat.statsEnemy.bonusPhysicalAtk);
-                    effectsPlayer.push(effect);
+                        (_statsEnemy.physicalAtk +
+                            _statsEnemy.bonusPhysicalAtk);
+                    _effectsPlayer.push(effect);
                 }
                 break;
             case EffectType.Burning:
                 if (turn) {
                     effect.value =
                         secondaryEffect *
-                        (combat.statsPlayer.magicalAtk +
-                            combat.statsPlayer.bonusMagicalAtk);
-                    effectsEnemy.push(effect);
+                        (_statsPlayer.magicalAtk +
+                            _statsPlayer.bonusMagicalAtk);
+                    _effectsEnemy.push(effect);
                 } else {
                     effect.value =
                         secondaryEffect *
-                        (combat.statsEnemy.magicalAtk +
-                            combat.statsEnemy.bonusMagicalAtk);
-                    effectsPlayer.push(effect);
+                        (_statsEnemy.magicalAtk + _statsEnemy.bonusMagicalAtk);
+                    _effectsPlayer.push(effect);
                 }
                 break;
             case EffectType.Healing:
                 if (turn) {
-                    statsPlayer.health = Math.min(
-                        statsPlayer.health +
-                            Math.round(
-                                secondaryEffect * combat.statsPlayer.health,
-                            ),
-                        attributes.health + attributes.bonusHealth,
+                    _statsPlayer.health = Math.min(
+                        _statsPlayer.health +
+                            Math.round(secondaryEffect * _statsPlayer.health),
+                        health + bonusHealth,
                     );
                     //TODO: Log healing effect.
                 } else {
-                    statsEnemy.health = Math.min(
-                        statsEnemy.health +
-                            Math.round(
-                                secondaryEffect * combat.statsEnemy.health,
-                            ),
-                        creature.stats.health + creature.stats.bonusHealth,
+                    _statsEnemy.health = Math.min(
+                        _statsEnemy.health +
+                            Math.round(secondaryEffect * _statsEnemy.health),
+                        _creature.stats.health + _creature.stats.bonusHealth,
                     );
                     //TODO: Log healing effect.
                 }
@@ -882,152 +846,152 @@ export function Combat() {
                 if (turn) {
                     effect.value = Math.round(
                         secondaryEffect *
-                            (combat.statsPlayer.physicalAtk +
-                                combat.statsPlayer.bonusPhysicalAtk),
+                            (_statsPlayer.physicalAtk +
+                                _statsPlayer.bonusPhysicalAtk),
                     );
-                    statsPlayer.bonusPhysicalAtk += effect.value;
-                    effectsPlayer.push(effect);
+                    _statsPlayer.bonusPhysicalAtk += effect.value;
+                    _effectsPlayer.push(effect);
                 } else {
                     effect.value = Math.round(
                         secondaryEffect *
-                            (combat.statsPlayer.physicalAtk +
-                                combat.statsPlayer.bonusPhysicalAtk),
+                            (_statsPlayer.physicalAtk +
+                                _statsPlayer.bonusPhysicalAtk),
                     );
-                    statsEnemy.bonusPhysicalAtk += effect.value;
-                    effectsEnemy.push(effect);
+                    _statsEnemy.bonusPhysicalAtk += effect.value;
+                    _effectsEnemy.push(effect);
                 }
                 break;
             case EffectType.PhyAtkDec:
                 if (turn) {
                     effect.value = Math.round(
                         secondaryEffect *
-                            (combat.statsEnemy.physicalAtk +
-                                combat.statsEnemy.bonusPhysicalAtk),
+                            (_statsEnemy.physicalAtk +
+                                _statsEnemy.bonusPhysicalAtk),
                     );
-                    statsEnemy.bonusPhysicalAtk -= effect.value;
-                    effectsEnemy.push(effect);
+                    _statsEnemy.bonusPhysicalAtk -= effect.value;
+                    _effectsEnemy.push(effect);
                 } else {
                     effect.value = Math.round(
                         secondaryEffect *
-                            (combat.statsPlayer.physicalAtk +
-                                combat.statsPlayer.bonusPhysicalAtk),
+                            (_statsPlayer.physicalAtk +
+                                _statsPlayer.bonusPhysicalAtk),
                     );
-                    statsPlayer.bonusPhysicalAtk -= effect.value;
-                    effectsPlayer.push(effect);
+                    _statsPlayer.bonusPhysicalAtk -= effect.value;
+                    _effectsPlayer.push(effect);
                 }
                 break;
             case EffectType.MagAtkInc:
                 if (turn) {
                     effect.value = Math.round(
                         secondaryEffect *
-                            (combat.statsPlayer.magicalAtk +
-                                combat.statsPlayer.bonusMagicalAtk),
+                            (_statsPlayer.magicalAtk +
+                                _statsPlayer.bonusMagicalAtk),
                     );
-                    statsPlayer.bonusMagicalAtk += effect.value;
-                    effectsPlayer.push(effect);
+                    _statsPlayer.bonusMagicalAtk += effect.value;
+                    _effectsPlayer.push(effect);
                 } else {
                     effect.value = Math.round(
                         secondaryEffect *
-                            (combat.statsPlayer.magicalAtk +
-                                combat.statsPlayer.bonusMagicalAtk),
+                            (_statsPlayer.magicalAtk +
+                                _statsPlayer.bonusMagicalAtk),
                     );
-                    statsEnemy.bonusMagicalAtk += effect.value;
-                    effectsEnemy.push(effect);
+                    _statsEnemy.bonusMagicalAtk += effect.value;
+                    _effectsEnemy.push(effect);
                 }
                 break;
             case EffectType.MagAtkDec:
                 if (turn) {
                     effect.value = Math.round(
                         secondaryEffect *
-                            (combat.statsEnemy.magicalAtk +
-                                combat.statsEnemy.bonusMagicalAtk),
+                            (_statsEnemy.magicalAtk +
+                                _statsEnemy.bonusMagicalAtk),
                     );
-                    statsEnemy.bonusMagicalAtk -= effect.value;
-                    effectsEnemy.push(effect);
+                    _statsEnemy.bonusMagicalAtk -= effect.value;
+                    _effectsEnemy.push(effect);
                 } else {
                     effect.value = Math.round(
                         secondaryEffect *
-                            (combat.statsPlayer.magicalAtk +
-                                combat.statsPlayer.bonusMagicalAtk),
+                            (_statsPlayer.magicalAtk +
+                                _statsPlayer.bonusMagicalAtk),
                     );
-                    statsPlayer.bonusMagicalAtk -= effect.value;
-                    effectsPlayer.push(effect);
+                    _statsPlayer.bonusMagicalAtk -= effect.value;
+                    _effectsPlayer.push(effect);
                 }
                 break;
             case EffectType.PhyResInc:
                 if (turn) {
                     effect.value = Math.round(
                         secondaryEffect *
-                            (combat.statsPlayer.physicalRes +
-                                combat.statsPlayer.bonusPhysicalRes),
+                            (_statsPlayer.physicalRes +
+                                _statsPlayer.bonusPhysicalRes),
                     );
-                    statsPlayer.bonusPhysicalRes += effect.value;
-                    effectsPlayer.push(effect);
+                    _statsPlayer.bonusPhysicalRes += effect.value;
+                    _effectsPlayer.push(effect);
                 } else {
                     effect.value = Math.round(
                         secondaryEffect *
-                            (combat.statsPlayer.physicalRes +
-                                combat.statsPlayer.bonusPhysicalRes),
+                            (_statsPlayer.physicalRes +
+                                _statsPlayer.bonusPhysicalRes),
                     );
-                    statsEnemy.bonusPhysicalRes += effect.value;
-                    effectsEnemy.push(effect);
+                    _statsEnemy.bonusPhysicalRes += effect.value;
+                    _effectsEnemy.push(effect);
                 }
                 break;
             case EffectType.PhyResDec:
                 if (turn) {
                     effect.value = Math.round(
                         secondaryEffect *
-                            (combat.statsEnemy.physicalRes +
-                                combat.statsEnemy.bonusPhysicalRes),
+                            (_statsEnemy.physicalRes +
+                                _statsEnemy.bonusPhysicalRes),
                     );
-                    statsEnemy.bonusPhysicalRes -= effect.value;
-                    effectsEnemy.push(effect);
+                    _statsEnemy.bonusPhysicalRes -= effect.value;
+                    _effectsEnemy.push(effect);
                 } else {
                     effect.value = Math.round(
                         secondaryEffect *
-                            (combat.statsPlayer.physicalRes +
-                                combat.statsPlayer.bonusPhysicalRes),
+                            (_statsPlayer.physicalRes +
+                                _statsPlayer.bonusPhysicalRes),
                     );
-                    statsPlayer.bonusPhysicalRes -= effect.value;
-                    effectsPlayer.push(effect);
+                    _statsPlayer.bonusPhysicalRes -= effect.value;
+                    _effectsPlayer.push(effect);
                 }
                 break;
             case EffectType.MagResInc:
                 if (turn) {
                     effect.value = Math.round(
                         secondaryEffect *
-                            (combat.statsPlayer.magicalRes +
-                                combat.statsPlayer.bonusMagicalRes),
+                            (_statsPlayer.magicalRes +
+                                _statsPlayer.bonusMagicalRes),
                     );
-                    statsPlayer.bonusMagicalRes += effect.value;
-                    effectsPlayer.push(effect);
+                    _statsPlayer.bonusMagicalRes += effect.value;
+                    _effectsPlayer.push(effect);
                 } else {
                     effect.value = Math.round(
                         secondaryEffect *
-                            (combat.statsPlayer.magicalRes +
-                                combat.statsPlayer.bonusMagicalRes),
+                            (_statsPlayer.magicalRes +
+                                _statsPlayer.bonusMagicalRes),
                     );
-                    statsEnemy.bonusMagicalRes += effect.value;
-                    effectsEnemy.push(effect);
+                    _statsEnemy.bonusMagicalRes += effect.value;
+                    _effectsEnemy.push(effect);
                 }
                 break;
             case EffectType.MagResDec:
                 if (turn) {
                     effect.value = Math.round(
                         secondaryEffect *
-                            (combat.statsEnemy.magicalRes +
-                                combat.statsEnemy.bonusMagicalRes),
+                            (_statsEnemy.magicalRes +
+                                _statsEnemy.bonusMagicalRes),
                     );
-                    statsEnemy.bonusMagicalRes -= effect.value;
-                    effectsEnemy.push(effect);
+                    _statsEnemy.bonusMagicalRes -= effect.value;
+                    _effectsEnemy.push(effect);
                 } else {
                     effect.value = Math.round(
                         secondaryEffect *
-                            (combat.statsPlayer.magicalRes +
-                                combat.statsPlayer.bonusMagicalRes),
+                            (_statsPlayer.magicalRes +
+                                _statsPlayer.bonusMagicalRes),
                     );
-                    statsPlayer.bonusMagicalRes -= effect.value;
-                    effectsPlayer.push(effect);
+                    _statsPlayer.bonusMagicalRes -= effect.value;
+                    _effectsPlayer.push(effect);
                 }
                 break;
             //TODO: CRIT/DODGE
@@ -1070,7 +1034,7 @@ export function Combat() {
     }
 
     function leaveCombat() {
-        dispatch(combatHide());
+        combatHide();
         setDisabled(false);
         setCooldown_1(0);
         setCooldown_2(0);
@@ -1087,19 +1051,20 @@ export function Combat() {
             style={{margin: 0}}
             animationIn={'zoomIn'}
             animationOut={'fadeOut'}
-            animationInTiming={500}
-            isVisible={combat.modalVisible}
+            animationInTiming={350}
+            isVisible={modalVisible}
             hideModalContentWhileAnimating={true}
             useNativeDriver={true}
             hasBackdrop={false}
+            // TODO: Remove DEBUG
             onBackButtonPress={() => {
-                dispatch(combatHide());
+                combatHide();
                 setDisabled(false);
                 setCombatComplete(false);
             }}>
             <View style={styles.container}>
                 {/* Creature Info */}
-                {combat.creature && (
+                {creature && (
                     <View>
                         <ImageBackground
                             source={getImage('background_combat_info')}
@@ -1109,7 +1074,7 @@ export function Combat() {
                                     <Image
                                         style={styles.avatar}
                                         source={getImage(
-                                            getCreatureImg(combat.creature.id),
+                                            getCreatureImg(creature.id),
                                         )}
                                         resizeMode={'stretch'}
                                     />
@@ -1129,9 +1094,8 @@ export function Combat() {
                                         <Text
                                             style={styles.phyAtkValue}
                                             numberOfLines={1}>
-                                            {combat.statsEnemy.physicalAtk +
-                                                combat.statsEnemy
-                                                    .bonusPhysicalAtk}
+                                            {statsEnemy.physicalAtk +
+                                                statsEnemy.bonusPhysicalAtk}
                                         </Text>
                                         <Image
                                             style={styles.statsIcon}
@@ -1143,10 +1107,9 @@ export function Combat() {
                                             style={styles.phyResValue}
                                             numberOfLines={1}>
                                             {getResistancePercent(
-                                                combat.statsEnemy.physicalRes +
-                                                    combat.statsEnemy
-                                                        .bonusPhysicalRes,
-                                                combat.creature.level,
+                                                statsEnemy.physicalRes +
+                                                    statsEnemy.bonusPhysicalRes,
+                                                creature.level,
                                             ).toFixed(1) + '%'}
                                         </Text>
                                         <Image
@@ -1157,9 +1120,8 @@ export function Combat() {
                                             style={styles.criticalValue}
                                             numberOfLines={1}>
                                             {(
-                                                (combat.statsEnemy.critical +
-                                                    combat.statsEnemy
-                                                        .bonusCritical) *
+                                                (statsEnemy.critical +
+                                                    statsEnemy.bonusCritical) *
                                                 100
                                             ).toFixed(1) + '%'}
                                         </Text>
@@ -1174,9 +1136,8 @@ export function Combat() {
                                         <Text
                                             style={styles.magAtkValue}
                                             numberOfLines={1}>
-                                            {combat.statsEnemy.magicalAtk +
-                                                combat.statsEnemy
-                                                    .bonusMagicalAtk}
+                                            {statsEnemy.magicalAtk +
+                                                statsEnemy.bonusMagicalAtk}
                                         </Text>
                                         <Image
                                             style={styles.statsIcon}
@@ -1188,10 +1149,9 @@ export function Combat() {
                                             style={styles.magResValue}
                                             numberOfLines={1}>
                                             {getResistancePercent(
-                                                combat.statsEnemy.magicalRes +
-                                                    combat.statsEnemy
-                                                        .bonusMagicalRes,
-                                                combat.creature.level,
+                                                statsEnemy.magicalRes +
+                                                    statsEnemy.bonusMagicalRes,
+                                                creature.level,
                                             ).toFixed(1) + '%'}
                                         </Text>
                                         <Image
@@ -1202,9 +1162,8 @@ export function Combat() {
                                             style={styles.dodgeValue}
                                             numberOfLines={1}>
                                             {(
-                                                (combat.statsEnemy.dodge +
-                                                    combat.statsEnemy
-                                                        .bonusDodge) *
+                                                (statsEnemy.dodge +
+                                                    statsEnemy.bonusDodge) *
                                                 100
                                             ).toFixed(1) + '%'}
                                         </Text>
@@ -1220,20 +1179,18 @@ export function Combat() {
                                             }>
                                             <ProgressBar
                                                 progress={
-                                                    combat.statsEnemy.health /
-                                                    (combat.creature.stats
-                                                        .health +
-                                                        combat.creature.stats
+                                                    statsEnemy.health /
+                                                    (creature.stats.health +
+                                                        creature.stats
                                                             .bonusHealth)
                                                 }
                                                 image={'progress_bar_health'}
                                             />
                                             <Text style={styles.healthText}>
-                                                {combat.statsEnemy.health +
+                                                {statsEnemy.health +
                                                     ' / ' +
-                                                    (combat.creature.stats
-                                                        .health +
-                                                        combat.creature.stats
+                                                    (creature.stats.health +
+                                                        creature.stats
                                                             .bonusHealth)}
                                             </Text>
                                         </View>
@@ -1244,9 +1201,9 @@ export function Combat() {
                                         <FlatList
                                             horizontal
                                             scrollEnabled={false}
-                                            data={combat.effectsEnemy}
-                                            keyExtractor={(_item, index) =>
-                                                index.toString()
+                                            data={effectsEnemy}
+                                            keyExtractor={(_item, _index) =>
+                                                _index.toString()
                                             }
                                             renderItem={({item}) => (
                                                 <Tooltip
@@ -1310,7 +1267,7 @@ export function Combat() {
                     </View>
                 )}
                 {/* Combat Log */}
-                {combat.creature && (
+                {creature && (
                     <ImageBackground
                         style={styles.logBackground}
                         source={getImage('background_log')}
@@ -1318,9 +1275,9 @@ export function Combat() {
                         <View style={styles.logContainer}>
                             <FlatList
                                 style={styles.logList}
-                                data={combat.combatLog}
-                                keyExtractor={(_item, index) =>
-                                    index.toString()
+                                data={combatLog}
+                                keyExtractor={(_item, _index) =>
+                                    _index.toString()
                                 }
                                 renderItem={({item}) => (
                                     //@ts-ignore
@@ -1337,7 +1294,7 @@ export function Combat() {
                     </ImageBackground>
                 )}
                 {/* Actionbar */}
-                {combat.creature && (
+                {creature && (
                     <View>
                         <ImageBackground
                             style={styles.actionbarBackground}
@@ -1454,24 +1411,22 @@ export function Combat() {
                                                 activeOpacity={1}
                                                 disabled={
                                                     disabled ||
-                                                    skills.spell_1 === null ||
+                                                    spell_1 === null ||
                                                     cooldown_1 > 0
                                                 }
                                                 onPress={() => {
                                                     setCooldown_1(
                                                         getSkillCooldown(
-                                                            (
-                                                                skills.spell_1 as Skill
-                                                            ).id,
+                                                            (spell_1 as Skill)
+                                                                .id,
                                                         ) as number,
                                                     );
                                                     simulateAttack(
                                                         true,
-                                                        skills.spell_1,
+                                                        spell_1,
                                                         getSkillElement(
-                                                            (
-                                                                skills.spell_1 as Skill
-                                                            ).id,
+                                                            (spell_1 as Skill)
+                                                                .id,
                                                         ),
                                                     );
                                                 }}>
@@ -1489,12 +1444,10 @@ export function Combat() {
                                                             styles.actionIcon
                                                         }
                                                         source={
-                                                            skills.spell_1
+                                                            spell_1
                                                                 ? getImage(
                                                                       getSkillImg(
-                                                                          skills
-                                                                              .spell_1
-                                                                              .id,
+                                                                          spell_1.id,
                                                                       ),
                                                                   )
                                                                 : getImage(
@@ -1526,24 +1479,22 @@ export function Combat() {
                                                 activeOpacity={1}
                                                 disabled={
                                                     disabled ||
-                                                    skills.spell_2 === null ||
+                                                    spell_2 === null ||
                                                     cooldown_2 > 0
                                                 }
                                                 onPress={() => {
                                                     setCooldown_2(
                                                         getSkillCooldown(
-                                                            (
-                                                                skills.spell_2 as Skill
-                                                            ).id,
+                                                            (spell_2 as Skill)
+                                                                .id,
                                                         ) as number,
                                                     );
                                                     simulateAttack(
                                                         true,
-                                                        skills.spell_2,
+                                                        spell_2,
                                                         getSkillElement(
-                                                            (
-                                                                skills.spell_2 as Skill
-                                                            ).id,
+                                                            (spell_2 as Skill)
+                                                                .id,
                                                         ),
                                                     );
                                                 }}>
@@ -1561,12 +1512,10 @@ export function Combat() {
                                                             styles.actionIcon
                                                         }
                                                         source={
-                                                            skills.spell_2
+                                                            spell_2
                                                                 ? getImage(
                                                                       getSkillImg(
-                                                                          skills
-                                                                              .spell_2
-                                                                              .id,
+                                                                          spell_2.id,
                                                                       ),
                                                                   )
                                                                 : getImage(
@@ -1598,24 +1547,22 @@ export function Combat() {
                                                 activeOpacity={1}
                                                 disabled={
                                                     disabled ||
-                                                    skills.spell_3 === null ||
+                                                    spell_3 === null ||
                                                     cooldown_3 > 0
                                                 }
                                                 onPress={() => {
                                                     setCooldown_3(
                                                         getSkillCooldown(
-                                                            (
-                                                                skills.spell_3 as Skill
-                                                            ).id,
+                                                            (spell_3 as Skill)
+                                                                .id,
                                                         ) as number,
                                                     );
                                                     simulateAttack(
                                                         true,
-                                                        skills.spell_3,
+                                                        spell_3,
                                                         getSkillElement(
-                                                            (
-                                                                skills.spell_3 as Skill
-                                                            ).id,
+                                                            (spell_3 as Skill)
+                                                                .id,
                                                         ),
                                                     );
                                                 }}>
@@ -1633,12 +1580,10 @@ export function Combat() {
                                                             styles.actionIcon
                                                         }
                                                         source={
-                                                            skills.spell_3
+                                                            spell_3
                                                                 ? getImage(
                                                                       getSkillImg(
-                                                                          skills
-                                                                              .spell_3
-                                                                              .id,
+                                                                          spell_3.id,
                                                                       ),
                                                                   )
                                                                 : getImage(
@@ -1672,7 +1617,7 @@ export function Combat() {
                     </View>
                 )}
                 {/* Player Info */}
-                {combat.creature && (
+                {creature && (
                     <View>
                         <ImageBackground
                             source={getImage('background_combat_info')}
@@ -1700,9 +1645,8 @@ export function Combat() {
                                         <Text
                                             style={styles.phyAtkValue}
                                             numberOfLines={1}>
-                                            {combat.statsPlayer.physicalAtk +
-                                                combat.statsPlayer
-                                                    .bonusPhysicalAtk}
+                                            {statsPlayer.physicalAtk +
+                                                statsPlayer.bonusPhysicalAtk}
                                         </Text>
                                         <Image
                                             style={styles.statsIcon}
@@ -1714,9 +1658,8 @@ export function Combat() {
                                             style={styles.phyResValue}
                                             numberOfLines={1}>
                                             {getResistancePercent(
-                                                combat.statsPlayer.physicalRes +
-                                                    combat.statsPlayer
-                                                        .bonusPhysicalRes,
+                                                statsPlayer.physicalRes +
+                                                    statsPlayer.bonusPhysicalRes,
                                                 level,
                                             ).toFixed(1) + '%'}
                                         </Text>
@@ -1728,9 +1671,8 @@ export function Combat() {
                                             style={styles.criticalValue}
                                             numberOfLines={1}>
                                             {(
-                                                (combat.statsPlayer.critical +
-                                                    combat.statsPlayer
-                                                        .bonusCritical) *
+                                                (statsPlayer.critical +
+                                                    statsPlayer.bonusCritical) *
                                                 100
                                             ).toFixed(1) + '%'}
                                         </Text>
@@ -1745,9 +1687,8 @@ export function Combat() {
                                         <Text
                                             style={styles.magAtkValue}
                                             numberOfLines={1}>
-                                            {combat.statsPlayer.magicalAtk +
-                                                combat.statsPlayer
-                                                    .bonusMagicalAtk}
+                                            {statsPlayer.magicalAtk +
+                                                statsPlayer.bonusMagicalAtk}
                                         </Text>
                                         <Image
                                             style={styles.statsIcon}
@@ -1759,9 +1700,8 @@ export function Combat() {
                                             style={styles.magResValue}
                                             numberOfLines={1}>
                                             {getResistancePercent(
-                                                combat.statsPlayer.magicalRes +
-                                                    combat.statsPlayer
-                                                        .bonusMagicalRes,
+                                                statsPlayer.magicalRes +
+                                                    statsPlayer.bonusMagicalRes,
                                                 level,
                                             ).toFixed(1) + '%'}
                                         </Text>
@@ -1773,9 +1713,8 @@ export function Combat() {
                                             style={styles.dodgeValue}
                                             numberOfLines={1}>
                                             {(
-                                                (combat.statsPlayer.dodge +
-                                                    combat.statsPlayer
-                                                        .bonusDodge) *
+                                                (statsPlayer.dodge +
+                                                    statsPlayer.bonusDodge) *
                                                 100
                                             ).toFixed(1) + '%'}
                                         </Text>
@@ -1791,15 +1730,14 @@ export function Combat() {
                                             }>
                                             <ProgressBar
                                                 progress={
-                                                    combat.statsPlayer.health /
-                                                    attributes.health
+                                                    statsPlayer.health / health
                                                 }
                                                 image={'progress_bar_health'}
                                             />
                                             <Text style={styles.healthText}>
-                                                {combat.statsPlayer.health +
+                                                {statsPlayer.health +
                                                     ' / ' +
-                                                    attributes.health}
+                                                    health}
                                             </Text>
                                         </View>
                                     </View>
@@ -1809,9 +1747,9 @@ export function Combat() {
                                         <FlatList
                                             horizontal
                                             scrollEnabled={false}
-                                            data={combat.effectsPlayer}
-                                            keyExtractor={(_item, index) =>
-                                                index.toString()
+                                            data={effectsPlayer}
+                                            keyExtractor={(_item, _index) =>
+                                                _index.toString()
                                             }
                                             renderItem={({item}) => (
                                                 <Tooltip

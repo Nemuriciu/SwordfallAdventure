@@ -6,7 +6,6 @@ import {
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {getImage} from '../../../assets/images/_index';
-import {useDispatch} from 'react-redux';
 import {ButtonGroup} from '@rneui/themed';
 import {strings} from '../../../utils/strings.ts';
 import {colors} from '../../../utils/colors.ts';
@@ -17,12 +16,14 @@ import {
     getCraftingEquipmentList,
 } from '../../../parsers/craftingParser.tsx';
 import {CraftingDetails} from './craftingDetails.tsx';
-import {craftingDetailsShow} from '../../../redux/slices/craftingDetailsSlice.tsx';
-import {userInfoStore} from '../../../_zustand/userInfoStore.tsx';
+import {userInfoStore} from '../../../store_zustand/userInfoStore.tsx';
+import {craftingDetailsStore} from '../../../store_zustand/craftingDetailsStore.tsx';
 
 export function Crafting() {
     const level = userInfoStore(state => state.level);
-
+    const craftingDetailsShow = craftingDetailsStore(
+        state => state.craftingDetailsShow,
+    );
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [equipmentList, setEquipmentList] = useState<[Item[], Item[][]]>([
         [],
@@ -33,7 +34,6 @@ export function Crafting() {
         [],
     ]);
     const [disabled, setDisabled] = useState(false);
-    const dispatch = useDispatch();
 
     useEffect(() => {
         setEquipmentList(getCraftingEquipmentList(level));
@@ -44,11 +44,11 @@ export function Crafting() {
         if (!disabled) {
             setDisabled(true);
 
-            dispatch(craftingDetailsShow([item, materials, index]));
+            craftingDetailsShow(item, materials, index);
 
             setTimeout(() => {
                 setDisabled(false);
-            }, 500);
+            }, 250);
         }
     }
 

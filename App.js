@@ -1,6 +1,4 @@
 import React from 'react';
-import {Provider} from 'react-redux';
-import {store} from './redux/store';
 import {MainComponent} from './screens/mainComponent';
 import {createUser} from './database';
 
@@ -20,10 +18,6 @@ const ExpressionAttributeValues = {
 export const Context = React.createContext('light');
 //TODO: Lock rotation on iOS
 function App() {
-    return (
-        <Provider store={store}>
-            <MainComponent />
-        </Provider>
-    );
+    return <MainComponent />;
 }
 export default App;

@@ -13,71 +13,109 @@ import {
     CustomButton,
 } from '../../../components/buttons/customButton.tsx';
 import {GatherNode} from './gatherNode.tsx';
-import {useDispatch, useSelector} from 'react-redux';
-import {RootState} from '../../../redux/store.tsx';
 import {marshall, unmarshall} from '@aws-sdk/util-dynamodb';
 import {USER_ID} from '../../../App';
 import {dynamoDb} from '../../../database';
-import {
-    increaseGatherLevel,
-    setGatherInfo,
-} from '../../../redux/slices/gatherInfoSlice.tsx';
 import {getNode, Node} from '../../../parsers/nodeParser.tsx';
 import {rand} from '../../../parsers/itemParser.tsx';
 import arrayShuffle from 'array-shuffle';
 import ProgressBar from '../../../components/progressBar.tsx';
 import experienceJson from '../../../assets/json/experience.json';
 import {colors} from '../../../utils/colors.ts';
+import {gatheringStore} from '../../../store_zustand/gatheringStore.tsx';
 
 export function Gathering() {
-    // const userInfo = useSelector((state: RootState) => state.userInfo);
-    const gatherInfo = useSelector((state: RootState) => state.gatherInfo);
-    const dispatch = useDispatch();
+    const gatherLevel = gatheringStore(state => state.level);
+    const gatherExp = gatheringStore(state => state.exp);
+    const isGathering = gatheringStore(state => state.isGathering);
+    const nodeIndex = gatheringStore(state => state.nodeIndex);
+    const gatherTimestamp = gatheringStore(state => state.timestamp);
+    const nodes = gatheringStore(state => state.nodes);
+    const setGatherInfo = gatheringStore(state => state.setGatherInfo);
+    const increaseGatherLevel = gatheringStore(
+        state => state.increaseGatherLevel,
+    );
     const didMount = useRef(2);
     // TODO: Gathering level up and experience/gather
     useEffect(() => {
-        fetchGatherInfoDB();
+        fetchGatheringDB();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     useEffect(() => {
         if (!didMount.current) {
-            updateGatherInfoDB();
+            updateGatheringDB();
         } else {
             didMount.current -= 1;
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [gatherInfo]);
+    }, [
+        gatherLevel,
+        gatherExp,
+        isGathering,
+        nodeIndex,
+        gatherTimestamp,
+        nodes,
+    ]);
 
     useEffect(() => {
-        const maxExp = experienceJson.gatheringMaxExp[gatherInfo.level - 1];
-        if (gatherInfo.experience >= maxExp) {
-            dispatch(increaseGatherLevel(gatherInfo.experience - maxExp));
+        const maxExp = experienceJson.gatheringMaxExp[gatherLevel - 1];
+        if (gatherExp >= maxExp) {
+            increaseGatherLevel(gatherExp - maxExp);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [gatherInfo.experience]);
+    }, [gatherExp]);
 
-    function fetchGatherInfoDB() {
+    function fetchGatheringDB() {
         const params = {
             TableName: 'users',
             Key: marshall({id: USER_ID}),
-            ProjectionExpression: 'gatherInfo',
+            ProjectionExpression: 'gathering',
         };
         dynamoDb.getItem(params, function (err, data) {
             if (err) {
                 console.log(err);
             } else {
                 // @ts-ignore
-                dispatch(setGatherInfo(unmarshall(data.Item).gatherInfo));
+                const {gathering} = unmarshall(data.Item);
+                setGatherInfo(
+                    gathering.level,
+                    gathering.experience,
+                    gathering.isGathering,
+                    gathering.nodeIndex,
+                    gathering.timestamp,
+                    gathering.nodes,
+                );
             }
         });
     }
 
-    function updateGatherInfoDB() {
+    function updateGatheringDB() {
         const params = {
             TableName: 'users',
             Key: marshall({id: USER_ID}),
-            UpdateExpression: 'set gatherInfo = :val',
-            ExpressionAttributeValues: marshall({':val': gatherInfo}),
+            UpdateExpression: `
+            set gathering.#experience = :experience,
+                gathering.#isGathering = :isGathering,
+                gathering.#level = :level,
+                gathering.#nodeIndex = :nodeIndex,
+                gathering.#nodes = :nodes,
+                gathering.#timestamp = :timestamp`,
+            ExpressionAttributeNames: {
+                '#experience': 'experience',
+                '#isGathering': 'isGathering',
+                '#level': 'level',
+                '#nodeIndex': 'nodeIndex',
+                '#nodes': 'nodes',
+                '#timestamp': 'timestamp',
+            },
+            ExpressionAttributeValues: marshall({
+                ':experience': gatherExp,
+                ':isGathering': isGathering,
+                ':level': gatherLevel,
+                ':nodeIndex': nodeIndex,
+                ':nodes': nodes,
+                ':timestamp': gatherTimestamp,
+            }),
         };
         dynamoDb.updateItem(params, function (err) {
             if (err) {
@@ -94,43 +132,40 @@ export function Gathering() {
         const r_herb = rand(1, 2);
 
         for (let i = 0; i < r_ore; i++) {
-            nodeList.push(getNode('ore', gatherInfo.level));
+            nodeList.push(getNode('ore', gatherLevel));
         }
         for (let i = 0; i < r_wood; i++) {
-            nodeList.push(getNode('wood', gatherInfo.level));
+            nodeList.push(getNode('wood', gatherLevel));
         }
         for (let i = 0; i < r_herb; i++) {
-            nodeList.push(getNode('herb', gatherInfo.level));
+            nodeList.push(getNode('herb', gatherLevel));
         }
 
         nodeList = arrayShuffle(nodeList);
 
-        dispatch(
-            setGatherInfo({
-                level: gatherInfo.level,
-                experience: gatherInfo.experience,
-                isGathering: gatherInfo.isGathering,
-                nodeIndex: gatherInfo.nodeIndex,
-                timestamp: gatherInfo.timestamp,
-                nodes: nodeList,
-            }),
+        setGatherInfo(
+            gatherLevel,
+            gatherExp,
+            isGathering,
+            nodeIndex,
+            gatherTimestamp,
+            nodeList,
         );
     }
 
     /*DEBUG*/
     function finish() {
-        if (gatherInfo.isGathering) {
+        if (isGathering) {
             const date = new Date();
             date.setDate(date.getDate() - 1);
-            dispatch(
-                setGatherInfo({
-                    level: gatherInfo.level,
-                    experience: gatherInfo.experience,
-                    isGathering: gatherInfo.isGathering,
-                    nodeIndex: gatherInfo.nodeIndex,
-                    timestamp: date.toISOString(),
-                    nodes: gatherInfo.nodes,
-                }),
+
+            setGatherInfo(
+                gatherLevel,
+                gatherExp,
+                isGathering,
+                nodeIndex,
+                date.toISOString(),
+                nodes,
             );
         }
     }
@@ -143,18 +178,18 @@ export function Gathering() {
             {/* Gathering Experience */}
             <View style={styles.experienceBarContainer}>
                 <Text style={styles.experienceLabel}>Gathering Level</Text>
-                <Text style={styles.experienceValue}>{gatherInfo.level}</Text>
+                <Text style={styles.experienceValue}>{gatherLevel}</Text>
                 <ProgressBar
                     progress={
-                        gatherInfo.experience /
-                        experienceJson.gatheringMaxExp[gatherInfo.level - 1]
+                        gatherExp /
+                        experienceJson.gatheringMaxExp[gatherLevel - 1]
                     }
                     image={'progress_bar_orange'}
                     style={styles.experienceBar}
                 />
                 <Text style={styles.experienceLabel}>
-                    {gatherInfo.experience}/
-                    {experienceJson.gatheringMaxExp[gatherInfo.level - 1]}
+                    {gatherExp}/
+                    {experienceJson.gatheringMaxExp[gatherLevel - 1]}
                 </Text>
                 <Image
                     style={styles.infoIcon}
@@ -165,7 +200,7 @@ export function Gathering() {
             {/* Nodes List */}
             <FlatList
                 style={styles.nodesList}
-                data={gatherInfo.nodes}
+                data={nodes}
                 keyExtractor={(_item, index) => index.toString()}
                 renderItem={({item, index}) => (
                     <GatherNode node={item} index={index} />
@@ -179,7 +214,7 @@ export function Gathering() {
                     style={styles.buttonStyle}
                     title={'Explore'}
                     onPress={refreshNodes}
-                    disabled={gatherInfo.isGathering}
+                    disabled={isGathering}
                 />
                 <CustomButton
                     type={ButtonType.Orange}

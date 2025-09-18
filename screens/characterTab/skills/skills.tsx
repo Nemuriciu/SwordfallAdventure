@@ -13,23 +13,25 @@ import {ButtonGroup} from '@rneui/themed';
 import {strings} from '../../../utils/strings.ts';
 import {colors} from '../../../utils/colors.ts';
 import {SkillsIcon} from './skillsIcon.tsx';
-import {useDispatch, useSelector} from 'react-redux';
-import {RootState} from '../../../redux/store.tsx';
 import {marshall, unmarshall} from '@aws-sdk/util-dynamodb';
 import {USER_ID} from '../../../App';
 import {dynamoDb} from '../../../database';
-import {skillsUpdate} from '../../../redux/slices/skillsSlice.tsx';
 import {SkillsDetails} from './skillsDetails.tsx';
 import {getSkillImg} from '../../../parsers/skillParser.tsx';
 import {SpellsModal} from './spellsModal.tsx';
+import {skillsStore} from '../../../store_zustand/skillsStore.tsx';
 
 export function Skills() {
-    const skills = useSelector((state: RootState) => state.skills);
+    const skillsList = skillsStore(state => state.skillsList);
+    const spell_1 = skillsStore(state => state.spell_1);
+    const spell_2 = skillsStore(state => state.spell_2);
+    const spell_3 = skillsStore(state => state.spell_3);
+    const skillsUpdate = skillsStore(state => state.skillsUpdate);
+
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [spellsListVisible, setSpellsListVisible] = useState(false);
     const [selectedSlot, setSelectedSlot] = useState(0);
     const didMount = useRef(2);
-    const dispatch = useDispatch();
 
     useEffect(() => {
         fetchSkillsDB();
@@ -43,7 +45,7 @@ export function Skills() {
             didMount.current -= 1;
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [skills]);
+    }, [skillsList, spell_1, spell_2, spell_3]);
 
     function fetchSkillsDB() {
         const params = {
@@ -56,7 +58,13 @@ export function Skills() {
                 console.log(err);
             } else {
                 // @ts-ignore
-                dispatch(skillsUpdate(unmarshall(data.Item).skills));
+                const {skills} = unmarshall(data.Item);
+                skillsUpdate(
+                    skills.skillsList,
+                    skills.spell_1,
+                    skills.spell_2,
+                    skills.spell_3,
+                );
             }
         });
     }
@@ -65,8 +73,23 @@ export function Skills() {
         const params = {
             TableName: 'users',
             Key: marshall({id: USER_ID}),
-            UpdateExpression: 'set skills = :val',
-            ExpressionAttributeValues: marshall({':val': skills}),
+            UpdateExpression: `
+            set skills.#skillsList = :skillsList,
+                skills.#spell_1 = :spell_1,
+                skills.#spell_2 = :spell_2,
+                skills.#spell_3 = :spell_3`,
+            ExpressionAttributeNames: {
+                '#skillsList': 'skillsList',
+                '#spell_1': 'spell_1',
+                '#spell_2': 'spell_2',
+                '#spell_3': 'spell_3',
+            },
+            ExpressionAttributeValues: marshall({
+                ':skillsList': skillsList,
+                ':spell_1': spell_1,
+                ':spell_2': spell_2,
+                ':spell_3': spell_3,
+            }),
         };
         dynamoDb.updateItem(params, function (err) {
             if (err) {
@@ -96,67 +119,67 @@ export function Skills() {
                 textStyle={styles.buttonText}
             />
             {/* Offense Skill List */}
-            {skills.list && selectedIndex === 0 && (
+            {skillsList && selectedIndex === 0 && (
                 <ScrollView style={styles.innerContainer}>
                     <View style={styles.skillsRowContainer}>
                         <SkillsIcon
                             style={styles.skillsIconContainer}
-                            skill={skills.list['100']}
+                            skill={skillsList['100']}
                         />
                         <SkillsIcon
                             style={styles.skillsIconContainer}
-                            skill={skills.list['101']}
+                            skill={skillsList['101']}
                         />
                     </View>
                     <View style={styles.skillsRowContainer}>
                         <SkillsIcon
                             style={styles.skillsIconContainer}
-                            skill={skills.list['102']}
+                            skill={skillsList['102']}
                         />
                         <SkillsIcon
                             style={styles.skillsIconContainer}
-                            skill={skills.list['103']}
+                            skill={skillsList['103']}
                         />
                         <SkillsIcon
                             style={styles.skillsIconContainer}
-                            skill={skills.list['104']}
+                            skill={skillsList['104']}
                         />
                         <SkillsIcon
                             style={styles.skillsIconContainer}
-                            skill={skills.list['105']}
+                            skill={skillsList['105']}
                         />
                     </View>
                 </ScrollView>
             )}
             {/* Defense Skill List */}
-            {skills.list && selectedIndex === 1 && (
+            {skillsList && selectedIndex === 1 && (
                 <ScrollView style={styles.innerContainer}>
                     <View style={styles.skillsRowContainer}>
                         <SkillsIcon
                             style={styles.skillsIconContainer}
-                            skill={skills.list['500']}
+                            skill={skillsList['500']}
                         />
                         <SkillsIcon
                             style={styles.skillsIconContainer}
-                            skill={skills.list['501']}
+                            skill={skillsList['501']}
                         />
                     </View>
                     <View style={styles.skillsRowContainer}>
                         <SkillsIcon
                             style={styles.skillsIconContainer}
-                            skill={skills.list['502']}
+                            skill={skillsList['502']}
                         />
                         <SkillsIcon
                             style={styles.skillsIconContainer}
-                            skill={skills.list['503']}
+                            skill={skillsList['503']}
                         />
                         <SkillsIcon
                             style={styles.skillsIconContainer}
-                            skill={skills.list['504']}
+                            skill={skillsList['504']}
                         />
                         <SkillsIcon
                             style={styles.skillsIconContainer}
-                            skill={skills.list['505']}
+                            skill={skillsList['505']}
                         />
                     </View>
                 </ScrollView>
@@ -181,8 +204,8 @@ export function Skills() {
                         <Image
                             style={styles.activeSpellImage}
                             source={
-                                skills.spell_1
-                                    ? getImage(getSkillImg(skills.spell_1.id))
+                                spell_1
+                                    ? getImage(getSkillImg(spell_1.id))
                                     : getImage('skills_frame_background_plus')
                             }
                             resizeMode={'stretch'}
@@ -205,8 +228,8 @@ export function Skills() {
                         <Image
                             style={styles.activeSpellImage}
                             source={
-                                skills.spell_2
-                                    ? getImage(getSkillImg(skills.spell_2.id))
+                                spell_2
+                                    ? getImage(getSkillImg(spell_2.id))
                                     : getImage('skills_frame_background_plus')
                             }
                             resizeMode={'stretch'}
@@ -229,8 +252,8 @@ export function Skills() {
                         <Image
                             style={styles.activeSpellImage}
                             source={
-                                skills.spell_3
-                                    ? getImage(getSkillImg(skills.spell_3.id))
+                                spell_3
+                                    ? getImage(getSkillImg(spell_3.id))
                                     : getImage('skills_frame_background_plus')
                             }
                             resizeMode={'stretch'}

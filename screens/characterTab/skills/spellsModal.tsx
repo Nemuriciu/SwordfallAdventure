@@ -12,8 +12,6 @@ import Modal from 'react-native-modal';
 import {getImage} from '../../../assets/images/_index';
 import {colors} from '../../../utils/colors.ts';
 import {strings} from '../../../utils/strings.ts';
-import {useDispatch, useSelector} from 'react-redux';
-import {RootState} from '../../../redux/store.tsx';
 import {CloseButton} from '../../../components/buttons/closeButton.tsx';
 import {Skill} from '../../../types/skill.ts';
 import {
@@ -22,7 +20,7 @@ import {
     getSkillName,
     getSkillType,
 } from '../../../parsers/skillParser.tsx';
-import {skillsSpellSet} from '../../../redux/slices/skillsSlice.tsx';
+import {skillsStore} from '../../../store_zustand/skillsStore.tsx';
 
 interface props {
     visible: boolean;
@@ -31,17 +29,18 @@ interface props {
 }
 
 export function SpellsModal({visible, setVisible, slot}: props) {
-    const skills = useSelector((state: RootState) => state.skills);
+    const skillsList = skillsStore(state => state.skillsList);
+    const skillsSpellSet = skillsStore(state => state.skillsSpellSet);
+
     const [spellsList, setSpellsList] = useState<Skill[]>([]);
     const [disabled, setDisabled] = useState(false);
-    const dispatch = useDispatch();
 
     useEffect(() => {
         if (visible) {
             const _spellsList = [];
             /* Fetch Learnt Spells */
-            for (const key in skills.list) {
-                const skill = skills.list[key];
+            for (const key in skillsList) {
+                const skill = skillsList[key];
 
                 if (getSkillType(skill.id) === 'Spell' && skill.points) {
                     _spellsList.push(skill);
@@ -56,7 +55,7 @@ export function SpellsModal({visible, setVisible, slot}: props) {
         if (!disabled) {
             setDisabled(true);
 
-            dispatch(skillsSpellSet([slot, spell]));
+            skillsSpellSet(slot, spell);
             setVisible(false);
 
             setTimeout(() => {
@@ -135,11 +134,7 @@ export function SpellsModal({visible, setVisible, slot}: props) {
                                 {strings.learnt + ' ' + strings.spells}
                             </Text>
                             {spellsList.length ? (
-                                <ImageBackground
-                                    style={styles.innerContainer}
-                                    source={getImage('background_inner')}
-                                    resizeMode={'stretch'}
-                                    fadeDuration={0}>
+                                <View style={styles.innerContainer}>
                                     <FlatList
                                         style={styles.spellsListContainer}
                                         data={spellsList}
@@ -147,7 +142,7 @@ export function SpellsModal({visible, setVisible, slot}: props) {
                                         renderItem={renderItem}
                                         overScrollMode={'never'}
                                     />
-                                </ImageBackground>
+                                </View>
                             ) : null}
                             {spellsList.length === 0 ? (
                                 <Text style={styles.noSpellsText}>

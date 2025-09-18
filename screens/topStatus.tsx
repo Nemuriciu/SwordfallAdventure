@@ -9,7 +9,7 @@ import ProgressBar from '../components/progressBar.tsx';
 import experienceJson from '../assets/json/experience.json';
 import {PlusButton} from '../components/buttons/plusButton.tsx';
 import {IconText} from '../components/iconText.tsx';
-import {userInfoStore} from '../_zustand/userInfoStore.tsx';
+import {userInfoStore} from '../store_zustand/userInfoStore.tsx';
 
 export function TopStatus() {
     const username = userInfoStore(state => state.username);

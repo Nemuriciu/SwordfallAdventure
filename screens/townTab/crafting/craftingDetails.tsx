@@ -9,9 +9,6 @@ import {
     Dimensions,
 } from 'react-native';
 import Modal from 'react-native-modal';
-import {useDispatch, useSelector} from 'react-redux';
-import {RootState} from '../../../redux/store.tsx';
-import {craftingDetailsHide} from '../../../redux/slices/craftingDetailsSlice.tsx';
 import {Category, isItem, Item} from '../../../types/item.ts';
 import {getImage} from '../../../assets/images/_index';
 import {
@@ -33,39 +30,41 @@ import {Counter} from '../../../components/counter.tsx';
 import {getInventoryIndex} from '../../../utils/arrayUtils.ts';
 import {getCraftingExperience} from '../../../parsers/craftingParser.tsx';
 import {isQuestComplete, sortQuests} from '../../../parsers/questParser.tsx';
-import {questsSetList} from '../../../redux/slices/questsSlice.tsx';
-import {inventoryStore} from '../../../_zustand/inventoryStore.tsx';
-import {rewardsStore} from '../../../_zustand/rewardsStore.tsx';
+import {inventoryStore} from '../../../store_zustand/inventoryStore.tsx';
+import {rewardsStore} from '../../../store_zustand/rewardsStore.tsx';
+import {craftingDetailsStore} from '../../../store_zustand/craftingDetailsStore.tsx';
+import {questsStore} from '../../../store_zustand/questsStore.tsx';
 
 export function CraftingDetails() {
+    const modalVisible = craftingDetailsStore(state => state.modalVisible);
+    const materials = craftingDetailsStore(state => state.materials);
+    const craftingItem = craftingDetailsStore(state => state.item);
+    const craftingDetailsHide = craftingDetailsStore(
+        state => state.craftingDetailsHide,
+    );
     const rewardsInit = rewardsStore(state => state.rewardsInit);
-
     const inventoryList = inventoryStore(state => state.inventoryList);
     const inventoryRemoveItemAt = inventoryStore(
         state => state.inventoryRemoveItemAt,
     );
-
-    const craftingDetails = useSelector(
-        (state: RootState) => state.craftingDetails,
-    );
-    const quests = useSelector((state: RootState) => state.quests);
+    const questsList = questsStore(state => state.questsList);
+    const questsSetList = questsStore(state => state.questsSetList);
     const [materialsTemp, setMaterialsTemp] = useState<Item[]>([]);
     const [materialsOwned, setMaterialsOwned] = useState<number[]>([]);
     const [amount, setAmount] = useState('1');
     const [disabled, setDisabled] = useState(false);
-    const dispatch = useDispatch();
     const didMount = useRef(1);
     const didMount_1 = useRef(2);
 
     useEffect(() => {
-        setMaterialsTemp(cloneDeep(craftingDetails.materials));
+        setMaterialsTemp(cloneDeep(materials));
         updateMatsOwned();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [craftingDetails.materials, inventoryList]);
+    }, [materials, inventoryList]);
 
     useEffect(() => {
         if (!didMount_1.current) {
-            if (materialsTemp.length === craftingDetails.materials.length) {
+            if (materialsTemp.length === materials.length) {
                 for (let i = 0; i < materialsTemp.length; i++) {
                     if (
                         materialsOwned[i] <
@@ -89,10 +88,10 @@ export function CraftingDetails() {
     function updateMatsOwned() {
         if (!didMount.current) {
             const matsOwned = [];
-            if (craftingDetails.materials.length) {
-                for (let i = 0; i < craftingDetails.materials.length; i++) {
+            if (materials.length) {
+                for (let i = 0; i < materials.length; i++) {
                     const inventoryIndex = getInventoryIndex(
-                        craftingDetails.materials[i],
+                        materials[i],
                         inventoryList,
                     );
                     if (inventoryIndex !== -1) {
@@ -116,15 +115,13 @@ export function CraftingDetails() {
 
     //TODO: Check Inventory Full
     function craftItem() {
-        if (isItem(craftingDetails.item)) {
+        if (isItem(craftingItem)) {
             /* Consumables */
-            if (
-                getItemCategory(craftingDetails.item.id) !== Category.equipment
-            ) {
+            if (getItemCategory(craftingItem.id) !== Category.equipment) {
                 /* Add Item to Inventory */
-                const item = cloneDeep(craftingDetails.item);
-                item.quantity = parseInt(amount, 10);
-                rewardsInit([item], 0, 0);
+                const _item = cloneDeep(craftingItem);
+                _item.quantity = parseInt(amount, 10);
+                rewardsInit([_item], 0, 0);
 
                 /* Remove materials from Inventory */
                 for (let i = 0; i < materialsTemp.length; i++) {
@@ -139,25 +136,24 @@ export function CraftingDetails() {
                     );
                 }
             } else if (
-                getItemCategory(craftingDetails.item.id) === Category.equipment
+                getItemCategory(craftingItem.id) === Category.equipment
             ) {
                 /* Equipment */
                 /* Add Items to Inventory */
                 const amountNr = parseInt(amount, 10);
                 const rewards = [];
                 for (let i = 0; i < amountNr; i++) {
-                    const equipItem = cloneDeep(craftingDetails.item);
-                    const item = getRandomEquip(
+                    const equipItem = cloneDeep(craftingItem);
+                    const _item = getRandomEquip(
                         getItemRarity(equipItem.id),
                         equipItem.level,
                     );
-                    rewards.push(item);
+                    rewards.push(_item);
                 }
 
                 rewardsInit(
                     rewards,
-                    getCraftingExperience(craftingDetails.item.level) *
-                        rewards.length,
+                    getCraftingExperience(craftingItem.level) * rewards.length,
                     0,
                 );
                 /* Remove materials from Inventory */
@@ -174,10 +170,10 @@ export function CraftingDetails() {
                 }
             }
             /* Update Quests */
-            const questsList = cloneDeep(quests.questsList);
+            const _questsList = cloneDeep(questsList);
 
-            for (let i = 0; i < questsList.length; i++) {
-                let quest = questsList[i];
+            for (let i = 0; i < _questsList.length; i++) {
+                let quest = _questsList[i];
                 if (
                     quest.isActive &&
                     !isQuestComplete(quest) &&
@@ -190,20 +186,21 @@ export function CraftingDetails() {
                     );
                 }
             }
-            sortQuests(questsList);
-            dispatch(questsSetList(questsList));
+            sortQuests(_questsList);
+            questsSetList(_questsList);
         }
     }
 
     // noinspection RequiredAttributes
     return (
         <Modal
-            animationIn={'zoomIn'}
+            animationIn={'fadeIn'}
             animationOut={'fadeOut'}
-            isVisible={craftingDetails.modalVisible}
+            animationOutTiming={200}
+            isVisible={modalVisible}
             backdropTransitionOutTiming={0}
             useNativeDriver={true}>
-            {isItem(craftingDetails.item) && (
+            {isItem(craftingItem) && (
                 <View style={styles.modalAlpha}>
                     <View style={styles.container}>
                         <ImageBackground
@@ -217,9 +214,7 @@ export function CraftingDetails() {
                                         <Image
                                             style={styles.image}
                                             source={getImage(
-                                                getItemImg(
-                                                    craftingDetails.item.id,
-                                                ),
+                                                getItemImg(craftingItem.id),
                                             )}
                                             fadeDuration={0}
                                         />
@@ -231,22 +226,18 @@ export function CraftingDetails() {
                                                 {
                                                     color: getItemColor(
                                                         getItemRarity(
-                                                            craftingDetails.item
-                                                                .id,
+                                                            craftingItem.id,
                                                         ),
                                                     ),
                                                 },
                                             ]}>
-                                            {isItem(craftingDetails.item)
-                                                ? getItemName(
-                                                      craftingDetails.item.id,
-                                                  )
+                                            {isItem(craftingItem)
+                                                ? getItemName(craftingItem.id)
                                                 : ''}
                                         </Text>
                                         <Text style={styles.level}>
-                                            {isItem(craftingDetails.item)
-                                                ? 'Level ' +
-                                                  craftingDetails.item.level
+                                            {isItem(craftingItem)
+                                                ? 'Level ' + craftingItem.level
                                                 : ''}
                                         </Text>
                                     </View>
@@ -257,7 +248,7 @@ export function CraftingDetails() {
                                         styles.materialsListContainer
                                     }
                                     scrollEnabled={false}
-                                    data={craftingDetails.materials}
+                                    data={materials}
                                     keyExtractor={item => item.id}
                                     renderItem={({item, index}) => (
                                         <ImageBackground
@@ -273,9 +264,7 @@ export function CraftingDetails() {
                                                     {
                                                         color:
                                                             materialsTemp.length ===
-                                                            craftingDetails
-                                                                .materials
-                                                                .length
+                                                            materials.length
                                                                 ? materialsOwned[
                                                                       index
                                                                   ] <
@@ -295,7 +284,7 @@ export function CraftingDetails() {
                                                     },
                                                 ]}>
                                                 {materialsTemp.length ===
-                                                craftingDetails.materials.length
+                                                materials.length
                                                     ? materialsOwned[index] +
                                                       '/' +
                                                       materialsTemp[index]
@@ -340,10 +329,10 @@ export function CraftingDetails() {
                                 </View>
                                 <CloseButton
                                     onPress={() => {
-                                        dispatch(craftingDetailsHide());
+                                        craftingDetailsHide();
                                         setTimeout(() => {
                                             setAmount('1');
-                                        }, 500);
+                                        }, 250);
                                     }}
                                     style={styles.closeButton}
                                 />

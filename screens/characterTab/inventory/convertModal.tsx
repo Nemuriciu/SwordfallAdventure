@@ -25,8 +25,8 @@ import {
 } from '../../../components/buttons/customButton.tsx';
 import {strings} from '../../../utils/strings.ts';
 import cloneDeep from 'lodash.clonedeep';
-import {inventoryStore} from '../../../_zustand/inventoryStore.tsx';
-import {itemDetailsStore} from '../../../_zustand/itemDetailsStore.tsx';
+import {inventoryStore} from '../../../store_zustand/inventoryStore.tsx';
+import {itemDetailsStore} from '../../../store_zustand/itemDetailsStore.tsx';
 
 interface props {
     visible: boolean;

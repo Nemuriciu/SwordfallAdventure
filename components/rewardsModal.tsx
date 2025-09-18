@@ -9,8 +9,6 @@ import {
     Dimensions,
 } from 'react-native';
 import Modal from 'react-native-modal';
-import {useDispatch, useSelector} from 'react-redux';
-import {RootState} from '../redux/store.tsx';
 import {getImage} from '../assets/images/_index';
 import {CloseButton} from './buttons/closeButton.tsx';
 import {getItemImg} from '../parsers/itemParser.tsx';
@@ -18,32 +16,28 @@ import {strings} from '../utils/strings.ts';
 import {isFull} from '../utils/arrayUtils.ts';
 import {colors} from '../utils/colors.ts';
 import Animated, {BounceIn, BounceOut} from 'react-native-reanimated';
-import {updateGatherExp} from '../redux/slices/gatherInfoSlice.tsx';
-import {rewardsStore} from '../_zustand/rewardsStore.tsx';
-import {inventoryStore} from '../_zustand/inventoryStore.tsx';
-import {userInfoStore} from '../_zustand/userInfoStore.tsx';
+import {rewardsStore} from '../store_zustand/rewardsStore.tsx';
+import {inventoryStore} from '../store_zustand/inventoryStore.tsx';
+import {userInfoStore} from '../store_zustand/userInfoStore.tsx';
+import {gatheringStore} from '../store_zustand/gatheringStore.tsx';
 
 export function RewardsModal() {
     const exp = userInfoStore(state => state.exp);
     const shards = userInfoStore(state => state.shards);
     const updateExp = userInfoStore(state => state.updateExp);
     const updateShards = userInfoStore(state => state.updateShards);
-
-    const gatherInfo = useSelector((state: RootState) => state.gatherInfo);
-
     const inventoryList = inventoryStore(state => state.inventoryList);
     const inventoryAddItems = inventoryStore(state => state.inventoryAddItems);
-
+    const gatherExp = gatheringStore(state => state.exp);
+    const updateGatherExp = gatheringStore(state => state.updateGatherExp);
     const modalVisible = rewardsStore(state => state.modalVisible);
     const rewards = rewardsStore(state => state.rewards);
     const rewardsExp = rewardsStore(state => state.exp);
     const rewardsShards = rewardsStore(state => state.shards);
-    const gatheringExp = rewardsStore(state => state.gatheringExp);
+    const rewardsGatheringExp = rewardsStore(state => state.gatheringExp);
     const title = rewardsStore(state => state.title);
     const rewardsHide = rewardsStore(state => state.rewardsHide);
-
-    const levelUp = useSelector((state: RootState) => state.levelUp);
-    const dispatch = useDispatch();
+    const levelUpVisibility = userInfoStore(state => state.levelUpVisibility);
 
     useEffect(() => {
         if (modalVisible) {
@@ -57,10 +51,8 @@ export function RewardsModal() {
                 if (rewardsShards) {
                     updateShards(shards + rewardsShards);
                 }
-                if (gatheringExp) {
-                    dispatch(
-                        updateGatherExp(gatherInfo.experience + gatheringExp),
-                    );
+                if (rewardsGatheringExp) {
+                    updateGatherExp(gatherExp + rewardsGatheringExp);
                 }
             }
         }
@@ -89,7 +81,7 @@ export function RewardsModal() {
             backdropTransitionOutTiming={0}
             useNativeDriver={true}>
             {/* Level Up Icon */}
-            {levelUp.iconVisibility && (
+            {levelUpVisibility && (
                 <Animated.View
                     style={styles.level_up}
                     entering={BounceIn.duration(500)}
@@ -138,13 +130,13 @@ export function RewardsModal() {
                                 fadeDuration={0}
                             />
                             <View style={styles.bottomContainer}>
-                                {gatheringExp ? (
+                                {rewardsGatheringExp ? (
                                     <View style={styles.gatheringExpContainer}>
                                         <Text style={styles.gatheringExpLabel}>
                                             Gathering Experience:
                                         </Text>
                                         <Text style={styles.gatheringExpText}>
-                                            {gatheringExp}
+                                            {rewardsGatheringExp}
                                         </Text>
                                     </View>
                                 ) : null}

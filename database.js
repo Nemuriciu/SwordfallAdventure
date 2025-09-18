@@ -135,7 +135,7 @@ function createUserEntry(userID, username) {
                 pants: {},
                 weapon: {},
             },
-            gatherInfo: {
+            gathering: {
                 level: 1,
                 experience: 0,
                 isGathering: false,
@@ -162,7 +162,7 @@ function createUserEntry(userID, username) {
                 refreshTimestamp: new Date().toISOString(),
             },
             skills: {
-                list: initializeSkills(),
+                skillsList: initializeSkills(),
                 spell_1: null,
                 spell_2: null,
                 spell_3: null,

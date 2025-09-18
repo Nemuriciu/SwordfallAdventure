@@ -18,9 +18,9 @@ import {
     CustomButton,
 } from '../../../components/buttons/customButton.tsx';
 import {strings} from '../../../utils/strings.ts';
-import {inventoryStore} from '../../../_zustand/inventoryStore.tsx';
-import {itemDetailsStore} from '../../../_zustand/itemDetailsStore.tsx';
-import {userInfoStore} from '../../../_zustand/userInfoStore.tsx';
+import {inventoryStore} from '../../../store_zustand/inventoryStore.tsx';
+import {itemDetailsStore} from '../../../store_zustand/itemDetailsStore.tsx';
+import {userInfoStore} from '../../../store_zustand/userInfoStore.tsx';
 
 interface props {
     visible: boolean;

@@ -9,8 +9,6 @@ import {
 } from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import {getImage} from '../../../assets/images/_index';
-import {useDispatch, useSelector} from 'react-redux';
-import {RootState} from '../../../redux/store.tsx';
 import {
     generateQuest,
     getQuestExp,
@@ -18,11 +16,6 @@ import {
     isQuestComplete,
     sortQuests,
 } from '../../../parsers/questParser.tsx';
-import {
-    questsSet,
-    questsSetList,
-    questsSetTimestamp,
-} from '../../../redux/slices/questsSlice.tsx';
 import {getItemImg} from '../../../parsers/itemParser.tsx';
 import {strings} from '../../../utils/strings.ts';
 import {colors} from '../../../utils/colors.ts';
@@ -35,9 +28,10 @@ import cloneDeep from 'lodash.clonedeep';
 import {marshall, unmarshall} from '@aws-sdk/util-dynamodb';
 import {USER_ID} from '../../../App';
 import {dynamoDb} from '../../../database';
-import {rewardsModalInit} from '../../../redux/slices/rewardsModalSlice.tsx';
 import {AbandonModal} from './abandonModal.tsx';
-import {userInfoStore} from '../../../_zustand/userInfoStore.tsx';
+import {userInfoStore} from '../../../store_zustand/userInfoStore.tsx';
+import {rewardsStore} from '../../../store_zustand/rewardsStore.tsx';
+import {questsStore} from '../../../store_zustand/questsStore.tsx';
 
 export const QUESTS_AMOUNT: number = 8;
 export const QUESTS_HUNTING_AMOUNT: number = 5;
@@ -46,9 +40,13 @@ export const QUESTS_CRAFTING_AMOUNT: number = 1;
 
 export function Quests() {
     const level = userInfoStore(state => state.level);
+    const rewardsInit = rewardsStore(state => state.rewardsInit);
+    const questsList = questsStore(state => state.questsList);
+    const refreshTimestamp = questsStore(state => state.refreshTimestamp);
+    const questsSet = questsStore(state => state.questsSet);
+    const questsSetList = questsStore(state => state.questsSetList);
+    const questsSetTimestamp = questsStore(state => state.questsSetTimestamp);
 
-    const quests = useSelector((state: RootState) => state.quests);
-    const dispatch = useDispatch();
     const [refreshFetched, setRefreshFetched] = useState(false);
     const [refreshTimer, setRefreshTimer] = useState(1);
     const [abandonIndex, setAbandonIndex] = useState(-1);
@@ -70,7 +68,7 @@ export function Quests() {
             didMount.current -= 1;
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [quests]);
+    }, [questsList, refreshTimestamp]);
 
     useEffect(() => {
         if (!didMount_2.current) {
@@ -78,17 +76,15 @@ export function Quests() {
                 setRefreshFetched(true);
 
                 let diff =
-                    new Date().getTime() -
-                    new Date(quests.refreshTimestamp).getTime();
+                    new Date().getTime() - new Date(refreshTimestamp).getTime();
 
                 if (diff >= twoHour) {
                     refreshQuests();
 
                     diff %= twoHour;
-                    dispatch(
-                        questsSetTimestamp(
-                            new Date(Date.now() - diff).toISOString(),
-                        ),
+
+                    questsSetTimestamp(
+                        new Date(Date.now() - diff).toISOString(),
                     );
                 }
 
@@ -99,14 +95,14 @@ export function Quests() {
             didMount_2.current -= 1;
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [quests.refreshTimestamp]);
+    }, [refreshTimestamp]);
 
     useEffect(() => {
         if (refreshTimer <= 0) {
             clearInterval(timer);
             setRefreshTimer(1);
             refreshQuests();
-            dispatch(questsSetTimestamp(new Date().toISOString()));
+            questsSetTimestamp(new Date().toISOString());
             setRefreshTimer(twoHour);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -123,7 +119,8 @@ export function Quests() {
                 console.log(err);
             } else {
                 // @ts-ignore
-                dispatch(questsSet(unmarshall(data.Item).quests));
+                const {quests} = unmarshall(data.Item);
+                questsSet(quests.questsList, quests.refreshTimestamp);
             }
         });
     }
@@ -132,9 +129,16 @@ export function Quests() {
         const params = {
             TableName: 'users',
             Key: marshall({id: USER_ID}),
-            UpdateExpression: 'set quests = :val',
+            UpdateExpression: `
+            set quests.#questsList = :questsList,
+                quests.#refreshTimestamp = :refreshTimestamp`,
+            ExpressionAttributeNames: {
+                '#questsList': 'questsList',
+                '#refreshTimestamp': 'refreshTimestamp',
+            },
             ExpressionAttributeValues: marshall({
-                ':val': quests,
+                ':questsList': questsList,
+                ':refreshTimestamp': refreshTimestamp,
             }),
         };
         dynamoDb.updateItem(params, function (err) {
@@ -145,11 +149,11 @@ export function Quests() {
     }
 
     function startQuest(index: number) {
-        const questsList = cloneDeep(quests.questsList);
-        questsList[index].isActive = true;
+        const _questsList = cloneDeep(questsList);
+        _questsList[index].isActive = true;
 
-        sortQuests(questsList);
-        dispatch(questsSetList(questsList));
+        sortQuests(_questsList);
+        questsSetList(_questsList);
     }
 
     function abandonQuest(index: number) {
@@ -158,32 +162,30 @@ export function Quests() {
     }
 
     function claimQuestRewards(index: number) {
-        const questsList = cloneDeep(quests.questsList);
+        const _questsList = cloneDeep(questsList);
         /* Display Rewards */
-        dispatch(
-            rewardsModalInit({
-                rewards: questsList[index].rewards,
-                experience: getQuestExp(questsList[index], level),
-                shards: getQuestShards(questsList[index]),
-            }),
+        rewardsInit(
+            _questsList[index].rewards,
+            getQuestExp(_questsList[index], level),
+            getQuestShards(_questsList[index]),
         );
         /* Remove quest */
-        questsList.splice(index, 1);
+        _questsList.splice(index, 1);
         //sortQuests(questsList);
-        dispatch(questsSetList(questsList));
+        questsSetList(_questsList);
     }
 
     function refreshQuests() {
-        const questsList =
-            quests.questsList.length > 0
-                ? cloneDeep(quests.questsList).filter(quest => quest.isActive)
+        const _questsList =
+            questsList.length > 0
+                ? cloneDeep(questsList).filter(quest => quest.isActive)
                 : [];
         let huntingCount = 0,
             gatheringCount = 0,
             craftingCount = 0;
 
-        if (questsList.length) {
-            questsList.map(quest => {
+        if (_questsList.length) {
+            _questsList.map(quest => {
                 switch (quest.type) {
                     case 'hunting':
                         huntingCount += 1;
@@ -199,18 +201,18 @@ export function Quests() {
         }
 
         for (let i = huntingCount; i < QUESTS_HUNTING_AMOUNT; i++) {
-            questsList.push(generateQuest('hunting', level));
+            _questsList.push(generateQuest('hunting', level));
         }
 
         for (let i = gatheringCount; i < QUESTS_GATHERING_AMOUNT; i++) {
-            questsList.push(generateQuest('gathering', level));
+            _questsList.push(generateQuest('gathering', level));
         }
 
         for (let i = craftingCount; i < QUESTS_CRAFTING_AMOUNT; i++) {
-            questsList.push(generateQuest('crafting', level));
+            _questsList.push(generateQuest('crafting', level));
         }
 
-        dispatch(questsSetList(questsList));
+        questsSetList(_questsList);
     }
 
     function startTimer(remainingTime: number) {
@@ -415,7 +417,7 @@ export function Quests() {
             {/* Quests List */}
             <FlatList
                 style={styles.questsList}
-                data={quests.questsList}
+                data={questsList}
                 renderItem={renderItem}
                 overScrollMode={'never'}
             />

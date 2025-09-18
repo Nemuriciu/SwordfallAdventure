@@ -16,8 +16,8 @@ import {
 } from '../../../components/buttons/customButton.tsx';
 import {strings} from '../../../utils/strings.ts';
 import {Category, isItem} from '../../../types/item.ts';
-import {inventoryStore} from '../../../_zustand/inventoryStore.tsx';
-import {userInfoStore} from '../../../_zustand/userInfoStore.tsx';
+import {inventoryStore} from '../../../store_zustand/inventoryStore.tsx';
+import {userInfoStore} from '../../../store_zustand/userInfoStore.tsx';
 
 interface props {
     visible: boolean;
@@ -118,7 +118,9 @@ export function BreakAllModal({visible, setVisible, rarity}: props) {
                                     source={getImage('icon_shards')}
                                     fadeDuration={0}
                                 />
-                                <Text style={styles.shardsText}>{shards}</Text>
+                                <Text style={styles.shardsText}>
+                                    {shardsAmount}
+                                </Text>
                             </View>
                         </View>
                         <View style={styles.buttonContainer}>

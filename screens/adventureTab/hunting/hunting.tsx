@@ -1,12 +1,9 @@
 import {FlatList, ImageBackground, StyleSheet, Text, View} from 'react-native';
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef} from 'react';
 import {getImage} from '../../../assets/images/_index';
 import {CreatureCard} from './creatureCard.tsx';
-import {useDispatch, useSelector} from 'react-redux';
-import {RootState} from '../../../redux/store.tsx';
 import {Creature} from '../../../types/creature.ts';
 import {getCreature} from '../../../parsers/creatureParser.tsx';
-import {huntingUpdate} from '../../../redux/slices/huntingSlice.tsx';
 import {marshall, unmarshall} from '@aws-sdk/util-dynamodb';
 import {USER_ID} from '../../../App';
 import {dynamoDb} from '../../../database';
@@ -15,17 +12,23 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {IconText} from '../../../components/iconText.tsx';
 import {MinusButton} from '../../../components/buttons/minusButton.tsx';
 import {PlusButton} from '../../../components/buttons/plusButton.tsx';
-import {userInfoStore} from '../../../_zustand/userInfoStore.tsx';
+import {userInfoStore} from '../../../store_zustand/userInfoStore.tsx';
+import {huntingStore} from '../../../store_zustand/huntingStore.tsx';
 
 export const CREATURE_COUNT_MIN = 5;
 export const CREATURE_COUNT_MAX = 7;
 
 export function Hunting() {
     const level = userInfoStore(state => state.level);
+    const depth = huntingStore(state => state.depth);
+    const killCount = huntingStore(state => state.killCount);
+    const creatureList = huntingStore(state => state.creatureList);
+    const creatureLevel = huntingStore(state => state.creatureLevel);
+    const huntingUpdate = huntingStore(state => state.huntingUpdate);
+    const huntingSetCreatureLevel = huntingStore(
+        state => state.huntingSetCreatureLevel,
+    );
 
-    const hunting = useSelector((state: RootState) => state.hunting);
-    const [creatureLevel, setCreatureLevel] = useState(0);
-    const dispatch = useDispatch();
     const didMount = useRef(1);
     const didMount_1 = useRef(1);
 
@@ -42,11 +45,11 @@ export function Hunting() {
             didMount.current -= 1;
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [hunting]);
+    }, [depth, killCount, creatureList]);
     useEffect(() => {
         if (!didMount_1.current) {
-            if (creatureLevel <= 0) {
-                setCreatureLevel(level);
+            if (!creatureLevel) {
+                huntingSetCreatureLevel(level);
                 // noinspection JSIgnoredPromiseFromCall
                 setStorageCreatureLevel(level);
             }
@@ -60,7 +63,7 @@ export function Hunting() {
         try {
             const lvl = await AsyncStorage.getItem('huntingCreatureLevel');
             if (lvl !== null) {
-                setCreatureLevel(parseInt(lvl as string, 10));
+                huntingSetCreatureLevel(parseInt(lvl as string, 10));
             }
         } catch (e) {
             console.error(e);
@@ -86,7 +89,12 @@ export function Hunting() {
                 console.log(err);
             } else {
                 // @ts-ignore
-                dispatch(huntingUpdate(unmarshall(data.Item).hunting));
+                const {hunting} = unmarshall(data.Item);
+                huntingUpdate(
+                    hunting.depth,
+                    hunting.killCount,
+                    hunting.creatureList,
+                );
             }
         });
     }
@@ -95,8 +103,20 @@ export function Hunting() {
         const params = {
             TableName: 'users',
             Key: marshall({id: USER_ID}),
-            UpdateExpression: 'set hunting = :val',
-            ExpressionAttributeValues: marshall({':val': hunting}),
+            UpdateExpression: `
+            set hunting.#depth = :depth,
+                hunting.#killCount = :killCount,
+                hunting.#creatureList = :creatureList`,
+            ExpressionAttributeNames: {
+                '#depth': 'depth',
+                '#killCount': 'killCount',
+                '#creatureList': 'creatureList',
+            },
+            ExpressionAttributeValues: marshall({
+                ':depth': depth,
+                ':killCount': killCount,
+                ':creatureList': creatureList,
+            }),
         };
         dynamoDb.updateItem(params, function (err) {
             if (err) {
@@ -108,43 +128,31 @@ export function Hunting() {
     function decreaseCreatureLevel() {
         // noinspection JSIgnoredPromiseFromCall
         setStorageCreatureLevel(creatureLevel - 1);
-        setCreatureLevel(creatureLevel - 1);
+        huntingSetCreatureLevel(creatureLevel - 1);
     }
 
     function increaseCreatureLevel() {
         // noinspection JSIgnoredPromiseFromCall
         setStorageCreatureLevel(creatureLevel + 1);
-        setCreatureLevel(creatureLevel + 1);
+        huntingSetCreatureLevel(creatureLevel + 1);
     }
 
     function decreaseDepth() {
-        const depth = hunting.depth - 1;
+        const _depth = depth - 1;
         //TODO: Decrease creatures bonus stats
 
-        dispatch(
-            huntingUpdate({
-                depth: depth,
-                creatureList: hunting.creatureList,
-                killCount: 0,
-            }),
-        );
+        huntingUpdate(_depth, 0, creatureList);
     }
 
     function increaseDepth() {
-        const depth = hunting.depth + 1;
-        const creatureList: Creature[] = [];
+        const _depth = depth + 1;
+        const _creatureList: Creature[] = [];
 
         for (let i = 0; i < rand(CREATURE_COUNT_MIN, CREATURE_COUNT_MAX); i++) {
-            creatureList.push(getCreature(creatureLevel, depth));
+            _creatureList.push(getCreature(creatureLevel, _depth));
         }
 
-        dispatch(
-            huntingUpdate({
-                depth: depth,
-                creatureList: creatureList,
-                killCount: 0,
-            }),
-        );
+        huntingUpdate(_depth, 0, _creatureList);
     }
 
     return (
@@ -193,7 +201,7 @@ export function Hunting() {
                     <MinusButton
                         style={styles.depthMinusButton}
                         onPress={decreaseDepth}
-                        disabled={hunting.depth <= 0}
+                        disabled={depth <= 0}
                     />
                     <Text
                         style={styles.labelText}
@@ -210,7 +218,7 @@ export function Hunting() {
                 </ImageBackground>
                 {/* Depth Value */}
                 <IconText
-                    text={hunting.depth.toString()}
+                    text={depth.toString()}
                     image={'frame_round_small_red'}
                     containerStyle={styles.valueIcon}
                     textContainerStyle={styles.valueTextContainer}
@@ -220,7 +228,7 @@ export function Hunting() {
             {/* Creature List */}
             <FlatList
                 style={styles.creatureList}
-                data={hunting.creatureList}
+                data={creatureList}
                 keyExtractor={(_item, index) => index.toString()}
                 renderItem={({item, index}) => (
                     <CreatureCard creature={item} index={index} />

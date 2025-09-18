@@ -8,9 +8,6 @@ import {
 } from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import {getImage} from '../../../assets/images/_index';
-import {useDispatch, useSelector} from 'react-redux';
-import {RootState} from '../../../redux/store.tsx';
-import {questsSet} from '../../../redux/slices/questsSlice.tsx';
 import {
     ButtonType,
     CustomButton,
@@ -19,11 +16,10 @@ import {marshall, unmarshall} from '@aws-sdk/util-dynamodb';
 import {USER_ID} from '../../../App';
 import {dynamoDb} from '../../../database';
 import {TitleSeparator} from '../../../components/titleSeparator.tsx';
+import {questsStore} from '../../../store_zustand/questsStore.tsx';
 
 // TODO: Generate shop items + DB + Refresh Timer
 export function Shop() {
-    const userInfo = useSelector((state: RootState) => state.userInfo);
-    const dispatch = useDispatch();
     const [refreshFetched, setRefreshFetched] = useState(false);
     const [refreshTimer, setRefreshTimer] = useState(1);
     const [disabled, setDisabled] = useState(false);
@@ -33,13 +29,13 @@ export function Shop() {
     let timer: string | number | NodeJS.Timeout | undefined;
 
     useEffect(() => {
-        //fetchMissionsDB();
+        //fetchShopDB();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
         if (!didMount.current) {
-            //updateMissionsDB();
+            //updateShopDB();
         } else {
             didMount.current -= 1;
         }
@@ -90,14 +86,14 @@ export function Shop() {
         const params = {
             TableName: 'users',
             Key: marshall({id: USER_ID}),
-            ProjectionExpression: 'quests',
+            ProjectionExpression: 'shop',
         };
         dynamoDb.getItem(params, function (err, data) {
             if (err) {
                 console.log(err);
             } else {
                 // @ts-ignore
-                dispatch(questsSet(unmarshall(data.Item).shopList));
+                // TODO:
             }
         });
     }
@@ -118,21 +114,7 @@ export function Shop() {
         });*/
     }
 
-    function refreshShop() {
-        /*const questsList =
-            quests.questsList.length > 0
-                ? cloneDeep(quests.questsList).filter(
-                      quest => quest.isActive,
-                  )
-                : [];
-
-        const activeCount = questsList.length;
-        for (let i = 0; i < QUESTS_AMOUNT - activeCount; i++) {
-            questsList.push(generateQuest(userInfo.level));
-        }
-
-        dispatch(questsSetList(questsList));*/
-    }
+    function refreshShop() {}
 
     function startTimer(remainingTime: number) {
         setRefreshTimer(remainingTime);

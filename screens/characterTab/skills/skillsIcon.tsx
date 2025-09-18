@@ -11,9 +11,8 @@ import {
 import {getImage} from '../../../assets/images/_index';
 import {Skill} from '../../../types/skill.ts';
 import {getSkillImg, getSkillMaxPoints} from '../../../parsers/skillParser.tsx';
-import {useDispatch} from 'react-redux';
-import {skillsDetailsShow} from '../../../redux/slices/skillsDetailsSlice.tsx';
 import {colors} from '../../../utils/colors.ts';
+import {skillDetailsStore} from '../../../store_zustand/skillDetailsStore.tsx';
 
 interface props {
     style?: ViewStyle;
@@ -21,18 +20,20 @@ interface props {
 }
 
 export function SkillsIcon({style, skill}: props) {
+    const skillsDetailsShow = skillDetailsStore(
+        state => state.skillsDetailsShow,
+    );
     const [disabled, setDisabled] = useState(false);
-    const dispatch = useDispatch();
 
     const handlePress = () => {
         if (!disabled) {
             setDisabled(true);
             if (skill) {
-                dispatch(skillsDetailsShow(skill));
+                skillsDetailsShow(skill);
             }
             setTimeout(() => {
                 setDisabled(false);
-            }, 300);
+            }, 250);
         }
     };
 

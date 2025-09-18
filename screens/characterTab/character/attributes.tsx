@@ -1,28 +1,42 @@
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import {getImage} from '../../../assets/images/_index';
-import {useDispatch, useSelector} from 'react-redux';
-import {RootState} from '../../../redux/store.tsx';
 import {isItem} from '../../../types/item.ts';
 import {
     getResistancePercent,
     getStats,
 } from '../../../parsers/attributeParser.tsx';
-import {updateAttributes} from '../../../redux/slices/attributesSlice.tsx';
 import {colors} from '../../../utils/colors.ts';
 import {strings} from '../../../utils/strings.ts';
 import cloneDeep from 'lodash.clonedeep';
 import {startingStats} from '../../../types/stats.ts';
-import {userInfoStore} from '../../../_zustand/userInfoStore.tsx';
+import {userInfoStore} from '../../../store_zustand/userInfoStore.tsx';
+import {equipmentStore} from '../../../store_zustand/equipmentStore.tsx';
+import {attributesStore} from '../../../store_zustand/attributesStore.tsx';
 
 export function Attributes() {
     const level = userInfoStore(state => state.level);
 
-    const equipment = useSelector((state: RootState) => state.equipment);
-    const attributes = useSelector((state: RootState) => state.attributes);
+    const helmet = equipmentStore(state => state.helmet);
+    const weapon = equipmentStore(state => state.weapon);
+    const chest = equipmentStore(state => state.chest);
+    const offhand = equipmentStore(state => state.offhand);
+    const gloves = equipmentStore(state => state.gloves);
+    const pants = equipmentStore(state => state.pants);
+    const boots = equipmentStore(state => state.boots);
+
+    const health = attributesStore(state => state.health);
+    const physicalAtk = attributesStore(state => state.physicalAtk);
+    const magicalAtk = attributesStore(state => state.magicalAtk);
+    const physicalRes = attributesStore(state => state.physicalRes);
+    const magicalRes = attributesStore(state => state.magicalRes);
+    const critical = attributesStore(state => state.critical);
+    const dodge = attributesStore(state => state.dodge);
+
+    const updateAttributes = attributesStore(state => state.updateAttributes);
+
     const [phyResPercent, setPhyResPercent] = useState(true);
     const [magResPercent, setMagResPercent] = useState(true);
-    const dispatch = useDispatch();
     const didMount = useRef(1);
 
     useEffect(() => {
@@ -32,15 +46,21 @@ export function Attributes() {
             didMount.current -= 1;
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [equipment]);
+    }, [helmet, weapon, chest, offhand, gloves, pants, boots]);
 
     function attributesUpdate() {
         let playerAttributes = cloneDeep(startingStats);
 
         /* List with all Equipped Items */
-        const items = Object.entries(equipment)
-            .filter(([, value]) => isItem(value))
-            .map(item => item[1]);
+        const items = [
+            helmet,
+            weapon,
+            offhand,
+            chest,
+            pants,
+            gloves,
+            boots,
+        ].filter(isItem);
 
         /* Add Stats for each item to attributes */
         for (let i = 0; i < items.length; i++) {
@@ -60,7 +80,7 @@ export function Attributes() {
             playerAttributes.dodge += itemStats.dodge + itemStats.bonusDodge;
         }
 
-        dispatch(updateAttributes(playerAttributes));
+        updateAttributes(playerAttributes);
     }
 
     return (
@@ -71,7 +91,7 @@ export function Attributes() {
                     {strings.health}
                 </Text>
                 <Text style={styles.healthValue} numberOfLines={1}>
-                    {attributes.health ? attributes.health : ''}
+                    {health ? health : ''}
                 </Text>
                 <View style={styles.icon} />
                 <Text style={styles.healthLabel} />
@@ -86,7 +106,7 @@ export function Attributes() {
                     {strings.physical_atk}
                 </Text>
                 <Text style={styles.phyAtkValue} numberOfLines={1}>
-                    {attributes.physicalAtk ? attributes.physicalAtk : ''}
+                    {physicalAtk ? physicalAtk : ''}
                 </Text>
                 <Image
                     style={styles.icon}
@@ -105,13 +125,13 @@ export function Attributes() {
                     onPress={() => setPhyResPercent(!phyResPercent)}
                     activeOpacity={1}>
                     <Text style={styles.phyResValue} numberOfLines={1}>
-                        {attributes.physicalRes
+                        {physicalRes
                             ? phyResPercent
                                 ? getResistancePercent(
-                                      attributes.physicalRes,
+                                      physicalRes,
                                       level,
                                   ).toFixed(1) + '%'
-                                : attributes.physicalRes
+                                : physicalRes
                             : ''}
                     </Text>
                 </TouchableOpacity>
@@ -125,7 +145,7 @@ export function Attributes() {
                     {strings.magical_atk}
                 </Text>
                 <Text style={styles.magAtkValue} numberOfLines={1}>
-                    {attributes.magicalAtk ? attributes.magicalAtk : ''}
+                    {magicalAtk ? magicalAtk : ''}
                 </Text>
                 <Image
                     style={styles.icon}
@@ -144,13 +164,13 @@ export function Attributes() {
                     onPress={() => setMagResPercent(!magResPercent)}
                     activeOpacity={1}>
                     <Text style={styles.magResValue} numberOfLines={1}>
-                        {attributes.magicalRes
+                        {magicalRes
                             ? magResPercent
                                 ? getResistancePercent(
-                                      attributes.magicalRes,
+                                      magicalRes,
                                       level,
                                   ).toFixed(1) + '%'
-                                : attributes.magicalRes
+                                : magicalRes
                             : ''}
                     </Text>
                 </TouchableOpacity>
@@ -161,18 +181,14 @@ export function Attributes() {
                     {strings.critical}
                 </Text>
                 <Text style={styles.criticalValue} numberOfLines={1}>
-                    {attributes.critical
-                        ? (attributes.critical * 100).toFixed(1) + '%'
-                        : ''}
+                    {critical ? (critical * 100).toFixed(1) + '%' : ''}
                 </Text>
                 <Image style={styles.icon} source={getImage('icon_dodge')} />
                 <Text style={styles.dodgeLabel} numberOfLines={1}>
                     {strings.dodge}
                 </Text>
                 <Text style={styles.dodgeValue} numberOfLines={1}>
-                    {attributes.dodge
-                        ? (attributes.dodge * 100).toFixed(1) + '%'
-                        : ''}
+                    {dodge ? (dodge * 100).toFixed(1) + '%' : ''}
                 </Text>
             </View>
         </View>
