@@ -366,7 +366,7 @@ export function Shop() {
             </View>
             {/* DEBUG */}
             <CustomButton
-                type={ButtonType.Orange}
+                type={ButtonType.Red}
                 title={'Refresh'}
                 onPress={() => {}}
                 style={styles.refreshButton}

@@ -4,6 +4,7 @@ import {
     ImageBackground,
     StatusBar,
     StyleSheet,
+    Text,
     View,
 } from 'react-native';
 import React, {useEffect} from 'react';
@@ -21,6 +22,9 @@ import experienceJson from '../assets/json/experience.json';
 import {colors} from '../utils/colors.ts';
 import {ItemDetails} from '../components/itemDetails.tsx';
 import {userInfoStore} from '../store_zustand/userInfoStore.tsx';
+import {addEventListener, fetch} from '@react-native-community/netinfo';
+import {strings} from '../utils/strings.ts';
+import {ButtonType, CustomButton} from '../components/buttons/customButton.tsx';
 
 const Tab = createBottomTabNavigator();
 const setLevelUpVisibility = userInfoStore(state => state.setLevelUpVisibility);
@@ -28,6 +32,27 @@ const setLevelUpVisibility = userInfoStore(state => state.setLevelUpVisibility);
 export function MainComponent() {
     const level = userInfoStore(state => state.level);
     const exp = userInfoStore(state => state.exp);
+    const networkConnection = userInfoStore(state => state.networkConnection);
+    const setNetworkConnection = userInfoStore(
+        state => state.setNetworkConnection,
+    );
+    /* Verify network connection */
+    addEventListener(state => {
+        if (state.isConnected !== networkConnection) {
+            if (state.isConnected !== null) {
+                setNetworkConnection(state.isConnected);
+            }
+        }
+    });
+    async function retryConnection() {
+        fetch().then(state => {
+            if (state.isConnected !== networkConnection) {
+                if (state.isConnected !== null) {
+                    setNetworkConnection(state.isConnected);
+                }
+            }
+        });
+    }
 
     useEffect(() => {
         const maxExp = experienceJson.userMaxExp[level - 1];
@@ -39,115 +64,146 @@ export function MainComponent() {
 
     return (
         <View style={styles.container}>
-            <ItemDetails />
-            <RewardsModal />
-            <Combat />
-
-            <StatusBar />
-            <TopStatus />
-            <NavigationContainer>
-                <Tab.Navigator
-                    screenOptions={{
-                        lazy: false,
-                        headerShown: false,
-                        tabBarActiveTintColor: colors.primary,
-                        tabBarStyle: {
-                            height: 82,
-                            borderTopWidth: 0,
-                            elevation: 0,
-                            paddingTop: 4,
-                            paddingBottom: 4,
-                        },
-                        tabBarLabelStyle: {
-                            fontSize: 13,
-                            fontFamily: 'Myriad',
-                            textShadowColor: 'rgba(0, 0, 0, 1)',
-                            textShadowOffset: {width: 1, height: 1},
-                            textShadowRadius: 5,
-                            marginBottom: 8,
-                        },
-                        tabBarBackground: () => (
-                            <ImageBackground
-                                style={styles.tabBarBackground}
-                                source={getImage('background_landscape')}
-                                resizeMode={'stretch'}
-                                fadeDuration={0}
-                            />
-                        ),
-                    }}>
-                    <Tab.Screen
-                        name="Character"
-                        component={CharacterTab}
-                        options={{
-                            lazy: false,
-                            tabBarIcon: () => {
-                                return (
-                                    <Image
-                                        style={styles.icon}
-                                        source={getImage('nav_icon_character')}
-                                        resizeMode={'stretch'}
-                                        fadeDuration={0}
-                                    />
-                                );
-                            },
+            {/* No Network Page */}
+            {!networkConnection && (
+                <View style={styles.connectionContainer}>
+                    <Image
+                        style={styles.connectionIcon}
+                        source={getImage('no_network_icon')}
+                        resizeMode={'stretch'}
+                        fadeDuration={0}
+                    />
+                    <Text style={styles.connectionText}>
+                        {strings.no_internet}
+                    </Text>
+                    <CustomButton
+                        style={styles.retryButton}
+                        type={ButtonType.Red}
+                        title={strings.retry}
+                        onPress={() => {
+                            // noinspection JSIgnoredPromiseFromCall
+                            retryConnection();
                         }}
                     />
-                    <Tab.Screen
-                        name="Adventure"
-                        component={AdventureTab}
-                        options={{
+                </View>
+            )}
+            {networkConnection && <ItemDetails />}
+            {networkConnection && <RewardsModal />}
+            {networkConnection && <Combat />}
+            {networkConnection && <StatusBar />}
+            {networkConnection && <TopStatus />}
+            {networkConnection && (
+                <NavigationContainer>
+                    <Tab.Navigator
+                        screenOptions={{
                             lazy: false,
-                            tabBarIcon: () => {
-                                return (
-                                    <Image
-                                        style={styles.icon}
-                                        source={getImage('nav_icon_adventure')}
-                                        resizeMode={'stretch'}
-                                        fadeDuration={0}
-                                    />
-                                );
+                            headerShown: false,
+                            tabBarActiveTintColor: colors.primary,
+                            tabBarStyle: {
+                                height: 82,
+                                borderTopWidth: 0,
+                                elevation: 0,
+                                paddingTop: 4,
+                                paddingBottom: 4,
                             },
-                        }}
-                    />
-                    <Tab.Screen
-                        name="Town"
-                        component={TownTab}
-                        options={{
-                            lazy: false,
-                            tabBarIcon: () => {
-                                return (
-                                    <Image
-                                        style={styles.icon}
-                                        source={getImage('nav_icon_town')}
-                                        resizeMode={'stretch'}
-                                        fadeDuration={0}
-                                    />
-                                );
+                            tabBarLabelStyle: {
+                                fontSize: 13,
+                                fontFamily: 'Myriad',
+                                textShadowColor: 'rgba(0, 0, 0, 1)',
+                                textShadowOffset: {width: 1, height: 1},
+                                textShadowRadius: 5,
+                                marginBottom: 8,
                             },
-                        }}
-                    />
-                    <Tab.Screen
-                        name="Settings"
-                        component={SettingsTab}
-                        options={{
-                            lazy: false,
-                            tabBarIcon: () => {
-                                return (
-                                    <Image
-                                        style={styles.icon}
-                                        source={getImage('nav_icon_settings')}
-                                        resizeMode={'stretch'}
-                                        fadeDuration={0}
-                                    />
-                                );
-                            },
-                        }}
-                    />
-                </Tab.Navigator>
-            </NavigationContainer>
+                            tabBarBackground: () => (
+                                <ImageBackground
+                                    style={styles.tabBarBackground}
+                                    source={getImage('background_landscape')}
+                                    resizeMode={'stretch'}
+                                    fadeDuration={0}
+                                />
+                            ),
+                        }}>
+                        <Tab.Screen
+                            name="Character"
+                            component={CharacterTab}
+                            options={{
+                                lazy: false,
+                                tabBarIcon: () => {
+                                    return (
+                                        <Image
+                                            style={styles.icon}
+                                            source={getImage(
+                                                'nav_icon_character',
+                                            )}
+                                            resizeMode={'stretch'}
+                                            fadeDuration={0}
+                                        />
+                                    );
+                                },
+                            }}
+                        />
+                        <Tab.Screen
+                            name="Adventure"
+                            component={AdventureTab}
+                            options={{
+                                lazy: false,
+                                tabBarIcon: () => {
+                                    return (
+                                        <Image
+                                            style={styles.icon}
+                                            source={getImage(
+                                                'nav_icon_adventure',
+                                            )}
+                                            resizeMode={'stretch'}
+                                            fadeDuration={0}
+                                        />
+                                    );
+                                },
+                            }}
+                        />
+                        <Tab.Screen
+                            name="Town"
+                            component={TownTab}
+                            options={{
+                                lazy: false,
+                                tabBarIcon: () => {
+                                    return (
+                                        <Image
+                                            style={styles.icon}
+                                            source={getImage('nav_icon_town')}
+                                            resizeMode={'stretch'}
+                                            fadeDuration={0}
+                                        />
+                                    );
+                                },
+                            }}
+                        />
+                        <Tab.Screen
+                            name="Settings"
+                            component={SettingsTab}
+                            options={{
+                                lazy: false,
+                                tabBarIcon: () => {
+                                    return (
+                                        <Image
+                                            style={styles.icon}
+                                            source={getImage(
+                                                'nav_icon_settings',
+                                            )}
+                                            resizeMode={'stretch'}
+                                            fadeDuration={0}
+                                        />
+                                    );
+                                },
+                            }}
+                        />
+                    </Tab.Navigator>
+                </NavigationContainer>
+            )}
         </View>
     );
 }
+
 export const triggerLevelUp = (exp: number) => {
     setLevelUpVisibility(true);
     console.log(exp);
@@ -161,7 +217,33 @@ export const triggerLevelUp = (exp: number) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#000000',
+        backgroundColor: '#817b6a',
+    },
+    connectionContainer: {
+        flex: 1,
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    connectionIcon: {
+        aspectRatio: 1,
+        width: '50%',
+        height: undefined,
+    },
+    connectionText: {
+        marginTop: 8,
+        color: colors.primary,
+        fontFamily: 'Myriad_Regular',
+        fontSize: 20,
+        textShadowColor: 'rgba(0, 0, 0, 1)',
+        textShadowOffset: {width: 1, height: 1},
+        textShadowRadius: 5,
+    },
+    retryButton: {
+        marginTop: 16,
+        marginBottom: 16,
+        aspectRatio: 3,
+        width: '30%',
     },
     navContainer: {},
     baseText: {

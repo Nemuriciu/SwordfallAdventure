@@ -74,6 +74,20 @@ export function getItemColor(rarity: string): string {
             return 'white';
     }
 }
+export function getItemDetailsBackgroundImg(item: Item): string {
+    switch (getItemRarity(item.id)) {
+        case 'common':
+            return 'item_background_common';
+        case 'uncommon':
+            return 'item_background_uncommon';
+        case 'rare':
+            return 'item_background_rare';
+        case 'epic':
+            return 'item_background_epic';
+        default:
+            return 'item_background_default';
+    }
+}
 
 export const getRandomEquip = (rarity: string, level: number): Item => {
     const allRarityItems = [];

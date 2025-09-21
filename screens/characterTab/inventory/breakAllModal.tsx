@@ -103,7 +103,7 @@ export function BreakAllModal({visible, setVisible, rarity}: props) {
             <View style={styles.container}>
                 <ImageBackground
                     style={styles.background}
-                    source={getImage('background_details')}
+                    source={getImage('item_background_default')}
                     resizeMode={'stretch'}
                     fadeDuration={0}>
                     <View style={styles.innerContainer}>
@@ -125,14 +125,14 @@ export function BreakAllModal({visible, setVisible, rarity}: props) {
                         </View>
                         <View style={styles.buttonContainer}>
                             <CustomButton
-                                type={ButtonType.Orange}
+                                type={ButtonType.Red}
                                 style={styles.actionButton}
                                 title={strings.yes}
                                 onPress={() => removeAllEquipment()}
                                 disabled={disabled}
                             />
                             <CustomButton
-                                type={ButtonType.Orange}
+                                type={ButtonType.Red}
                                 style={styles.actionButton}
                                 title={strings.no}
                                 onPress={() => setVisible(false)}

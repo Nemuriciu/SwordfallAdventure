@@ -202,7 +202,7 @@ export function Inventory() {
                     {usedSlots + '/' + inventoryList.length}
                 </Text>
                 <CustomButton
-                    type={ButtonType.Orange}
+                    type={ButtonType.Red}
                     title={'Sort'}
                     onPress={sortInventory}
                     style={styles.sortButton}
@@ -260,14 +260,14 @@ export function Inventory() {
                 }}>
                 {/* ADD ITEM */}
                 <CustomButton
-                    type={ButtonType.Orange}
+                    type={ButtonType.Red}
                     title={'Add Item'}
                     onPress={addItemOnPress}
                     style={styles.button}
                 />
                 {/* CLEAR INVENTORY */}
                 <CustomButton
-                    type={ButtonType.Orange}
+                    type={ButtonType.Red}
                     title={'CLEAR'}
                     onPress={clearInventoryList}
                     style={styles.clearButton}

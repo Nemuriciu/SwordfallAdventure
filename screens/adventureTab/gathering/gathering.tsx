@@ -210,14 +210,14 @@ export function Gathering() {
             {/* Gathering Buttons */}
             <View style={styles.buttonsContainer}>
                 <CustomButton
-                    type={ButtonType.Orange}
+                    type={ButtonType.Red}
                     style={styles.buttonStyle}
                     title={'Explore'}
                     onPress={refreshNodes}
                     disabled={isGathering}
                 />
                 <CustomButton
-                    type={ButtonType.Orange}
+                    type={ButtonType.Red}
                     style={styles.buttonStyle}
                     title={'Finish'}
                     onPress={finish}

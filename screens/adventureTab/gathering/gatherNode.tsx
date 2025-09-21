@@ -208,7 +208,7 @@ export function GatherNode({node, index}: props) {
 
                 {!isGathering && (
                     <CustomButton
-                        type={ButtonType.Orange}
+                        type={ButtonType.Red}
                         title={'Gather'}
                         onPress={startGathering}
                         disabled={disabled}

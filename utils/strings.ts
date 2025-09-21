@@ -73,4 +73,6 @@ export const strings = {
     exploring_level: 'Exploring Level',
     item_received: 'Item received',
     learnt: 'Learnt',
+    no_internet: 'No Internet Connection.',
+    retry: 'Retry',
 };

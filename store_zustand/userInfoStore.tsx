@@ -11,6 +11,7 @@ export interface UserInfoState {
     diamonds: number;
     staminaTimestamp: string;
     levelUpVisibility: boolean;
+    networkConnection: boolean;
     setUserInfo: (
         username: string,
         level: number,
@@ -33,6 +34,7 @@ export interface UserInfoState {
     updateDiamonds: (diamonds: number) => void;
     increaseLevel: (expTrunc: number) => void;
     setLevelUpVisibility: (visibility: boolean) => void;
+    setNetworkConnection: (networkConnection: boolean) => void;
 }
 
 export const userInfoStore = create<UserInfoState>()(set => ({
@@ -46,6 +48,7 @@ export const userInfoStore = create<UserInfoState>()(set => ({
     diamonds: 0,
     staminaTimestamp: '',
     levelUpVisibility: false,
+    networkConnection: false,
     setUserInfo: (
         username: string,
         level: number,
@@ -92,5 +95,9 @@ export const userInfoStore = create<UserInfoState>()(set => ({
     setLevelUpVisibility: (visibility: boolean) =>
         set(() => ({
             levelUpVisibility: visibility,
+        })),
+    setNetworkConnection: (networkConnection: boolean) =>
+        set(() => ({
+            networkConnection: networkConnection,
         })),
 }));

@@ -12,7 +12,6 @@ interface props {
 }
 
 export enum ButtonType {
-    Orange = 'orange',
     Green = 'green',
     Red = 'red',
 }
@@ -21,18 +20,14 @@ export function CustomButton({type, title, onPress, disabled, style}: props) {
     const [isPressed, setIsPressed] = useState(false);
     //const [disabled, setDisabled] = useState(false);
     const defaultImage =
-        type === ButtonType.Orange
-            ? getImage('button_orange')
-            : type === ButtonType.Green
+        type === ButtonType.Green
             ? getImage('button_green')
             : getImage('button_red');
     const pressedImage =
-        type === ButtonType.Orange
-            ? getImage('button_orange_pressed')
-            : type === ButtonType.Green
-            ? getImage('button_green')
-            : getImage('button_red');
-    const disabledImage = getImage('button_orange_disabled');
+        type === ButtonType.Green
+            ? getImage('button_green_pressed')
+            : getImage('button_red_pressed');
+    const disabledImage = getImage('button_disabled');
 
     const handlePress = () => {
         if (!disabled) {

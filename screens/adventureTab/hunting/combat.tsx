@@ -1304,7 +1304,7 @@ export function Combat() {
                                 {/* Leave Combat */}
                                 {combatComplete && (
                                     <CustomButton
-                                        type={ButtonType.Orange}
+                                        type={ButtonType.Red}
                                         style={styles.leaveButton}
                                         title={'Leave Combat'}
                                         onPress={() => leaveCombat()}

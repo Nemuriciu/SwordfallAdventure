@@ -86,7 +86,7 @@ export function DiscardModal({visible, setVisible, item, index}: props) {
             <View style={styles.container}>
                 <ImageBackground
                     style={styles.background}
-                    source={getImage('background_details')}
+                    source={getImage('item_background_default')}
                     resizeMode={'stretch'}
                     fadeDuration={0}>
                     <View style={styles.innerContainer}>
@@ -128,14 +128,14 @@ export function DiscardModal({visible, setVisible, item, index}: props) {
                         )}
                         <View style={styles.buttonContainer}>
                             <CustomButton
-                                type={ButtonType.Orange}
+                                type={ButtonType.Red}
                                 style={styles.actionButton}
                                 title={strings.yes}
                                 onPress={removeItem}
                                 disabled={disabled}
                             />
                             <CustomButton
-                                type={ButtonType.Orange}
+                                type={ButtonType.Red}
                                 style={styles.actionButton}
                                 title={strings.no}
                                 onPress={() => setVisible(false)}

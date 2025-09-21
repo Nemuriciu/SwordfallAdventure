@@ -99,7 +99,7 @@ export function RewardsModal() {
                 <View style={styles.container}>
                     <ImageBackground
                         style={styles.background}
-                        source={getImage('background_details')}
+                        source={getImage('item_background_default')}
                         resizeMode={'stretch'}
                         fadeDuration={0}>
                         <View style={styles.innerContainer}>

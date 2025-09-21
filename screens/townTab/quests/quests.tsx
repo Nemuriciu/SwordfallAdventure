@@ -376,7 +376,7 @@ export function Quests() {
                             type={
                                 isQuestComplete(item)
                                     ? ButtonType.Green
-                                    : ButtonType.Orange
+                                    : ButtonType.Red
                             }
                             title={
                                 isQuestComplete(item)
@@ -423,7 +423,7 @@ export function Quests() {
             />
             {/* DEBUG */}
             <CustomButton
-                type={ButtonType.Orange}
+                type={ButtonType.Red}
                 title={'Refresh'}
                 onPress={refreshQuests}
                 style={styles.refreshButton}

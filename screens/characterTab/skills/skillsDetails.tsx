@@ -263,7 +263,7 @@ export function SkillsDetails() {
                     {skill && (
                         <ImageBackground
                             style={styles.background}
-                            source={getImage('background_details')}
+                            source={getImage('item_background_default')}
                             resizeMode={'stretch'}
                             fadeDuration={0}>
                             <View>
@@ -370,7 +370,7 @@ export function SkillsDetails() {
                                 <View style={styles.buttonsContainer}>
                                     {/* Apply Button */}
                                     <CustomButton
-                                        type={ButtonType.Orange}
+                                        type={ButtonType.Red}
                                         title={strings.apply}
                                         onPress={applyPoints}
                                         style={styles.actionButton}

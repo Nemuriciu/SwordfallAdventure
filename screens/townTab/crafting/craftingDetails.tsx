@@ -205,7 +205,7 @@ export function CraftingDetails() {
                     <View style={styles.container}>
                         <ImageBackground
                             style={styles.background}
-                            source={getImage('background_details')}
+                            source={getImage('item_background_default')}
                             resizeMode={'stretch'}
                             fadeDuration={0}>
                             <View>
@@ -311,7 +311,7 @@ export function CraftingDetails() {
                                 <View style={styles.buttonsContainer}>
                                     {/* Craft Button */}
                                     <CustomButton
-                                        type={ButtonType.Orange}
+                                        type={ButtonType.Red}
                                         title={strings.craft}
                                         onPress={craftItem}
                                         style={styles.actionButton}

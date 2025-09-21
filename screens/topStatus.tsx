@@ -486,7 +486,7 @@ const styles = StyleSheet.create({
         textAlign: 'left',
         fontSize: 16,
         color: colors.experience_color,
-        fontFamily: 'Myriad_Regular',
+        fontFamily: 'Myriad',
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,

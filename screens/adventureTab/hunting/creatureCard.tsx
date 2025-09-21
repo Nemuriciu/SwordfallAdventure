@@ -18,6 +18,7 @@ import {userInfoStore} from '../../../store_zustand/userInfoStore.tsx';
 import {combatStore} from '../../../store_zustand/combatStore.tsx';
 import {attributesStore} from '../../../store_zustand/attributesStore.tsx';
 import {Stats} from '../../../types/stats.ts';
+import {values} from '../../../utils/values.ts';
 
 interface props {
     creature: Creature;
@@ -187,7 +188,7 @@ export function CreatureCard({creature, index}: props) {
                     </View>
                     <View style={styles.buttonContainer}>
                         <CustomButton
-                            type={ButtonType.Orange}
+                            type={ButtonType.Red}
                             title={'Attack'}
                             onPress={attackCreature}
                             disabled={disabled}
@@ -333,7 +334,7 @@ const styles = StyleSheet.create({
         textShadowRadius: 5,
     },
     buttonContainer: {
-        aspectRatio: 3,
+        aspectRatio: values.button_aspect_ratio,
         width: '35%',
     },
     attackButton: {},

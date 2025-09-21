@@ -6,6 +6,7 @@ import {
     canConvert,
     getItemCategory,
     getItemColor,
+    getItemDetailsBackgroundImg,
     getItemImg,
     getItemName,
     getItemRarity,
@@ -35,6 +36,7 @@ import {inventoryStore} from '../store_zustand/inventoryStore.tsx';
 import {rewardsStore} from '../store_zustand/rewardsStore.tsx';
 import {userInfoStore} from '../store_zustand/userInfoStore.tsx';
 import {equipmentStore} from '../store_zustand/equipmentStore.tsx';
+import {values} from '../utils/values.ts';
 
 export function ItemDetails() {
     const rewardsInit = rewardsStore(state => state.rewardsInit);
@@ -331,7 +333,10 @@ export function ItemDetails() {
             animationOutTiming={200}
             isVisible={modalVisible}
             backdropTransitionOutTiming={0}
-            useNativeDriver={true}>
+            useNativeDriver={true}
+            onBackdropPress={() => {
+                itemDetailsHide();
+            }}>
             {isItem(item) && (
                 <DiscardModal
                     visible={discardVisible}
@@ -355,7 +360,9 @@ export function ItemDetails() {
                     {isItem(equippedItem) ? (
                         <ImageBackground
                             style={styles.background}
-                            source={getImage('background_details')}
+                            source={getImage(
+                                getItemDetailsBackgroundImg(equippedItem),
+                            )}
                             resizeMode={'stretch'}
                             fadeDuration={0}>
                             <View>
@@ -533,7 +540,7 @@ export function ItemDetails() {
                     {isItem(item) && (
                         <ImageBackground
                             style={styles.background}
-                            source={getImage('background_details')}
+                            source={getImage(getItemDetailsBackgroundImg(item))}
                             resizeMode={'stretch'}
                             fadeDuration={0}>
                             <View>
@@ -711,7 +718,7 @@ export function ItemDetails() {
                                         'equipment' && (
                                         <View style={styles.actionButton}>
                                             <CustomButton
-                                                type={ButtonType.Orange}
+                                                type={ButtonType.Red}
                                                 title={strings.upgrade}
                                                 onPress={upgradeItem}
                                                 disabled={
@@ -749,7 +756,7 @@ export function ItemDetails() {
                                     {getItemCategory(item.id) !== 'resource' &&
                                         getItemCategory(item.id) !== 'key' && (
                                             <CustomButton
-                                                type={ButtonType.Orange}
+                                                type={ButtonType.Red}
                                                 title={
                                                     getItemCategory(item.id) ===
                                                     'chest'
@@ -811,7 +818,7 @@ export function ItemDetails() {
                                     {isItem(item) &&
                                         canConvert(item, level) && (
                                             <CustomButton
-                                                type={ButtonType.Orange}
+                                                type={ButtonType.Red}
                                                 title={strings.convert}
                                                 onPress={convertItem}
                                                 disabled={disabled}
@@ -821,7 +828,7 @@ export function ItemDetails() {
                                     {/* Break/Discard Button */}
                                     {isItem(item) && index !== -1 && (
                                         <CustomButton
-                                            type={ButtonType.Orange}
+                                            type={ButtonType.Red}
                                             title={
                                                 getItemCategory(item.id) ===
                                                 'equipment'
@@ -834,13 +841,12 @@ export function ItemDetails() {
                                         />
                                     )}
                                 </View>
-                                <CloseButton
+                                {/*<CloseButton
                                     onPress={() => {
-                                        // dispatch(itemDetailsHide());
                                         itemDetailsHide();
                                     }}
                                     style={styles.closeButton}
-                                />
+                                />*/}
                             </View>
                         </ImageBackground>
                     )}
@@ -881,7 +887,7 @@ const styles = StyleSheet.create({
         marginEnd: 32,
     },
     imageContainer: {
-        width: '22%',
+        width: '20%',
         aspectRatio: 1,
         marginEnd: 12,
     },
@@ -902,14 +908,14 @@ const styles = StyleSheet.create({
     },
     itemInfoContainer: {},
     name: {
-        fontSize: 18,
+        fontSize: 17,
         fontFamily: 'Myriad',
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
     },
     type: {
-        marginTop: 2,
+        marginTop: 1,
         textTransform: 'capitalize',
         fontFamily: 'Myriad_Regular',
         textShadowColor: 'rgba(0, 0, 0, 1)',
@@ -917,7 +923,7 @@ const styles = StyleSheet.create({
         textShadowRadius: 5,
     },
     level: {
-        marginTop: 2,
+        marginTop: 1,
         color: 'white',
         fontFamily: 'Myriad_Regular',
         textShadowColor: 'rgba(0, 0, 0, 1)',
@@ -926,18 +932,12 @@ const styles = StyleSheet.create({
     },
     separatorContainer: {
         marginTop: 8,
-        marginBottom: 8,
+        marginBottom: 6,
         marginStart: 24,
         marginEnd: 24,
     },
     separatorImage: {
         width: '100%',
-    },
-    buttonsContainer: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        marginTop: 4,
-        marginBottom: 20,
     },
     attributesContainer: {
         marginStart: 52,
@@ -951,12 +951,19 @@ const styles = StyleSheet.create({
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
     },
+    buttonsContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-evenly',
+        // marginTop: 4,
+        // marginBottom: 20,
+        marginTop: 8,
+        marginStart: 24,
+        marginEnd: 24,
+        marginBottom: 24,
+    },
     actionButton: {
-        marginStart: 6,
-        marginEnd: 6,
-        aspectRatio: 2.5,
-        width: '25%',
-        marginBottom: 36,
+        aspectRatio: values.button_aspect_ratio,
+        width: '30%',
     },
     upgradeCostContainer: {
         flexDirection: 'row',
