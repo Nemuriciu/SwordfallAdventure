@@ -21,8 +21,7 @@ import {
     CustomButton,
 } from '../../../components/buttons/customButton.tsx';
 import {marshall, unmarshall} from '@aws-sdk/util-dynamodb';
-import {USER_ID} from '../../../App';
-import {dynamoDb} from '../../../database';
+import {dynamoDb, USER_ID} from '../../../database';
 import {Category, isItem, Item} from '../../../types/item';
 import {strings} from '../../../utils/strings.ts';
 import {BreakAllModal} from './breakAllModal.tsx';

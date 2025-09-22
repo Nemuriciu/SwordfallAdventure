@@ -13,6 +13,9 @@ import {
 import cloneDeep from 'lodash.clonedeep';
 import {Item} from '../types/item.ts';
 
+export const CREATURE_COUNT_MIN = 5;
+export const CREATURE_COUNT_MAX = 7;
+
 export function getCreatureName(id: string): string {
     // @ts-ignore
     return creaturesJson[id].name;

@@ -3,10 +3,9 @@ import React, {useEffect, useRef} from 'react';
 import {getImage} from '../../../assets/images/_index';
 import {CreatureCard} from './creatureCard.tsx';
 import {Creature} from '../../../types/creature.ts';
-import {getCreature} from '../../../parsers/creatureParser.tsx';
+import {CREATURE_COUNT_MAX, CREATURE_COUNT_MIN, getCreature} from '../../../parsers/creatureParser.tsx';
 import {marshall, unmarshall} from '@aws-sdk/util-dynamodb';
-import {USER_ID} from '../../../App';
-import {dynamoDb} from '../../../database';
+import {dynamoDb, USER_ID} from '../../../database';
 import {rand} from '../../../parsers/itemParser.tsx';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {IconText} from '../../../components/iconText.tsx';
@@ -14,9 +13,6 @@ import {MinusButton} from '../../../components/buttons/minusButton.tsx';
 import {PlusButton} from '../../../components/buttons/plusButton.tsx';
 import {userInfoStore} from '../../../store_zustand/userInfoStore.tsx';
 import {huntingStore} from '../../../store_zustand/huntingStore.tsx';
-
-export const CREATURE_COUNT_MIN = 5;
-export const CREATURE_COUNT_MAX = 7;
 
 export function Hunting() {
     const level = userInfoStore(state => state.level);

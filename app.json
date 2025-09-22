@@ -1,4 +1,11 @@
 {
-  "name": "SwordfallAdventure",
-  "displayName": "SwordfallAdventure"
+  "expo": {
+    "name": "SwordfallAdventure",
+    "slug": "SwordfallAdventure",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*",
+      "assets/fonts/*"
+    ]
+  }
 }

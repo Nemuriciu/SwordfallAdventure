@@ -6,11 +6,11 @@ import {getChest, getKey, getRandomEquip, rand} from './itemParser.tsx';
 import {getCreatureName} from './creatureParser.tsx';
 import {Item} from '../types/item.ts';
 import shardsJson from '../assets/json/shards.json';
-import {
-    QUESTS_CRAFTING_AMOUNT,
-    QUESTS_GATHERING_AMOUNT,
-    QUESTS_HUNTING_AMOUNT,
-} from '../screens/townTab/quests/quests.tsx';
+
+export const QUESTS_AMOUNT: number = 8;
+export const QUESTS_HUNTING_AMOUNT: number = 5;
+export const QUESTS_GATHERING_AMOUNT: number = 2;
+export const QUESTS_CRAFTING_AMOUNT: number = 1;
 
 export function generateQuest(type: string, level: number): Quest {
     let amount: number;

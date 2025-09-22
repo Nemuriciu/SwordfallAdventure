@@ -1,18 +1,16 @@
 import AWS from 'aws-sdk';
 import {marshall} from '@aws-sdk/util-dynamodb';
 import {initializeQuests} from './parsers/questParser';
-import {getCreature} from './parsers/creatureParser';
+import {CREATURE_COUNT_MAX, CREATURE_COUNT_MIN, getCreature} from './parsers/creatureParser';
 import {rand} from './parsers/itemParser';
-import {
-    CREATURE_COUNT_MAX,
-    CREATURE_COUNT_MIN,
-} from './screens/adventureTab/hunting/hunting';
 import {initializeSkills} from './parsers/skillParser';
 //import "react-native-get-random-values";
 //import 'react-native-url-polyfill/auto';
 //import {ReadableStream} from 'web-streams-polyfill/ponyfill';
 
 //globalThis.ReadableStream = ReadableStream;
+
+export const USER_ID = '33b49812-d0f1-7019-44e6-3ad9b23c4e71';
 
 const REGION = 'eu-central-1';
 const ACCESS_KEY = 'AKIA5FTZAJQTUM5R4P6Y';

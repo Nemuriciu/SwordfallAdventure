@@ -27,7 +27,7 @@ import {strings} from '../utils/strings.ts';
 import {ButtonType, CustomButton} from '../components/buttons/customButton.tsx';
 
 const Tab = createBottomTabNavigator();
-const setLevelUpVisibility = userInfoStore(state => state.setLevelUpVisibility);
+// const setLevelUpVisibility = userInfoStore(state => state.setLevelUpVisibility);
 
 export function MainComponent() {
     const level = userInfoStore(state => state.level);
@@ -57,7 +57,7 @@ export function MainComponent() {
     useEffect(() => {
         const maxExp = experienceJson.userMaxExp[level - 1];
         if (exp >= maxExp) {
-            triggerLevelUp(exp - maxExp);
+            // triggerLevelUp(exp - maxExp);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [exp]);
@@ -204,7 +204,7 @@ export function MainComponent() {
     );
 }
 
-export const triggerLevelUp = (exp: number) => {
+/*export const triggerLevelUp = (exp: number) => {
     setLevelUpVisibility(true);
     console.log(exp);
     //TODO:
@@ -212,7 +212,7 @@ export const triggerLevelUp = (exp: number) => {
     setTimeout(() => {
         setLevelUpVisibility(false);
     }, 3000);
-};
+};*/
 
 const styles = StyleSheet.create({
     container: {

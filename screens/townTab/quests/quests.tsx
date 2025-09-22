@@ -13,7 +13,7 @@ import {
     generateQuest,
     getQuestExp,
     getQuestShards,
-    isQuestComplete,
+    isQuestComplete, QUESTS_CRAFTING_AMOUNT, QUESTS_GATHERING_AMOUNT, QUESTS_HUNTING_AMOUNT,
     sortQuests,
 } from '../../../parsers/questParser.tsx';
 import {getItemImg} from '../../../parsers/itemParser.tsx';
@@ -26,17 +26,11 @@ import {
 } from '../../../components/buttons/customButton.tsx';
 import cloneDeep from 'lodash.clonedeep';
 import {marshall, unmarshall} from '@aws-sdk/util-dynamodb';
-import {USER_ID} from '../../../App';
-import {dynamoDb} from '../../../database';
+import {dynamoDb, USER_ID} from '../../../database';
 import {AbandonModal} from './abandonModal.tsx';
 import {userInfoStore} from '../../../store_zustand/userInfoStore.tsx';
 import {rewardsStore} from '../../../store_zustand/rewardsStore.tsx';
 import {questsStore} from '../../../store_zustand/questsStore.tsx';
-
-export const QUESTS_AMOUNT: number = 8;
-export const QUESTS_HUNTING_AMOUNT: number = 5;
-export const QUESTS_GATHERING_AMOUNT: number = 2;
-export const QUESTS_CRAFTING_AMOUNT: number = 1;
 
 export function Quests() {
     const level = userInfoStore(state => state.level);

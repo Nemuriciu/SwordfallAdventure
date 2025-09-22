@@ -13,8 +13,7 @@ import {
     CustomButton,
 } from '../../../components/buttons/customButton.tsx';
 import {marshall, unmarshall} from '@aws-sdk/util-dynamodb';
-import {USER_ID} from '../../../App';
-import {dynamoDb} from '../../../database';
+import {dynamoDb, USER_ID} from '../../../database';
 import {TitleSeparator} from '../../../components/titleSeparator.tsx';
 import {questsStore} from '../../../store_zustand/questsStore.tsx';
 

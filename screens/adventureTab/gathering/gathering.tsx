@@ -14,8 +14,7 @@ import {
 } from '../../../components/buttons/customButton.tsx';
 import {GatherNode} from './gatherNode.tsx';
 import {marshall, unmarshall} from '@aws-sdk/util-dynamodb';
-import {USER_ID} from '../../../App';
-import {dynamoDb} from '../../../database';
+import {dynamoDb, USER_ID} from '../../../database';
 import {getNode, Node} from '../../../parsers/nodeParser.tsx';
 import {rand} from '../../../parsers/itemParser.tsx';
 import arrayShuffle from 'array-shuffle';
