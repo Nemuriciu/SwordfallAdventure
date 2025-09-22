@@ -1,6 +1,12 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {useState} from 'react';
-import {TouchableOpacity, Text, ImageBackground, ViewStyle} from 'react-native';
+import {
+    TouchableOpacity,
+    Text,
+    ImageBackground,
+    ViewStyle,
+    View,
+} from 'react-native';
 import {getImage} from '../../assets/images/_index';
 
 interface props {
@@ -54,6 +60,10 @@ export function CustomButton({type, title, onPress, disabled, style}: props) {
             disabled={disabled}
             style={style}>
             <ImageBackground
+                style={{
+                    width: '100%',
+                    height: '100%',
+                }}
                 source={
                     disabled
                         ? disabledImage
@@ -63,20 +73,23 @@ export function CustomButton({type, title, onPress, disabled, style}: props) {
                 }
                 resizeMode={'stretch'}
                 fadeDuration={0}>
-                <Text
-                    style={{
-                        width: '100%',
-                        height: '100%',
-                        textAlign: 'center',
-                        textAlignVertical: 'center',
-                        color: 'white',
-                        fontFamily: 'Myriad_Regular',
-                        textShadowColor: 'rgba(0, 0, 0, 1)',
-                        textShadowOffset: {width: 1, height: 1},
-                        textShadowRadius: 5,
-                    }}>
-                    {title}
-                </Text>
+                <View style={{
+                    flex: 1,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                }}>
+                    <Text
+                        style={{
+                            textAlign: 'center',
+                            color: 'white',
+                            fontFamily: 'Myriad_Regular',
+                            textShadowColor: 'rgba(0, 0, 0, 1)',
+                            textShadowOffset: {width: 1, height: 1},
+                            textShadowRadius: 5,
+                        }}>
+                        {title}
+                    </Text>
+                </View>
             </ImageBackground>
         </TouchableOpacity>
     );

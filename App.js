@@ -2,6 +2,7 @@ import React from 'react';
 import {MainComponent} from './screens/mainComponent';
 import {createUser} from './database';
 import {useFonts} from "expo-font";
+import {SafeAreaProvider, } from 'react-native-safe-area-context';
 
 // eslint-disable-next-line no-unused-vars
 const USERNAME = 'vlad.megaboy@gmail.com';
@@ -25,9 +26,13 @@ function App() {
     });
 
     if (!fontsLoaded) {
-        return null; // or a loading screen
+        return null;
     }
 
-    return <MainComponent />;
+    return (
+        <SafeAreaProvider>
+                <MainComponent />
+        </SafeAreaProvider>
+    );
 }
 export default App;

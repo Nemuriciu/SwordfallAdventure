@@ -6,6 +6,7 @@
     "assetBundlePatterns": [
       "**/*",
       "assets/fonts/*"
-    ]
+    ],
+    "orientation": "portrait"
   }
 }

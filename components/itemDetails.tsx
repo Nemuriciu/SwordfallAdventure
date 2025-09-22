@@ -27,7 +27,6 @@ import {
     hasTreasureKey,
     isFull,
 } from '../utils/arrayUtils.ts';
-import Toast from 'react-native-simple-toast';
 import {emptyStats, Stats} from '../types/stats.ts';
 import {DiscardModal} from '../screens/characterTab/inventory/discardModal.tsx';
 import {ConvertModal} from '../screens/characterTab/inventory/convertModal.tsx';
@@ -229,7 +228,7 @@ export function ItemDetails() {
 
             if (isFull(inventoryList)) {
                 //TODO: localization
-                Toast.show('Inventory is full.', Toast.SHORT);
+                // Toast.show('Inventory is full.', Toast.SHORT); TODO: Replace Toast
             } else {
                 if (isItem(item)) {
                     const type = getItemType(item.id);

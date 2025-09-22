@@ -25,6 +25,7 @@ import {userInfoStore} from '../store_zustand/userInfoStore.tsx';
 import {addEventListener, fetch} from '@react-native-community/netinfo';
 import {strings} from '../utils/strings.ts';
 import {ButtonType, CustomButton} from '../components/buttons/customButton.tsx';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
 const Tab = createBottomTabNavigator();
 // const setLevelUpVisibility = userInfoStore(state => state.setLevelUpVisibility);
@@ -63,7 +64,7 @@ export function MainComponent() {
     }, [exp]);
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
             {/* No Network Page */}
             {!networkConnection && (
                 <View style={styles.connectionContainer}>
@@ -200,7 +201,7 @@ export function MainComponent() {
                     </Tab.Navigator>
                 </NavigationContainer>
             )}
-        </View>
+        </SafeAreaView>
     );
 }
 

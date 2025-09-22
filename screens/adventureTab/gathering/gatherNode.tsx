@@ -18,7 +18,6 @@ import {
     CustomButton,
 } from '../../../components/buttons/customButton.tsx';
 import ProgressBar from '../../../components/progressBar.tsx';
-import Toast from 'react-native-simple-toast';
 import {isQuestComplete, sortQuests} from '../../../parsers/questParser.tsx';
 import {userInfoStore} from '../../../store_zustand/userInfoStore.tsx';
 import {rewardsStore} from '../../../store_zustand/rewardsStore.tsx';
@@ -105,7 +104,7 @@ export function GatherNode({node, index}: props) {
                 );
             } else {
                 //TODO: localization
-                Toast.show('Not enough stamina.', Toast.SHORT);
+                // Toast.show('Not enough stamina.', Toast.SHORT); TODO: Replace Toast
             }
 
             setTimeout(() => {

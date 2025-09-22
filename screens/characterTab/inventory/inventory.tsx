@@ -25,7 +25,6 @@ import {dynamoDb, USER_ID} from '../../../database';
 import {Category, isItem, Item} from '../../../types/item';
 import {strings} from '../../../utils/strings.ts';
 import {BreakAllModal} from './breakAllModal.tsx';
-import Toast from 'react-native-simple-toast';
 import cloneDeep from 'lodash.clonedeep';
 import {
     areListsIdentical,
@@ -150,7 +149,7 @@ export function Inventory() {
             }
         }
         //TODO: localization
-        Toast.show('No equipment of that rarity found.', Toast.SHORT);
+        // Toast.show('No equipment of that rarity found.', Toast.SHORT); TODO: Replace Toast
     }
 
     const breakButton = (image: string, onPress: () => void) => {

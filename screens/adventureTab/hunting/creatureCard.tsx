@@ -13,7 +13,6 @@ import {
 } from '../../../parsers/creatureParser.tsx';
 import {getItemColor} from '../../../parsers/itemParser.tsx';
 import {getResistancePercent} from '../../../parsers/attributeParser.tsx';
-import Toast from 'react-native-simple-toast';
 import {userInfoStore} from '../../../store_zustand/userInfoStore.tsx';
 import {combatStore} from '../../../store_zustand/combatStore.tsx';
 import {attributesStore} from '../../../store_zustand/attributesStore.tsx';
@@ -75,7 +74,7 @@ export function CreatureCard({creature, index}: props) {
                 updateStamina(stamina - staminaCost);
             } else {
                 //TODO: localization
-                Toast.show('Not enough stamina.', Toast.SHORT);
+                // Toast.show('Not enough stamina.', Toast.SHORT); TODO: Replace Toast
             }
 
             setTimeout(() => {

@@ -54,6 +54,7 @@ import {combatStore} from '../../../store_zustand/combatStore.tsx';
 import {questsStore} from '../../../store_zustand/questsStore.tsx';
 import {attributesStore} from '../../../store_zustand/attributesStore.tsx';
 import {skillsStore} from '../../../store_zustand/skillsStore.tsx';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
 export function Combat() {
     const rewardsInit = rewardsStore(state => state.rewardsInit);
@@ -1062,7 +1063,7 @@ export function Combat() {
                 setDisabled(false);
                 setCombatComplete(false);
             }}>
-            <View style={styles.container}>
+            <SafeAreaView style={styles.container}>
                 {/* Creature Info */}
                 {creature && (
                     <View>
@@ -1812,13 +1813,14 @@ export function Combat() {
                         </ImageBackground>
                     </View>
                 )}
-            </View>
+            </SafeAreaView>
         </Modal>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
+        flex: 1,
         width: '100%',
         height: '100%',
     },
