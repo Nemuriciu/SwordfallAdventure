@@ -19,6 +19,7 @@ import {SkillsDetails} from './skillsDetails.tsx';
 import {getSkillImg} from '../../../parsers/skillParser.tsx';
 import {SpellsModal} from './spellsModal.tsx';
 import {skillsStore} from '../../../store_zustand/skillsStore.tsx';
+import {values} from '../../../utils/values.ts';
 
 export function Skills() {
     const skillsList = skillsStore(state => state.skillsList);
@@ -279,7 +280,7 @@ const styles = StyleSheet.create({
         alignSelf: 'stretch',
         textAlign: 'center',
         color: colors.primary,
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -296,7 +297,7 @@ const styles = StyleSheet.create({
     },
     skillsIconContainer: {
         aspectRatio: 1,
-        width: '17.5%',
+        width: '15%',
         height: undefined,
     },
     skillsRowContainer: {
@@ -308,17 +309,17 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-evenly',
         height: '9%',
-        marginStart: 24,
-        marginEnd: 24,
+        marginStart: 16,
+        marginEnd: 16,
         marginTop: 8,
-        marginBottom: 16,
+        marginBottom: 12,
     },
     activeSpellsLabel: {
         marginEnd: 16,
         color: 'white',
         alignSelf: 'center',
         fontSize: 16,
-        fontFamily: 'Myriad_Regular',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,

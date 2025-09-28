@@ -27,6 +27,7 @@ import {strings} from '../../../utils/strings.ts';
 import cloneDeep from 'lodash.clonedeep';
 import {inventoryStore} from '../../../store_zustand/inventoryStore.tsx';
 import {itemDetailsStore} from '../../../store_zustand/itemDetailsStore.tsx';
+import {values} from '../../../utils/values.ts';
 
 interface props {
     visible: boolean;
@@ -82,7 +83,8 @@ export function ConvertModal({visible, setVisible, item, index}: props) {
             animationIn={'fadeIn'}
             animationOut={'fadeOut'}
             isVisible={visible}
-            backdropTransitionOutTiming={0}
+            backdropTransitionInTiming={1}
+            backdropTransitionOutTiming={1}
             useNativeDriver={true}>
             <View style={styles.container}>
                 <ImageBackground
@@ -178,7 +180,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         color: 'white',
         fontSize: 18,
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -214,7 +216,7 @@ const styles = StyleSheet.create({
         bottom: -12,
         alignSelf: 'center',
         color: 'white',
-        fontFamily: 'Myriad_Regular',
+        fontFamily: values.fontRegular,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -222,7 +224,7 @@ const styles = StyleSheet.create({
     itemLevelText: {
         textAlign: 'center',
         color: 'white',
-        fontFamily: 'Myriad_Regular',
+        fontFamily: values.fontRegular,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -232,7 +234,7 @@ const styles = StyleSheet.create({
         bottom: 5,
         right: 6,
         color: 'white',
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,

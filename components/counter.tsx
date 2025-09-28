@@ -9,6 +9,7 @@ import {
     TextInput,
 } from 'react-native';
 import {getImage} from '../assets/images/_index';
+import {values} from '../utils/values.ts';
 
 interface props {
     amount: string;
@@ -107,7 +108,7 @@ const styles = StyleSheet.create({
         padding: 0,
         textAlign: 'center',
         color: 'white',
-        fontFamily: 'Myriad_Regular',
+        fontFamily: values.fontRegular,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,

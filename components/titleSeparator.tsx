@@ -2,6 +2,7 @@ import {Image, StyleSheet, Text, View} from 'react-native';
 import React from 'react';
 import {getImage} from '../assets/images/_index';
 import {colors} from '../utils/colors.ts';
+import {values} from '../utils/values.ts';
 
 interface props {
     title: string;
@@ -45,7 +46,7 @@ const styles = StyleSheet.create({
         marginEnd: 12,
         fontSize: 18,
         color: colors.primary,
-        fontFamily: 'Myriad_Bold',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,

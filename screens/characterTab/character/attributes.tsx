@@ -13,6 +13,7 @@ import {startingStats} from '../../../types/stats.ts';
 import {userInfoStore} from '../../../store_zustand/userInfoStore.tsx';
 import {equipmentStore} from '../../../store_zustand/equipmentStore.tsx';
 import {attributesStore} from '../../../store_zustand/attributesStore.tsx';
+import {values} from '../../../utils/values.ts';
 
 export function Attributes() {
     const level = userInfoStore(state => state.level);
@@ -239,7 +240,7 @@ const styles = StyleSheet.create({
     healthLabel: {
         width: '22.5%',
         color: colors.health_color,
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -248,7 +249,7 @@ const styles = StyleSheet.create({
         flex: 1,
         textAlign: 'right',
         color: colors.health_color,
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -256,7 +257,7 @@ const styles = StyleSheet.create({
     phyAtkLabel: {
         width: '23%',
         color: colors.physicalAtk_color,
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -265,14 +266,14 @@ const styles = StyleSheet.create({
         flex: 1,
         textAlign: 'right',
         color: colors.physicalAtk_color,
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
     },
     phyResLabel: {
         color: colors.physicalRes_color,
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -280,7 +281,7 @@ const styles = StyleSheet.create({
     phyResValue: {
         textAlign: 'right',
         color: colors.physicalRes_color,
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -288,7 +289,7 @@ const styles = StyleSheet.create({
     magAtkLabel: {
         width: '23%',
         color: colors.magicalAtk_color,
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -297,14 +298,14 @@ const styles = StyleSheet.create({
         flex: 1,
         textAlign: 'right',
         color: colors.magicalAtk_color,
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
     },
     magResLabel: {
         color: colors.magicalRes_color,
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -312,7 +313,7 @@ const styles = StyleSheet.create({
     magResValue: {
         textAlign: 'right',
         color: colors.magicalRes_color,
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -320,7 +321,7 @@ const styles = StyleSheet.create({
     criticalLabel: {
         width: '23%',
         color: colors.critical_color,
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -329,7 +330,7 @@ const styles = StyleSheet.create({
         flex: 1,
         textAlign: 'right',
         color: colors.critical_color,
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -337,7 +338,7 @@ const styles = StyleSheet.create({
     dodgeLabel: {
         width: '23%',
         color: colors.dodge_color,
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -346,7 +347,7 @@ const styles = StyleSheet.create({
         flex: 1,
         textAlign: 'right',
         color: colors.dodge_color,
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,

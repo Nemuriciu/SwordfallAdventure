@@ -2,6 +2,7 @@ import {StyleSheet, Text} from 'react-native';
 import SpannableBuilder from '@mj-studio/react-native-spannable-string';
 import {colors} from '../../../utils/colors.ts';
 import {EffectType} from '../../../types/effect.ts';
+import {values} from '../../../utils/values.ts';
 
 interface props {
     type: EffectType;
@@ -103,7 +104,7 @@ export function EffectTooltip({type, percent}: props) {
 const styles = StyleSheet.create({
     text: {
         color: 'white',
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         fontSize: 13,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},

@@ -18,6 +18,7 @@ import {
 import {CraftingDetails} from './craftingDetails.tsx';
 import {userInfoStore} from '../../../store_zustand/userInfoStore.tsx';
 import {craftingDetailsStore} from '../../../store_zustand/craftingDetailsStore.tsx';
+import {values} from '../../../utils/values.ts';
 
 export function Crafting() {
     const level = userInfoStore(state => state.level);
@@ -119,7 +120,7 @@ const styles = StyleSheet.create({
         alignSelf: 'stretch',
         textAlign: 'center',
         color: colors.primary,
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,

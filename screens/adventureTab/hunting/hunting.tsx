@@ -3,7 +3,11 @@ import React, {useEffect, useRef} from 'react';
 import {getImage} from '../../../assets/images/_index';
 import {CreatureCard} from './creatureCard.tsx';
 import {Creature} from '../../../types/creature.ts';
-import {CREATURE_COUNT_MAX, CREATURE_COUNT_MIN, getCreature} from '../../../parsers/creatureParser.tsx';
+import {
+    CREATURE_COUNT_MAX,
+    CREATURE_COUNT_MIN,
+    getCreature,
+} from '../../../parsers/creatureParser.tsx';
 import {marshall, unmarshall} from '@aws-sdk/util-dynamodb';
 import {dynamoDb, USER_ID} from '../../../database';
 import {rand} from '../../../parsers/itemParser.tsx';
@@ -13,6 +17,7 @@ import {MinusButton} from '../../../components/buttons/minusButton.tsx';
 import {PlusButton} from '../../../components/buttons/plusButton.tsx';
 import {userInfoStore} from '../../../store_zustand/userInfoStore.tsx';
 import {huntingStore} from '../../../store_zustand/huntingStore.tsx';
+import {values} from '../../../utils/values.ts';
 
 export function Hunting() {
     const level = userInfoStore(state => state.level);
@@ -253,30 +258,32 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-evenly',
         paddingStart: 12,
+        marginStart: 2,
     },
     creatureMinusButton: {
-        width: '17.5%',
-        marginStart: 4,
+        width: '15%',
+        marginStart: 8,
     },
     creaturePlusButton: {
-        width: '17.5%',
-        marginEnd: 6,
+        width: '15%',
+        marginEnd: 8,
     },
     depthLabelContainer: {
         flex: 1,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-evenly',
-        marginStart: 8,
+        marginStart: 4,
+        marginEnd: 2,
         paddingEnd: 12,
     },
     depthMinusButton: {
-        width: '17.5%',
-        marginStart: 6,
+        width: '15%',
+        marginStart: 8,
     },
     depthPlusButton: {
-        width: '17.5%',
-        marginEnd: 4,
+        width: '15%',
+        marginEnd: 8,
     },
     valueIcon: {
         aspectRatio: 1,
@@ -290,7 +297,7 @@ const styles = StyleSheet.create({
         marginBottom: 1,
         textAlign: 'center',
         color: 'white',
-        fontFamily: 'Myriad',
+        fontFamily: values.fontBold,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -301,7 +308,7 @@ const styles = StyleSheet.create({
         marginEnd: 4,
         textAlign: 'center',
         color: 'white',
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,

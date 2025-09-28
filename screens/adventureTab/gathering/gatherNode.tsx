@@ -23,6 +23,7 @@ import {userInfoStore} from '../../../store_zustand/userInfoStore.tsx';
 import {rewardsStore} from '../../../store_zustand/rewardsStore.tsx';
 import {gatheringStore} from '../../../store_zustand/gatheringStore.tsx';
 import {questsStore} from '../../../store_zustand/questsStore.tsx';
+import {values} from '../../../utils/values.ts';
 
 interface props {
     node: Node;
@@ -243,7 +244,7 @@ const styles = StyleSheet.create({
     },
     image: {
         aspectRatio: 1,
-        width: '13.5%',
+        width: '13%',
         marginTop: 8,
         marginBottom: 8,
         marginStart: 20,
@@ -255,7 +256,7 @@ const styles = StyleSheet.create({
     },
     name: {
         marginBottom: 4,
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -263,7 +264,7 @@ const styles = StyleSheet.create({
     time: {
         fontSize: 13,
         color: colors.primary,
-        fontFamily: 'Myriad_Regular',
+        fontFamily: values.fontRegular,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -290,7 +291,7 @@ const styles = StyleSheet.create({
         textAlign: 'right',
         alignSelf: 'center',
         color: colors.stamina_color,
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,

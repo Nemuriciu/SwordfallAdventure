@@ -4,6 +4,7 @@ import {SceneMap, TabBar, TabView} from 'react-native-tab-view';
 import {Hunting} from './hunting/hunting';
 import {Gathering} from './gathering/gathering';
 import {colors} from '../../utils/colors.ts';
+import {values} from '../../utils/values.ts';
 
 const renderScene = SceneMap({
     1: Hunting,
@@ -24,6 +25,7 @@ export function AdventureTab() {
         return (
             <TabBar
                 {...props}
+                // @ts-ignore
                 renderLabel={({focused, route}) => {
                     return (
                         <Text
@@ -64,7 +66,7 @@ const styles = StyleSheet.create({
         alignSelf: 'stretch',
         textAlign: 'center',
         color: 'white',
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,

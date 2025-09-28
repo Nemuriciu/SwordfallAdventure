@@ -16,6 +16,7 @@ import {marshall, unmarshall} from '@aws-sdk/util-dynamodb';
 import {dynamoDb, USER_ID} from '../../../database';
 import {TitleSeparator} from '../../../components/titleSeparator.tsx';
 import {questsStore} from '../../../store_zustand/questsStore.tsx';
+import {values} from '../../../utils/values.ts';
 
 // TODO: Generate shop items + DB + Refresh Timer
 export function Shop() {
@@ -384,7 +385,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         fontSize: 16,
         color: 'white',
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -417,7 +418,7 @@ const styles = StyleSheet.create({
         bottom: 5,
         right: 6,
         color: 'white',
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -436,7 +437,7 @@ const styles = StyleSheet.create({
         flex: 1,
         marginLeft: 4,
         color: 'white',
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,

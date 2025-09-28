@@ -13,6 +13,7 @@ import {Skill} from '../../../types/skill.ts';
 import {getSkillImg, getSkillMaxPoints} from '../../../parsers/skillParser.tsx';
 import {colors} from '../../../utils/colors.ts';
 import {skillDetailsStore} from '../../../store_zustand/skillDetailsStore.tsx';
+import {values} from '../../../utils/values.ts';
 
 interface props {
     style?: ViewStyle;
@@ -102,9 +103,9 @@ const styles = StyleSheet.create({
         aspectRatio: 3,
     },
     text: {
-        fontSize: 13,
+        fontSize: 12,
         textAlign: 'center',
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,

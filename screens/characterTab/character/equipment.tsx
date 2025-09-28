@@ -7,6 +7,7 @@ import {getItemImg} from '../../../parsers/itemParser.tsx';
 import {isItem, Item} from '../../../types/item';
 import {itemDetailsStore} from '../../../store_zustand/itemDetailsStore.tsx';
 import {equipmentStore} from '../../../store_zustand/equipmentStore.tsx';
+import {values} from '../../../utils/values.ts';
 
 export function Equipment() {
     const helmet = equipmentStore(state => state.helmet);
@@ -285,7 +286,7 @@ const styles = StyleSheet.create({
         right: '10%',
         fontSize: 16,
         color: 'white',
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -293,7 +294,7 @@ const styles = StyleSheet.create({
     row_1: {
         flexDirection: 'row',
         justifyContent: 'center',
-        marginTop: 16,
+        marginTop: 12,
     },
     row_2: {
         flexDirection: 'row',

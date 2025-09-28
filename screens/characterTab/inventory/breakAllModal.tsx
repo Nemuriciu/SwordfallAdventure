@@ -18,6 +18,7 @@ import {strings} from '../../../utils/strings.ts';
 import {Category, isItem} from '../../../types/item.ts';
 import {inventoryStore} from '../../../store_zustand/inventoryStore.tsx';
 import {userInfoStore} from '../../../store_zustand/userInfoStore.tsx';
+import {values} from '../../../utils/values.ts';
 
 interface props {
     visible: boolean;
@@ -98,7 +99,8 @@ export function BreakAllModal({visible, setVisible, rarity}: props) {
             animationIn={'fadeIn'}
             animationOut={'fadeOut'}
             isVisible={visible}
-            backdropTransitionOutTiming={0}
+            backdropTransitionInTiming={1}
+            backdropTransitionOutTiming={1}
             useNativeDriver={true}>
             <View style={styles.container}>
                 <ImageBackground
@@ -169,7 +171,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         color: 'white',
         fontSize: 18,
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -179,7 +181,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         color: 'white',
         fontSize: 16,
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -189,7 +191,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         color: 'white',
         fontSize: 16,
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -213,7 +215,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         color: 'white',
         fontSize: 16,
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -229,7 +231,7 @@ const styles = StyleSheet.create({
     thumbValue: {
         color: colors.primary,
         fontSize: 16,
-        fontFamily: 'Myriad_Bold',
+        fontFamily: values.fontBold,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,

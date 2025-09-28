@@ -16,10 +16,10 @@ import {
     CustomButton,
 } from '../../../components/buttons/customButton.tsx';
 import {strings} from '../../../utils/strings.ts';
-import {CloseButton} from '../../../components/buttons/closeButton.tsx';
 import {
     getSkillCooldown,
     getSkillDescription,
+    getSkillElement,
     getSkillImg,
     getSkillMaxPoints,
     getSkillName,
@@ -33,6 +33,7 @@ import SpannableBuilder from '@mj-studio/react-native-spannable-string';
 import {userInfoStore} from '../../../store_zustand/userInfoStore.tsx';
 import {skillsStore} from '../../../store_zustand/skillsStore.tsx';
 import {skillDetailsStore} from '../../../store_zustand/skillDetailsStore.tsx';
+import {values} from '../../../utils/values.ts';
 
 interface props {
     description: string;
@@ -254,10 +255,13 @@ export function SkillsDetails() {
         <Modal
             animationIn={'fadeIn'}
             animationOut={'fadeOut'}
-            animationOutTiming={200}
             isVisible={modalVisible}
-            backdropTransitionOutTiming={0}
-            useNativeDriver={true}>
+            backdropTransitionInTiming={1}
+            backdropTransitionOutTiming={1}
+            useNativeDriver={true}
+            onBackdropPress={() => {
+                skillsDetailsHide();
+            }}>
             <View style={styles.modalAlpha}>
                 <View style={styles.container}>
                     {skill && (
@@ -287,7 +291,18 @@ export function SkillsDetails() {
                                         </ImageBackground>
                                     </View>
                                     <View>
-                                        <Text style={styles.name}>
+                                        <Text
+                                            style={[
+                                                styles.name,
+                                                {
+                                                    color:
+                                                        getSkillElement(
+                                                            skill.id,
+                                                        ) === 'Physical'
+                                                            ? colors.physicalAtk_color
+                                                            : colors.magicalAtk_color,
+                                                },
+                                            ]}>
                                             {getSkillName(skill.id)}
                                         </Text>
                                         <Text
@@ -494,12 +509,6 @@ export function SkillsDetails() {
                                         </Text>
                                     </View>
                                 </View>
-                                <CloseButton
-                                    onPress={() => {
-                                        skillsDetailsHide();
-                                    }}
-                                    style={styles.closeButton}
-                                />
                             </View>
                         </ImageBackground>
                     )}
@@ -524,13 +533,15 @@ const styles = StyleSheet.create({
     },
     topContainer: {
         flexDirection: 'row',
+        alignItems: 'center',
         marginTop: 24,
         marginStart: 32,
         marginEnd: 32,
     },
     imageContainer: {
-        width: '22%',
+        width: '20%',
         aspectRatio: 1,
+        marginTop: 2,
         marginEnd: 12,
     },
     frame: {
@@ -541,47 +552,43 @@ const styles = StyleSheet.create({
         height: '100%',
     },
     name: {
-        marginTop: 4,
-        marginStart: 4,
-        color: 'white',
         fontSize: 16,
-        fontFamily: 'Myriad',
+        fontFamily: values.fontBold,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
     },
     rank: {
         marginTop: 2,
-        marginStart: 4,
-        fontFamily: 'Myriad_Regular',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
     },
     descriptionContainer: {
         alignItems: 'center',
-        marginTop: 16,
+        marginTop: 12,
         marginStart: 36,
         marginEnd: 36,
     },
     description: {
-        marginBottom: 12,
+        marginBottom: 8,
         color: 'white',
         textAlign: 'center',
-        fontFamily: 'Myriad_Regular',
+        fontFamily: values.fontRegular,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
     },
     nextRankImage: {
-        marginBottom: 12,
+        marginBottom: 8,
     },
     nextRankDescription: {
         aspectRatio: 5,
         margin: 2,
         textAlign: 'center',
         color: colors.primary,
-        fontFamily: 'Myriad_Regular',
+        fontFamily: values.fontRegular,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -589,7 +596,7 @@ const styles = StyleSheet.create({
     cooldown: {
         textAlign: 'center',
         color: 'white',
-        fontFamily: 'Myriad_Regular',
+        fontFamily: values.fontRegular,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -607,10 +614,11 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         marginTop: 4,
-        marginBottom: 36,
+        marginBottom: 16,
     },
     pointsContainer: {
-        width: '37.%',
+        marginStart: 12,
+        width: '35%',
     },
     spentPointsBackground: {
         width: '100%',
@@ -628,7 +636,7 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 0,
         textAlign: 'center',
-        fontFamily: 'Myriad_Regular',
+        fontFamily: values.fontRegular,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -644,30 +652,17 @@ const styles = StyleSheet.create({
         height: undefined,
     },
     availablePointsText: {
-        marginTop: 6,
-        marginStart: 4,
-        marginEnd: 4,
+        marginTop: 4,
         textAlign: 'center',
         color: 'white',
-        fontFamily: 'Myriad_Regular',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
     },
     actionButton: {
-        marginStart: 6,
-        marginEnd: 12,
-        aspectRatio: 3,
-        width: '32.5%',
+        aspectRatio: values.button_aspect_ratio,
+        width: '25%',
     },
-    spentPointsContainer: {
-        aspectRatio: 4.5,
-    },
-    closeButton: {
-        position: 'absolute',
-        bottom: '-5%',
-        width: '10%',
-        aspectRatio: 1,
-        alignSelf: 'center',
-    },
+    spentPointsContainer: {},
 });

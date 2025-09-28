@@ -12,7 +12,6 @@ import Modal from 'react-native-modal';
 import {getImage} from '../../../assets/images/_index';
 import {colors} from '../../../utils/colors.ts';
 import {strings} from '../../../utils/strings.ts';
-import {CloseButton} from '../../../components/buttons/closeButton.tsx';
 import {Skill} from '../../../types/skill.ts';
 import {
     getSkillElement,
@@ -21,6 +20,7 @@ import {
     getSkillType,
 } from '../../../parsers/skillParser.tsx';
 import {skillsStore} from '../../../store_zustand/skillsStore.tsx';
+import {values} from '../../../utils/values.ts';
 
 interface props {
     visible: boolean;
@@ -120,8 +120,12 @@ export function SpellsModal({visible, setVisible, slot}: props) {
             animationIn={'fadeIn'}
             animationOut={'fadeOut'}
             isVisible={visible}
-            backdropTransitionOutTiming={0}
-            useNativeDriver={true}>
+            backdropTransitionInTiming={1}
+            backdropTransitionOutTiming={1}
+            useNativeDriver={true}
+            onBackdropPress={() => {
+                setVisible(false);
+            }}>
             <View style={styles.modalAlpha}>
                 <View style={styles.container}>
                     <ImageBackground
@@ -150,10 +154,6 @@ export function SpellsModal({visible, setVisible, slot}: props) {
                                 </Text>
                             ) : null}
                         </View>
-                        <CloseButton
-                            onPress={() => setVisible(false)}
-                            style={styles.closeButton}
-                        />
                     </ImageBackground>
                 </View>
             </View>
@@ -167,9 +167,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     container: {
-        height: '55%',
-        marginStart: 12,
-        marginEnd: 12,
+        height: '50%',
     },
     background: {
         width: '100%',
@@ -177,16 +175,16 @@ const styles = StyleSheet.create({
     },
     outerContainer: {
         flex: 1,
-        alignItems: 'center',
-        marginTop: 32,
-        marginBottom: 32,
-        marginStart: 16,
-        marginEnd: 16,
+        marginTop: 24,
+        marginBottom: 24,
+        marginStart: 6,
+        marginEnd: 6,
     },
     title: {
+        alignSelf: 'center',
         color: colors.primary,
-        fontSize: 20,
-        fontFamily: 'Myriad',
+        fontSize: 18,
+        fontFamily: values.fontBold,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -195,28 +193,23 @@ const styles = StyleSheet.create({
         flex: 1,
         width: '100%',
         justifyContent: 'center',
-        marginStart: 8,
-        marginEnd: 8,
         marginTop: 12,
-        marginBottom: 4,
     },
-    spellsListContainer: {
-        marginTop: 5,
-        marginBottom: 6,
-    },
+    spellsListContainer: {},
     spellSlot: {
         width: '100%',
         marginBottom: 2,
     },
     spellSlotContainer: {
         flexDirection: 'row',
+        alignItems: 'center',
     },
     spellImageContainer: {
-        width: '17.5%',
+        width: '16.5%',
         aspectRatio: 1,
-        marginStart: 24,
-        marginTop: 6,
-        marginBottom: 6,
+        marginStart: 18,
+        marginTop: 4,
+        marginBottom: 4,
     },
     spellImageFrame: {
         padding: 6,
@@ -227,23 +220,18 @@ const styles = StyleSheet.create({
     },
     spellInfoContainer: {
         flex: 1,
-        marginStart: 8,
-        marginTop: 12,
-        marginBottom: 8,
+        marginStart: 12,
     },
     spellName: {
         color: 'white',
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
     },
     spellElement: {
-        marginTop: 4,
-        marginBottom: 4,
-        color: 'white',
         fontSize: 13,
-        fontFamily: 'Myriad_Regular',
+        fontFamily: values.fontRegular,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -253,16 +241,9 @@ const styles = StyleSheet.create({
         textAlignVertical: 'center',
         color: 'white',
         fontSize: 18,
-        fontFamily: 'Myriad_Regular',
+        fontFamily: values.fontRegular,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
-    },
-    closeButton: {
-        position: 'absolute',
-        bottom: '-5%',
-        width: '12%',
-        aspectRatio: 1,
-        alignSelf: 'center',
     },
 });

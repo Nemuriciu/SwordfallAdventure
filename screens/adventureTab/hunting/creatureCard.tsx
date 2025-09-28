@@ -105,7 +105,9 @@ export function CreatureCard({creature, index}: props) {
                         resizeMode={'stretch'}
                         fadeDuration={0}>
                         <View style={styles.levelTextContainer}>
-                            <Text style={styles.levelText}>
+                            <Text
+                                style={styles.levelText}
+                                adjustsFontSizeToFit={true}>
                                 {creature.level}
                             </Text>
                         </View>
@@ -232,10 +234,10 @@ const styles = StyleSheet.create({
     },
     levelContainer: {
         position: 'absolute',
-        left: '38%',
+        left: '35.5%',
         bottom: '-7.5%',
         aspectRatio: 1,
-        width: '27%',
+        width: '30%',
     },
     levelTextContainer: {
         width: '100%',
@@ -246,7 +248,7 @@ const styles = StyleSheet.create({
         color: 'white',
         textAlign: 'center',
         fontSize: 13,
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -258,9 +260,9 @@ const styles = StyleSheet.create({
         marginEnd: 12,
     },
     name: {
-        marginBottom: 4,
+        marginBottom: 2,
         fontSize: 16,
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -291,7 +293,7 @@ const styles = StyleSheet.create({
     healthValue: {
         color: colors.health_color,
         fontSize: 13,
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -300,7 +302,7 @@ const styles = StyleSheet.create({
         flex: 1,
         color: colors.physicalAtk_color,
         fontSize: 13,
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -309,7 +311,7 @@ const styles = StyleSheet.create({
         flex: 1,
         color: colors.physicalRes_color,
         fontSize: 13,
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -318,7 +320,7 @@ const styles = StyleSheet.create({
         flex: 1,
         color: colors.magicalAtk_color,
         fontSize: 13,
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -327,7 +329,7 @@ const styles = StyleSheet.create({
         flex: 1,
         color: colors.magicalRes_color,
         fontSize: 13,
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -347,7 +349,7 @@ const styles = StyleSheet.create({
         textAlign: 'right',
         alignSelf: 'center',
         color: colors.stamina_color,
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,

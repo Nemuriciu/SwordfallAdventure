@@ -5,6 +5,7 @@ import {
     ImageBackground,
     StyleSheet,
     Text,
+    TouchableOpacity,
     View,
 } from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
@@ -13,7 +14,10 @@ import {
     generateQuest,
     getQuestExp,
     getQuestShards,
-    isQuestComplete, QUESTS_CRAFTING_AMOUNT, QUESTS_GATHERING_AMOUNT, QUESTS_HUNTING_AMOUNT,
+    isQuestComplete,
+    QUESTS_CRAFTING_AMOUNT,
+    QUESTS_GATHERING_AMOUNT,
+    QUESTS_HUNTING_AMOUNT,
     sortQuests,
 } from '../../../parsers/questParser.tsx';
 import {getItemImg} from '../../../parsers/itemParser.tsx';
@@ -31,6 +35,8 @@ import {AbandonModal} from './abandonModal.tsx';
 import {userInfoStore} from '../../../store_zustand/userInfoStore.tsx';
 import {rewardsStore} from '../../../store_zustand/rewardsStore.tsx';
 import {questsStore} from '../../../store_zustand/questsStore.tsx';
+import {values} from '../../../utils/values.ts';
+import {itemTooltipStore} from '../../../store_zustand/itemTooltipStore.tsx';
 
 export function Quests() {
     const level = userInfoStore(state => state.level);
@@ -40,6 +46,8 @@ export function Quests() {
     const questsSet = questsStore(state => state.questsSet);
     const questsSetList = questsStore(state => state.questsSetList);
     const questsSetTimestamp = questsStore(state => state.questsSetTimestamp);
+
+    const itemTooltipShow = itemTooltipStore(state => state.itemTooltipShow);
 
     const [refreshFetched, setRefreshFetched] = useState(false);
     const [refreshTimer, setRefreshTimer] = useState(1);
@@ -250,10 +258,10 @@ export function Quests() {
                             item.type === 'hunting'
                                 ? getImage('quests_icon_hunting')
                                 : item.type === 'crafting'
-                                ? getImage('quests_icon_crafting')
-                                : item.type === 'gathering'
-                                ? getImage('quests_icon_gathering')
-                                : null
+                                  ? getImage('quests_icon_crafting')
+                                  : item.type === 'gathering'
+                                    ? getImage('quests_icon_gathering')
+                                    : null
                         }
                         resizeMode={'stretch'}
                         fadeDuration={0}
@@ -341,16 +349,22 @@ export function Quests() {
                                 data={item.rewards}
                                 /* eslint-disable-next-line @typescript-eslint/no-shadow */
                                 renderItem={({item}) => (
-                                    <ImageBackground
+                                    <TouchableOpacity
                                         style={styles.rewardSlot}
-                                        source={getImage(getItemImg(item.id))}
-                                        fadeDuration={0}>
-                                        <Text style={styles.rewardQuantity}>
-                                            {item.quantity > 1
-                                                ? item.quantity
-                                                : ''}
-                                        </Text>
-                                    </ImageBackground>
+                                        onPress={() => itemTooltipShow(item)}>
+                                        <ImageBackground
+                                            style={styles.rewardSlot}
+                                            source={getImage(
+                                                getItemImg(item.id),
+                                            )}
+                                            fadeDuration={0}>
+                                            <Text style={styles.rewardQuantity}>
+                                                {item.quantity > 1
+                                                    ? item.quantity
+                                                    : ''}
+                                            </Text>
+                                        </ImageBackground>
+                                    </TouchableOpacity>
                                 )}
                                 scrollEnabled={false}
                                 overScrollMode={'never'}
@@ -436,7 +450,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         fontSize: 16,
         color: 'white',
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -482,14 +496,14 @@ const styles = StyleSheet.create({
         marginStart: 10,
         marginEnd: 4,
         color: 'white',
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
     },
     rewardsLabel: {
         color: colors.primary,
-        fontFamily: 'Myriad_Regular',
+        fontFamily: values.fontRegular,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -510,7 +524,7 @@ const styles = StyleSheet.create({
         bottom: 5,
         right: 6,
         color: 'white',
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -538,7 +552,7 @@ const styles = StyleSheet.create({
         marginStart: 4,
         textAlignVertical: 'center',
         color: 'white',
-        fontFamily: 'Myriad_Regular',
+        fontFamily: values.fontRegular,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -549,7 +563,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: 32,
         color: colors.primary,
-        fontFamily: 'Myriad_Bold',
+        fontFamily: values.fontBold,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -559,7 +573,7 @@ const styles = StyleSheet.create({
         marginStart: 4,
         textAlignVertical: 'center',
         color: 'white',
-        fontFamily: 'Myriad_Regular',
+        fontFamily: values.fontRegular,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -573,7 +587,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         color: 'white',
         alignSelf: 'center',
-        fontFamily: 'Myriad_Regular',
+        fontFamily: values.fontRegular,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,

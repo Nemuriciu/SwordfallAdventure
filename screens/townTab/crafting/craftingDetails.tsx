@@ -1,12 +1,13 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {
+    Dimensions,
+    FlatList,
+    Image,
+    ImageBackground,
     StyleSheet,
     Text,
+    TouchableOpacity,
     View,
-    ImageBackground,
-    Image,
-    FlatList,
-    Dimensions,
 } from 'react-native';
 import Modal from 'react-native-modal';
 import {Category, isItem, Item} from '../../../types/item.ts';
@@ -24,7 +25,6 @@ import {
     CustomButton,
 } from '../../../components/buttons/customButton.tsx';
 import {strings} from '../../../utils/strings.ts';
-import {CloseButton} from '../../../components/buttons/closeButton.tsx';
 import cloneDeep from 'lodash.clonedeep';
 import {Counter} from '../../../components/counter.tsx';
 import {getInventoryIndex} from '../../../utils/arrayUtils.ts';
@@ -34,6 +34,8 @@ import {inventoryStore} from '../../../store_zustand/inventoryStore.tsx';
 import {rewardsStore} from '../../../store_zustand/rewardsStore.tsx';
 import {craftingDetailsStore} from '../../../store_zustand/craftingDetailsStore.tsx';
 import {questsStore} from '../../../store_zustand/questsStore.tsx';
+import {values} from '../../../utils/values.ts';
+import {itemTooltipStore} from '../../../store_zustand/itemTooltipStore.tsx';
 
 export function CraftingDetails() {
     const modalVisible = craftingDetailsStore(state => state.modalVisible);
@@ -47,6 +49,7 @@ export function CraftingDetails() {
     const inventoryRemoveItemAt = inventoryStore(
         state => state.inventoryRemoveItemAt,
     );
+    const itemTooltipShow = itemTooltipStore(state => state.itemTooltipShow);
     const questsList = questsStore(state => state.questsList);
     const questsSetList = questsStore(state => state.questsSetList);
     const [materialsTemp, setMaterialsTemp] = useState<Item[]>([]);
@@ -196,10 +199,16 @@ export function CraftingDetails() {
         <Modal
             animationIn={'fadeIn'}
             animationOut={'fadeOut'}
-            animationOutTiming={200}
             isVisible={modalVisible}
-            backdropTransitionOutTiming={0}
-            useNativeDriver={true}>
+            backdropTransitionInTiming={1}
+            backdropTransitionOutTiming={1}
+            useNativeDriver={true}
+            onBackdropPress={() => {
+                craftingDetailsHide();
+                setTimeout(() => {
+                    setAmount('1');
+                }, 250);
+            }}>
             {isItem(craftingItem) && (
                 <View style={styles.modalAlpha}>
                     <View style={styles.container}>
@@ -251,53 +260,61 @@ export function CraftingDetails() {
                                     data={materials}
                                     keyExtractor={item => item.id}
                                     renderItem={({item, index}) => (
-                                        <ImageBackground
-                                            style={styles.materialSlot}
-                                            source={getImage(
-                                                getItemImg(item.id),
-                                            )}
-                                            fadeDuration={0}>
-                                            <Text
-                                                style={[
-                                                    styles.materialQuantity,
-                                                    // eslint-disable-next-line react-native/no-inline-styles
-                                                    {
-                                                        color:
-                                                            materialsTemp.length ===
-                                                            materials.length
-                                                                ? materialsOwned[
-                                                                      index
-                                                                  ] <
-                                                                  materialsTemp[
-                                                                      index
-                                                                  ].quantity *
-                                                                      (amount !==
-                                                                      ''
-                                                                          ? parseInt(
-                                                                                amount,
-                                                                                10,
-                                                                            )
-                                                                          : 1)
-                                                                    ? 'red'
-                                                                    : 'white'
-                                                                : 'white',
-                                                    },
-                                                ]}>
-                                                {materialsTemp.length ===
-                                                materials.length
-                                                    ? materialsOwned[index] +
-                                                      '/' +
-                                                      materialsTemp[index]
-                                                          .quantity *
-                                                          (amount !== ''
-                                                              ? parseInt(
-                                                                    amount,
-                                                                    10,
-                                                                )
-                                                              : 1)
-                                                    : ''}
-                                            </Text>
-                                        </ImageBackground>
+                                        <TouchableOpacity
+                                            onPress={() =>
+                                                itemTooltipShow(item)
+                                            }>
+                                            <ImageBackground
+                                                style={styles.materialSlot}
+                                                source={getImage(
+                                                    getItemImg(item.id),
+                                                )}
+                                                fadeDuration={0}>
+                                                <Text
+                                                    style={[
+                                                        styles.materialQuantity,
+                                                        // eslint-disable-next-line react-native/no-inline-styles
+                                                        {
+                                                            color:
+                                                                materialsTemp.length ===
+                                                                materials.length
+                                                                    ? materialsOwned[
+                                                                          index
+                                                                      ] <
+                                                                      materialsTemp[
+                                                                          index
+                                                                      ]
+                                                                          .quantity *
+                                                                          (amount !==
+                                                                          ''
+                                                                              ? parseInt(
+                                                                                    amount,
+                                                                                    10,
+                                                                                )
+                                                                              : 1)
+                                                                        ? 'red'
+                                                                        : 'white'
+                                                                    : 'white',
+                                                        },
+                                                    ]}>
+                                                    {materialsTemp.length ===
+                                                    materials.length
+                                                        ? materialsOwned[
+                                                              index
+                                                          ] +
+                                                          '/' +
+                                                          materialsTemp[index]
+                                                              .quantity *
+                                                              (amount !== ''
+                                                                  ? parseInt(
+                                                                        amount,
+                                                                        10,
+                                                                    )
+                                                                  : 1)
+                                                        : ''}
+                                                </Text>
+                                            </ImageBackground>
+                                        </TouchableOpacity>
                                     )}
                                 />
                                 <View style={styles.separatorContainer}>
@@ -327,15 +344,6 @@ export function CraftingDetails() {
                                         style={styles.craftAmount}
                                     />
                                 </View>
-                                <CloseButton
-                                    onPress={() => {
-                                        craftingDetailsHide();
-                                        setTimeout(() => {
-                                            setAmount('1');
-                                        }, 250);
-                                    }}
-                                    style={styles.closeButton}
-                                />
                             </View>
                         </ImageBackground>
                     </View>
@@ -365,7 +373,7 @@ const styles = StyleSheet.create({
         marginEnd: 32,
     },
     imageContainer: {
-        width: '22%',
+        width: '20%',
         aspectRatio: 1,
         marginEnd: 12,
     },
@@ -374,16 +382,16 @@ const styles = StyleSheet.create({
         height: '100%',
     },
     name: {
-        fontSize: 18,
-        fontFamily: 'Myriad',
+        fontSize: 16,
+        fontFamily: values.fontBold,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
     },
     level: {
-        marginTop: 2,
+        marginTop: 0,
         color: 'white',
-        fontFamily: 'Myriad_Regular',
+        fontFamily: values.fontRegular,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -399,7 +407,7 @@ const styles = StyleSheet.create({
     },
     materialsListContainer: {
         flex: 1,
-        marginTop: 12,
+        marginTop: 8,
         justifyContent: 'center',
     },
     materialSlot: {
@@ -414,7 +422,7 @@ const styles = StyleSheet.create({
         right: 5,
         color: 'white',
         fontSize: 12,
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -423,23 +431,16 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         marginTop: 4,
-        marginBottom: 36,
+        marginBottom: 12,
     },
     actionButton: {
-        marginStart: 6,
-        marginEnd: 6,
-        aspectRatio: 2.5,
+        aspectRatio: values.button_aspect_ratio,
         width: '25%',
     },
     craftAmount: {
+        marginStart: 12,
+        marginTop: 1,
+        aspectRatio: values.button_aspect_ratio,
         width: '35%',
-        aspectRatio: 4.5,
-    },
-    closeButton: {
-        position: 'absolute',
-        bottom: '-5%',
-        width: '10%',
-        aspectRatio: 1,
-        alignSelf: 'center',
     },
 });

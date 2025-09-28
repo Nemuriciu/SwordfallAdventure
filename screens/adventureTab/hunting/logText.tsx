@@ -2,6 +2,7 @@ import {StyleSheet, Text} from 'react-native';
 import SpannableBuilder from '@mj-studio/react-native-spannable-string';
 import {colors} from '../../../utils/colors.ts';
 import {Log} from '../../../types/log.ts';
+import {values} from '../../../utils/values.ts';
 
 interface props {
     log: Log;
@@ -192,7 +193,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         color: 'white',
         fontSize: 16,
-        fontFamily: 'Myriad_Regular',
+        fontFamily: values.fontRegular,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,

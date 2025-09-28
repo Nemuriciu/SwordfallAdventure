@@ -34,8 +34,9 @@ import {
 import {itemDetailsStore} from '../../../store_zustand/itemDetailsStore.tsx';
 import {inventoryStore} from '../../../store_zustand/inventoryStore.tsx';
 import {userInfoStore} from '../../../store_zustand/userInfoStore.tsx';
+import {values} from '../../../utils/values.ts';
 
-const COLUMN_NR = 6;
+const COLUMN_NR = 7;
 
 export function Inventory() {
     const level = userInfoStore(state => state.level);
@@ -99,7 +100,7 @@ export function Inventory() {
     }
 
     function addItemOnPress() {
-        const items = [getRandomEquip('common', 3)];
+        const items = [getRandomEquip('common', level)];
         if (inventoryList.length - usedSlots > items.length) {
             inventoryAddItems(items);
         }
@@ -193,8 +194,8 @@ export function Inventory() {
                                 usedSlots / inventoryList.length === 1
                                     ? 'red'
                                     : usedSlots / inventoryList.length >= 0.8
-                                    ? 'yellow'
-                                    : 'white',
+                                      ? 'yellow'
+                                      : 'white',
                         },
                     ]}>
                     {usedSlots + '/' + inventoryList.length}
@@ -254,21 +255,21 @@ export function Inventory() {
                 style={{
                     flexDirection: 'row',
                     justifyContent: 'center',
-                    marginBottom: 36,
+                    marginBottom: 8,
                 }}>
                 {/* ADD ITEM */}
                 <CustomButton
                     type={ButtonType.Red}
                     title={'Add Item'}
                     onPress={addItemOnPress}
-                    style={styles.button}
+                    style={styles.debugButton}
                 />
                 {/* CLEAR INVENTORY */}
                 <CustomButton
                     type={ButtonType.Red}
-                    title={'CLEAR'}
+                    title={'Clear'}
                     onPress={clearInventoryList}
-                    style={styles.clearButton}
+                    style={styles.debugButton}
                 />
             </View>
             {/* Equipment Break */}
@@ -295,15 +296,15 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginTop: 16,
-        marginBottom: 8,
+        marginTop: 8,
+        marginBottom: 4,
         marginStart: 32,
     },
     inventoryContainer: {
         flex: 1,
-        marginBottom: 8,
-        marginStart: 18,
-        marginEnd: 18,
+        // marginBottom: 4,
+        marginStart: 12,
+        marginEnd: 12,
     },
     inventoryFlatList: {
         flex: 1,
@@ -330,7 +331,7 @@ const styles = StyleSheet.create({
         top: 4,
         right: 6,
         color: 'white',
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -340,53 +341,46 @@ const styles = StyleSheet.create({
         bottom: 5,
         right: 6,
         color: 'white',
-        fontFamily: 'Myriad',
+        fontSize: 13,
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: -1, height: 1},
         textShadowRadius: 5,
     },
     bagIcon: {
         aspectRatio: 1,
-        width: '12.5%',
+        width: '12%',
         height: undefined,
     },
     slotsText: {
-        marginTop: 4,
+        marginTop: 2,
         marginStart: 2,
         marginRight: 'auto',
-        fontSize: 16,
-        fontFamily: 'Myriad_Bold',
+        fontFamily: values.fontBold,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
     },
     sortButton: {
-        aspectRatio: 3.5,
-        width: '30%',
+        aspectRatio: values.button_aspect_ratio,
+        width: '25%',
         justifyContent: 'flex-end',
         marginLeft: 'auto',
-        marginRight: 24,
+        marginRight: 28,
     },
-    button: {
-        aspectRatio: 3.5,
-        width: '35%',
+    debugButton: {
+        aspectRatio: values.button_aspect_ratio,
+        width: '25%',
         alignSelf: 'center',
-        marginStart: 8,
-        marginEnd: 8,
-    },
-    clearButton: {
-        aspectRatio: 3.5,
-        width: '35%',
-        alignSelf: 'center',
-        marginStart: 8,
-        marginEnd: 8,
+        marginStart: 16,
+        marginEnd: 16,
     },
     breakContainer: {
         flexDirection: 'row',
         height: '5%',
         marginStart: 24,
         marginEnd: 16,
-        marginTop: 12,
+        marginTop: 32,
         marginBottom: 12,
     },
     breakLabel: {
@@ -394,7 +388,7 @@ const styles = StyleSheet.create({
         color: 'white',
         alignSelf: 'center',
         fontSize: 16,
-        fontFamily: 'Myriad_Regular',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,

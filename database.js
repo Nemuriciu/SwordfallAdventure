@@ -1,7 +1,11 @@
 import AWS from 'aws-sdk';
 import {marshall} from '@aws-sdk/util-dynamodb';
 import {initializeQuests} from './parsers/questParser';
-import {CREATURE_COUNT_MAX, CREATURE_COUNT_MIN, getCreature} from './parsers/creatureParser';
+import {
+    CREATURE_COUNT_MAX,
+    CREATURE_COUNT_MIN,
+    getCreature,
+} from './parsers/creatureParser';
 import {rand} from './parsers/itemParser';
 import {initializeSkills} from './parsers/skillParser';
 //import "react-native-get-random-values";
@@ -153,7 +157,7 @@ function createUserEntry(userID, username) {
             },
             inventory: {
                 //TODO:
-                inventoryList: new Array(36).fill({}),
+                inventoryList: new Array(42).fill({}),
             },
             quests: {
                 questsList: initializeQuests(1),

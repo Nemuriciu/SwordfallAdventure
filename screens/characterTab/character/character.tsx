@@ -12,6 +12,7 @@ import {Equipment} from './equipment';
 import {Attributes} from './attributes.tsx';
 import {getImage} from '../../../assets/images/_index';
 import {colors} from '../../../utils/colors.ts';
+import {values} from '../../../utils/values.ts';
 
 export function Character() {
     return (
@@ -63,7 +64,7 @@ const styles = StyleSheet.create({
     avatar: {
         aspectRatio: 1,
         height: undefined,
-        width: '30%',
+        width: '25%',
         borderRadius: 100,
         borderWidth: 4,
         borderColor: '#BE763C',
@@ -72,17 +73,17 @@ const styles = StyleSheet.create({
     username: {
         fontSize: 16,
         color: colors.primary,
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
     },
     guild: {
-        marginTop: 12,
-        marginBottom: 12,
+        marginTop: 6,
+        marginBottom: 6,
         fontSize: 16,
         color: colors.primary,
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -90,7 +91,7 @@ const styles = StyleSheet.create({
     arena: {
         fontSize: 16,
         color: colors.primary,
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,

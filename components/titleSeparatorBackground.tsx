@@ -9,6 +9,7 @@ import {
 import React from 'react';
 import {getImage} from '../assets/images/_index';
 import {colors} from '../utils/colors.ts';
+import {values} from '../utils/values.ts';
 
 interface props {
     title: string;
@@ -65,7 +66,7 @@ const styles = StyleSheet.create({
         fontSize: 30,
         textAlign: 'center',
         color: colors.primary,
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,

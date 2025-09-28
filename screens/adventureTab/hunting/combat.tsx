@@ -55,6 +55,7 @@ import {questsStore} from '../../../store_zustand/questsStore.tsx';
 import {attributesStore} from '../../../store_zustand/attributesStore.tsx';
 import {skillsStore} from '../../../store_zustand/skillsStore.tsx';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import {values} from '../../../utils/values.ts';
 
 export function Combat() {
     const rewardsInit = rewardsStore(state => state.rewardsInit);
@@ -1050,11 +1051,12 @@ export function Combat() {
         <Modal
             /* eslint-disable-next-line react-native/no-inline-styles */
             style={{margin: 0}}
-            animationIn={'zoomIn'}
+            animationIn={'fadeIn'}
             animationOut={'fadeOut'}
-            animationInTiming={350}
+            // animationInTiming={100}
+            backdropTransitionInTiming={1}
+            backdropTransitionOutTiming={1}
             isVisible={modalVisible}
-            hideModalContentWhileAnimating={true}
             useNativeDriver={true}
             hasBackdrop={false}
             // TODO: Remove DEBUG
@@ -1887,7 +1889,7 @@ const styles = StyleSheet.create({
     phyAtkValue: {
         flex: 1,
         color: colors.physicalAtk_color,
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -1895,7 +1897,7 @@ const styles = StyleSheet.create({
     magAtkValue: {
         flex: 1,
         color: colors.magicalAtk_color,
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -1903,7 +1905,7 @@ const styles = StyleSheet.create({
     phyResValue: {
         flex: 1,
         color: colors.physicalRes_color,
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -1911,7 +1913,7 @@ const styles = StyleSheet.create({
     magResValue: {
         flex: 1,
         color: colors.magicalRes_color,
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -1919,7 +1921,7 @@ const styles = StyleSheet.create({
     criticalValue: {
         flex: 1,
         color: colors.critical_color,
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -1927,7 +1929,7 @@ const styles = StyleSheet.create({
     dodgeValue: {
         flex: 1,
         color: colors.dodge_color,
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -1955,7 +1957,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         color: 'white',
         fontSize: 16,
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 3,
@@ -1978,7 +1980,7 @@ const styles = StyleSheet.create({
         bottom: 0,
         right: 2,
         color: 'white',
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -2017,7 +2019,7 @@ const styles = StyleSheet.create({
         color: colors.primary,
         textAlign: 'center',
         fontSize: 16,
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -2030,7 +2032,7 @@ const styles = StyleSheet.create({
         textAlignVertical: 'center',
         color: 'white',
         fontSize: 18,
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,

@@ -1,14 +1,14 @@
-/* eslint-disable react/no-unstable-nested-components */
 import {
     Image,
     ImageBackground,
     StatusBar,
     StyleSheet,
     Text,
+    TouchableOpacity,
     View,
 } from 'react-native';
 import React, {useEffect} from 'react';
-import {NavigationContainer} from '@react-navigation/native';
+import {NavigationContainer, useIsFocused} from '@react-navigation/native';
 import {CharacterTab} from './characterTab/characterTab';
 import {AdventureTab} from './adventureTab/adventureTab';
 import {TownTab} from './townTab/townTab';
@@ -25,7 +25,9 @@ import {userInfoStore} from '../store_zustand/userInfoStore.tsx';
 import {addEventListener, fetch} from '@react-native-community/netinfo';
 import {strings} from '../utils/strings.ts';
 import {ButtonType, CustomButton} from '../components/buttons/customButton.tsx';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
+import {values} from '../utils/values.ts';
+import {ItemTooltip} from '../components/itemTooltip.tsx';
 
 const Tab = createBottomTabNavigator();
 // const setLevelUpVisibility = userInfoStore(state => state.setLevelUpVisibility);
@@ -37,6 +39,7 @@ export function MainComponent() {
     const setNetworkConnection = userInfoStore(
         state => state.setNetworkConnection,
     );
+    const insets = useSafeAreaInsets();
     /* Verify network connection */
     addEventListener(state => {
         if (state.isConnected !== networkConnection) {
@@ -63,6 +66,43 @@ export function MainComponent() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [exp]);
 
+    // @ts-ignore
+    const NavIcon = ({img, label, onPress}) => {
+        const isFocused = useIsFocused();
+
+        return (
+            <TouchableOpacity
+                onPress={onPress}
+                activeOpacity={1}
+                style={{
+                    flex: 1,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    paddingTop: 6,
+                    paddingBottom: 6,
+                }}>
+                <Image
+                    style={{flex: 1, aspectRatio: 1, height: '100%'}}
+                    source={getImage(img)}
+                    resizeMode={'stretch'}
+                    fadeDuration={0}
+                />
+                <Text
+                    style={{
+                        color: isFocused ? colors.primary : '#fff',
+                        fontFamily: 'Roboto',
+                        textShadowColor: 'rgba(0, 0, 0, 1)',
+                        textShadowOffset: {width: 1, height: 1},
+                        textShadowRadius: 5,
+                    }}
+                    adjustsFontSizeToFit={true}>
+                    {label}
+                </Text>
+            </TouchableOpacity>
+        );
+    };
+
+    // @ts-ignore
     return (
         <SafeAreaView style={styles.container}>
             {/* No Network Page */}
@@ -88,6 +128,7 @@ export function MainComponent() {
                     />
                 </View>
             )}
+            {networkConnection && <ItemTooltip />}
             {networkConnection && <ItemDetails />}
             {networkConnection && <RewardsModal />}
             {networkConnection && <Combat />}
@@ -101,19 +142,8 @@ export function MainComponent() {
                             headerShown: false,
                             tabBarActiveTintColor: colors.primary,
                             tabBarStyle: {
-                                height: 82,
+                                height: 75 + insets.bottom,
                                 borderTopWidth: 0,
-                                elevation: 0,
-                                paddingTop: 4,
-                                paddingBottom: 4,
-                            },
-                            tabBarLabelStyle: {
-                                fontSize: 13,
-                                fontFamily: 'Myriad',
-                                textShadowColor: 'rgba(0, 0, 0, 1)',
-                                textShadowOffset: {width: 1, height: 1},
-                                textShadowRadius: 5,
-                                marginBottom: 8,
                             },
                             tabBarBackground: () => (
                                 <ImageBackground
@@ -129,18 +159,14 @@ export function MainComponent() {
                             component={CharacterTab}
                             options={{
                                 lazy: false,
-                                tabBarIcon: () => {
-                                    return (
-                                        <Image
-                                            style={styles.icon}
-                                            source={getImage(
-                                                'nav_icon_character',
-                                            )}
-                                            resizeMode={'stretch'}
-                                            fadeDuration={0}
-                                        />
-                                    );
-                                },
+                                tabBarButton: props => (
+                                    // @ts-ignore
+                                    <NavIcon
+                                        {...props}
+                                        img="nav_icon_character"
+                                        label="Character"
+                                    />
+                                ),
                             }}
                         />
                         <Tab.Screen
@@ -148,18 +174,14 @@ export function MainComponent() {
                             component={AdventureTab}
                             options={{
                                 lazy: false,
-                                tabBarIcon: () => {
-                                    return (
-                                        <Image
-                                            style={styles.icon}
-                                            source={getImage(
-                                                'nav_icon_adventure',
-                                            )}
-                                            resizeMode={'stretch'}
-                                            fadeDuration={0}
-                                        />
-                                    );
-                                },
+                                tabBarButton: props => (
+                                    // @ts-ignore
+                                    <NavIcon
+                                        {...props}
+                                        img="nav_icon_adventure"
+                                        label="Adventure"
+                                    />
+                                ),
                             }}
                         />
                         <Tab.Screen
@@ -167,16 +189,14 @@ export function MainComponent() {
                             component={TownTab}
                             options={{
                                 lazy: false,
-                                tabBarIcon: () => {
-                                    return (
-                                        <Image
-                                            style={styles.icon}
-                                            source={getImage('nav_icon_town')}
-                                            resizeMode={'stretch'}
-                                            fadeDuration={0}
-                                        />
-                                    );
-                                },
+                                tabBarButton: props => (
+                                    // @ts-ignore
+                                    <NavIcon
+                                        {...props}
+                                        img="nav_icon_town"
+                                        label="Town"
+                                    />
+                                ),
                             }}
                         />
                         <Tab.Screen
@@ -184,18 +204,14 @@ export function MainComponent() {
                             component={SettingsTab}
                             options={{
                                 lazy: false,
-                                tabBarIcon: () => {
-                                    return (
-                                        <Image
-                                            style={styles.icon}
-                                            source={getImage(
-                                                'nav_icon_settings',
-                                            )}
-                                            resizeMode={'stretch'}
-                                            fadeDuration={0}
-                                        />
-                                    );
-                                },
+                                tabBarButton: props => (
+                                    // @ts-ignore
+                                    <NavIcon
+                                        {...props}
+                                        img="nav_icon_settings"
+                                        label="Settings"
+                                    />
+                                ),
                             }}
                         />
                     </Tab.Navigator>
@@ -216,9 +232,12 @@ export function MainComponent() {
 };*/
 
 const styles = StyleSheet.create({
+    safeArea: {
+        flex: 1,
+    },
     container: {
         flex: 1,
-        backgroundColor: '#817b6a',
+        backgroundColor: '#241f20',
     },
     connectionContainer: {
         flex: 1,
@@ -234,7 +253,7 @@ const styles = StyleSheet.create({
     connectionText: {
         marginTop: 8,
         color: colors.primary,
-        fontFamily: 'Myriad_Regular',
+        fontFamily: values.fontRegular,
         fontSize: 20,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
@@ -246,22 +265,8 @@ const styles = StyleSheet.create({
         aspectRatio: 3,
         width: '30%',
     },
-    navContainer: {},
-    baseText: {
-        textAlign: 'center',
-        fontSize: 30,
-    },
-    bottomBar: {
-        height: 60,
-        width: '100%',
-        resizeMode: 'contain',
-    },
     tabBarBackground: {
         flex: 1,
         width: '100%',
-    },
-    icon: {
-        aspectRatio: 1,
-        height: 45,
     },
 });

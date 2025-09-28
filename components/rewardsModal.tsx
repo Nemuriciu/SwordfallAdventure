@@ -1,12 +1,13 @@
 import React, {useEffect} from 'react';
 import {
-    StyleSheet,
-    View,
-    ImageBackground,
-    FlatList,
-    Text,
-    Image,
     Dimensions,
+    FlatList,
+    Image,
+    ImageBackground,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from 'react-native';
 import Modal from 'react-native-modal';
 import {getImage} from '../assets/images/_index';
@@ -20,16 +21,25 @@ import {rewardsStore} from '../store_zustand/rewardsStore.tsx';
 import {inventoryStore} from '../store_zustand/inventoryStore.tsx';
 import {userInfoStore} from '../store_zustand/userInfoStore.tsx';
 import {gatheringStore} from '../store_zustand/gatheringStore.tsx';
+import {values} from '../utils/values.ts';
+import experienceJson from '../assets/json/experience.json';
+import {itemTooltipStore} from '../store_zustand/itemTooltipStore.tsx';
 
 export function RewardsModal() {
+    const level = userInfoStore(state => state.level);
     const exp = userInfoStore(state => state.exp);
     const shards = userInfoStore(state => state.shards);
     const updateExp = userInfoStore(state => state.updateExp);
     const updateShards = userInfoStore(state => state.updateShards);
+    const increaseLevel = userInfoStore(state => state.increaseLevel);
     const inventoryList = inventoryStore(state => state.inventoryList);
     const inventoryAddItems = inventoryStore(state => state.inventoryAddItems);
     const gatherExp = gatheringStore(state => state.exp);
+    const gatherLevel = gatheringStore(state => state.level);
     const updateGatherExp = gatheringStore(state => state.updateGatherExp);
+    const increaseGatherLevel = gatheringStore(
+        state => state.increaseGatherLevel,
+    );
     const modalVisible = rewardsStore(state => state.modalVisible);
     const rewards = rewardsStore(state => state.rewards);
     const rewardsExp = rewardsStore(state => state.exp);
@@ -39,20 +49,37 @@ export function RewardsModal() {
     const rewardsHide = rewardsStore(state => state.rewardsHide);
     const levelUpVisibility = userInfoStore(state => state.levelUpVisibility);
 
+    const itemTooltipShow = itemTooltipStore(state => state.itemTooltipShow);
+
     useEffect(() => {
         if (modalVisible) {
             if (!isFull(inventoryList)) {
                 if (rewards.length) {
                     inventoryAddItems(rewards);
                 }
-                if (rewardsExp) {
-                    updateExp(exp + rewardsExp);
-                }
                 if (rewardsShards) {
                     updateShards(shards + rewardsShards);
                 }
                 if (rewardsGatheringExp) {
-                    updateGatherExp(gatherExp + rewardsGatheringExp);
+                    const newExp = gatherExp + rewardsGatheringExp;
+                    const maxExp =
+                        experienceJson.gatheringMaxExp[gatherLevel - 1];
+                    /* Check Gather Level-Up */
+                    if (newExp >= maxExp) {
+                        increaseGatherLevel(newExp - maxExp);
+                    } else {
+                        updateGatherExp(newExp);
+                    }
+                }
+                if (rewardsExp) {
+                    const newExp = exp + rewardsExp;
+                    const maxExp = experienceJson.userMaxExp[level - 1];
+                    /* Check Level-Up */
+                    if (newExp >= maxExp) {
+                        increaseLevel(newExp - maxExp);
+                    } else {
+                        updateExp(newExp);
+                    }
                 }
             }
         }
@@ -61,14 +88,16 @@ export function RewardsModal() {
 
     // @ts-ignore
     const renderItem = ({item}) => (
-        <ImageBackground
-            style={styles.rewardSlot}
-            source={getImage(getItemImg(item.id))}
-            fadeDuration={0}>
-            <Text style={styles.rewardQuantity}>
-                {item.quantity > 1 ? item.quantity : ''}
-            </Text>
-        </ImageBackground>
+        <TouchableOpacity onPress={() => itemTooltipShow(item)}>
+            <ImageBackground
+                style={styles.rewardSlot}
+                source={getImage(getItemImg(item.id))}
+                fadeDuration={0}>
+                <Text style={styles.rewardQuantity}>
+                    {item.quantity > 1 ? item.quantity : ''}
+                </Text>
+            </ImageBackground>
+        </TouchableOpacity>
     );
 
     // noinspection RequiredAttributes
@@ -76,9 +105,9 @@ export function RewardsModal() {
         <Modal
             animationIn={'fadeIn'}
             animationOut={'fadeOut'}
-            animationOutTiming={200}
             isVisible={modalVisible}
-            backdropTransitionOutTiming={0}
+            backdropTransitionInTiming={1}
+            backdropTransitionOutTiming={1}
             useNativeDriver={true}>
             {/* Level Up Icon */}
             {levelUpVisibility && (
@@ -130,48 +159,48 @@ export function RewardsModal() {
                                 fadeDuration={0}
                             />
                             <View style={styles.bottomContainer}>
-                                {rewardsGatheringExp ? (
-                                    <View style={styles.gatheringExpContainer}>
-                                        <Text style={styles.gatheringExpLabel}>
-                                            Gathering Experience:
+                                {rewardsShards ? (
+                                    <View style={styles.bottomInnerContainer}>
+                                        <Image
+                                            style={styles.bottomIcon}
+                                            source={getImage('icon_shards')}
+                                            fadeDuration={0}
+                                        />
+                                        <Text style={styles.bottomText}>
+                                            {rewardsShards}
                                         </Text>
-                                        <Text style={styles.gatheringExpText}>
+                                    </View>
+                                ) : null}
+                                {rewardsExp ? (
+                                    <View style={styles.bottomInnerContainer}>
+                                        <Text style={styles.bottomExpIcon}>
+                                            {strings.xp}
+                                        </Text>
+                                        <Text style={styles.bottomText}>
+                                            {rewardsExp}
+                                        </Text>
+                                    </View>
+                                ) : null}
+                                {rewardsGatheringExp ? (
+                                    <View style={styles.bottomInnerContainer}>
+                                        <Image
+                                            style={styles.bottomIcon}
+                                            source={getImage(
+                                                'quests_icon_gathering',
+                                            )}
+                                            fadeDuration={0}
+                                        />
+                                        <Text style={styles.bottomText}>
                                             {rewardsGatheringExp}
                                         </Text>
                                     </View>
                                 ) : null}
-                                <View style={styles.shardsExpContainer}>
-                                    {rewardsShards ? (
-                                        <Image
-                                            style={styles.shardsIcon}
-                                            source={getImage('icon_shards')}
-                                            fadeDuration={0}
-                                        />
-                                    ) : null}
-                                    {rewardsShards ? (
-                                        <Text style={styles.shardsText}>
-                                            {rewardsShards}
-                                        </Text>
-                                    ) : null}
-                                    {rewardsExp ? (
-                                        <Text style={styles.expIcon}>
-                                            {strings.xp}
-                                        </Text>
-                                    ) : null}
-                                    {rewardsExp ? (
-                                        <Text style={styles.expText}>
-                                            {rewardsExp}
-                                        </Text>
-                                    ) : null}
-                                </View>
                             </View>
                         </View>
-
                         <CloseButton
                             onPress={() => {
                                 rewardsHide();
                             }}
-                            style={styles.closeButton}
                         />
                     </ImageBackground>
                 </View>
@@ -188,34 +217,34 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        marginStart: 16,
-        marginEnd: 16,
+        marginStart: 12,
+        marginEnd: 12,
     },
     background: {
         width: '100%',
     },
     innerContainer: {
         alignItems: 'center',
-        marginTop: 32,
-        marginBottom: 32,
-        marginStart: 32,
-        marginEnd: 32,
+        marginTop: 16,
+        marginBottom: 24,
+        marginStart: 24,
+        marginEnd: 24,
     },
     title: {
         color: colors.primary,
-        fontSize: 24,
-        fontFamily: 'Myriad',
+        fontSize: 20,
+        fontFamily: values.fontBold,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
     },
     flatList: {
-        marginTop: 24,
-        marginBottom: 16,
+        marginTop: 16,
+        marginBottom: 12,
     },
     rewardSlot: {
         aspectRatio: 1,
-        height: Dimensions.get('screen').height / 16,
+        height: Dimensions.get('screen').height / 18,
         marginStart: 1,
         marginEnd: 1,
     },
@@ -224,17 +253,18 @@ const styles = StyleSheet.create({
         bottom: 5,
         right: 6,
         color: 'white',
-        fontFamily: 'Myriad',
+        fontSize: 13,
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
     },
     noRewardText: {
-        marginTop: 24,
-        marginBottom: 24,
+        marginTop: 16,
+        marginBottom: 16,
         color: 'white',
-        fontSize: 18,
-        fontFamily: 'Myriad_Regular',
+        fontSize: 16,
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -242,80 +272,42 @@ const styles = StyleSheet.create({
     separator: {
         width: '100%',
     },
-    bottomContainer: {},
-    gatheringExpContainer: {
-        flexDirection: 'row',
-        width: '100%',
+
+    bottomContainer: {
         marginTop: 12,
-        marginBottom: -4,
-    },
-    shardsExpContainer: {
+        marginBottom: 16,
         flexDirection: 'row',
+        justifyContent: 'space-evenly',
+        alignItems: 'center',
         width: '100%',
-        marginTop: 20,
-        marginBottom: 20,
     },
-    shardsIcon: {
+    bottomInnerContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    bottomIcon: {
         aspectRatio: 1,
-        width: '10%',
-        height: undefined,
-        alignSelf: 'center',
+        width: 20,
+        resizeMode: 'contain',
     },
-    shardsText: {
-        marginStart: 6,
-        alignSelf: 'center',
-        fontSize: 16,
-        color: 'white',
-        fontFamily: 'Myriad',
-        textShadowColor: 'rgba(0, 0, 0, 1)',
-        textShadowOffset: {width: 1, height: 1},
-        textShadowRadius: 5,
-    },
-    expIcon: {
-        marginStart: 46,
-        alignSelf: 'center',
-        fontSize: 18,
-        color: colors.primary,
-        fontFamily: 'Myriad',
-        textShadowColor: 'rgba(0, 0, 0, 1)',
-        textShadowOffset: {width: 1, height: 1},
-        textShadowRadius: 5,
-    },
-    expText: {
-        marginStart: 6,
-        alignSelf: 'center',
-        fontSize: 16,
-        color: 'white',
-        fontFamily: 'Myriad',
-        textShadowColor: 'rgba(0, 0, 0, 1)',
-        textShadowOffset: {width: 1, height: 1},
-        textShadowRadius: 5,
-    },
-    gatheringExpLabel: {
-        marginEnd: 16,
-        alignSelf: 'center',
+    bottomExpIcon: {
         color: colors.experience_color,
-        fontFamily: 'Myriad_Regular',
-        textShadowColor: 'rgba(0, 0, 0, 1)',
-        textShadowOffset: {width: 1, height: 1},
-        textShadowRadius: 5,
-    },
-    gatheringExpText: {
-        alignSelf: 'center',
         fontSize: 16,
-        color: colors.experience_color,
-        fontFamily: 'Myriad',
+        fontFamily: values.fontBold,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
     },
-    closeButton: {
-        position: 'absolute',
-        bottom: '-5%',
-        width: '11%',
-        aspectRatio: 1,
-        alignSelf: 'center',
+    bottomText: {
+        marginStart: 8,
+        color: 'white',
+        fontFamily: values.font,
+        textShadowColor: 'rgba(0, 0, 0, 1)',
+        textShadowOffset: {width: 1, height: 1},
+        textShadowRadius: 5,
     },
+
+    // TODO:
     level_up: {
         position: 'absolute',
         zIndex: 100,

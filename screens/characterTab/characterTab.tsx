@@ -5,6 +5,7 @@ import {Character} from './character/character';
 import {Inventory} from './inventory/inventory';
 import {Skills} from './skills/skills';
 import {colors} from '../../utils/colors.ts';
+import {values} from '../../utils/values.ts';
 
 const renderScene = SceneMap({
     1: Character,
@@ -27,6 +28,7 @@ export function CharacterTab() {
         return (
             <TabBar
                 {...props}
+                // @ts-ignore
                 renderLabel={({focused, route}) => {
                     return (
                         <Text
@@ -67,7 +69,7 @@ const styles = StyleSheet.create({
         alignSelf: 'stretch',
         textAlign: 'center',
         color: 'white',
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,

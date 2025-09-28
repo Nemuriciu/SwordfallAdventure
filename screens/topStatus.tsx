@@ -9,6 +9,7 @@ import experienceJson from '../assets/json/experience.json';
 import {PlusButton} from '../components/buttons/plusButton.tsx';
 import {IconText} from '../components/iconText.tsx';
 import {userInfoStore} from '../store_zustand/userInfoStore.tsx';
+import {values} from '../utils/values.ts';
 
 export function TopStatus() {
     const username = userInfoStore(state => state.username);
@@ -389,7 +390,7 @@ const styles = StyleSheet.create({
     progressBarContainer: {
         height: 18,
         flexDirection: 'row',
-        marginTop: 4,
+        marginTop: 2,
         marginBottom: 8,
         marginStart: '2.5%',
         marginEnd: '2.5%',
@@ -427,7 +428,7 @@ const styles = StyleSheet.create({
         marginBottom: 1,
         textAlign: 'center',
         color: colors.primary,
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -438,7 +439,7 @@ const styles = StyleSheet.create({
         marginEnd: 4,
         fontSize: 16,
         color: 'white',
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -459,7 +460,7 @@ const styles = StyleSheet.create({
         flex: 1,
         marginStart: 6,
         color: 'white',
-        fontFamily: 'Myriad_Regular',
+        fontFamily: values.fontRegular,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -473,9 +474,8 @@ const styles = StyleSheet.create({
     expIcon: {
         marginStart: 4,
         marginEnd: 8,
-        fontSize: 16,
         color: colors.experience_color,
-        fontFamily: 'Myriad_Bold',
+        fontFamily: values.fontBold,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -483,18 +483,16 @@ const styles = StyleSheet.create({
     experience: {
         flex: 1,
         textAlign: 'left',
-        fontSize: 16,
         color: colors.experience_color,
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
     },
 
     staminaRefresh: {
-        fontSize: 16,
         color: colors.stamina_color,
-        fontFamily: 'Myriad_Regular',
+        fontFamily: values.fontRegular,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -503,9 +501,8 @@ const styles = StyleSheet.create({
         marginLeft: 'auto',
         marginRight: 2,
         textAlign: 'right',
-        fontSize: 16,
         color: colors.stamina_color,
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,

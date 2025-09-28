@@ -17,6 +17,7 @@ import {
 } from '../../../parsers/itemParser.tsx';
 import {Item} from '../../../types/item.ts';
 import {strings} from '../../../utils/strings.ts';
+import {values} from '../../../utils/values.ts';
 
 interface props {
     craftedItem: Item;
@@ -97,7 +98,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
     },
     imageContainer: {
-        width: '14%',
+        width: '13%',
         aspectRatio: 1,
         marginStart: 32,
         marginTop: 12,
@@ -115,17 +116,17 @@ const styles = StyleSheet.create({
     },
     name: {
         marginTop: 2,
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
     },
     level: {
-        marginTop: 4,
+        marginTop: 2,
         marginBottom: 4,
         color: 'white',
         fontSize: 13,
-        fontFamily: 'Myriad_Regular',
+        fontFamily: values.fontRegular,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -134,7 +135,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         color: 'white',
         fontSize: 13,
-        fontFamily: 'Myriad_Regular',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -165,7 +166,7 @@ const styles = StyleSheet.create({
         right: 4,
         color: 'white',
         fontSize: 12,
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,

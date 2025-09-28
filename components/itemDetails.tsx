@@ -20,7 +20,6 @@ import {getImage} from '../assets/images/_index';
 import {ButtonType, CustomButton} from './buttons/customButton.tsx';
 import {colors} from '../utils/colors.ts';
 import {getStats} from '../parsers/attributeParser.tsx';
-import {CloseButton} from './buttons/closeButton.tsx';
 import {strings} from '../utils/strings.ts';
 import {
     getInventoryIndex,
@@ -286,7 +285,6 @@ export function ItemDetails() {
                     getItemRarity(item.id),
                     item.level,
                 );
-                /* Remove Key */
                 const keyIndex = getInventoryIndex(
                     getKey(getItemRarity(item.id), item.level, 1),
                     inventoryList,
@@ -329,9 +327,9 @@ export function ItemDetails() {
         <Modal
             animationIn={'fadeIn'}
             animationOut={'fadeOut'}
-            animationOutTiming={200}
             isVisible={modalVisible}
-            backdropTransitionOutTiming={0}
+            backdropTransitionInTiming={1}
+            backdropTransitionOutTiming={1}
             useNativeDriver={true}
             onBackdropPress={() => {
                 itemDetailsHide();
@@ -412,7 +410,20 @@ export function ItemDetails() {
                                                 ' ' +
                                                 getItemType(equippedItem.id)}
                                         </Text>
-                                        <Text style={styles.level}>
+                                        <Text
+                                            style={[
+                                                styles.level,
+                                                {
+                                                    color:
+                                                        getItemCategory(
+                                                            equippedItem.id,
+                                                        ) === 'equipment' &&
+                                                        equippedItem.level >
+                                                            level
+                                                            ? 'red'
+                                                            : 'white',
+                                                },
+                                            ]}>
                                             {'Level ' + equippedItem.level}
                                         </Text>
                                     </View>
@@ -587,7 +598,19 @@ export function ItemDetails() {
                                                   getItemType(item.id)
                                                 : ''}
                                         </Text>
-                                        <Text style={styles.level}>
+                                        <Text
+                                            style={[
+                                                styles.level,
+                                                {
+                                                    color:
+                                                        getItemCategory(
+                                                            item.id,
+                                                        ) === 'equipment' &&
+                                                        item.level > level
+                                                            ? 'red'
+                                                            : 'white',
+                                                },
+                                            ]}>
                                             {isItem(item)
                                                 ? 'Level ' + item.level
                                                 : ''}
@@ -761,16 +784,16 @@ export function ItemDetails() {
                                                     'chest'
                                                         ? strings.open
                                                         : getItemCategory(
-                                                              item.id,
-                                                          ) === 'consumable'
-                                                        ? strings.use
-                                                        : getItemCategory(
-                                                              item.id,
-                                                          ) === 'equipment'
-                                                        ? index !== -1
-                                                            ? strings.equip
-                                                            : strings.unequip
-                                                        : ''
+                                                                item.id,
+                                                            ) === 'consumable'
+                                                          ? strings.use
+                                                          : getItemCategory(
+                                                                  item.id,
+                                                              ) === 'equipment'
+                                                            ? index !== -1
+                                                                ? strings.equip
+                                                                : strings.unequip
+                                                            : ''
                                                 }
                                                 onPress={() => {
                                                     if (
@@ -799,6 +822,11 @@ export function ItemDetails() {
                                                 }}
                                                 disabled={
                                                     disabled ||
+                                                    (getItemCategory(
+                                                        item.id,
+                                                    ) === 'equipment' &&
+                                                        item.level > level &&
+                                                        index !== -1) ||
                                                     (getItemCategory(
                                                         item.id,
                                                     ) === 'chest' &&
@@ -840,12 +868,6 @@ export function ItemDetails() {
                                         />
                                     )}
                                 </View>
-                                {/*<CloseButton
-                                    onPress={() => {
-                                        itemDetailsHide();
-                                    }}
-                                    style={styles.closeButton}
-                                />*/}
                             </View>
                         </ImageBackground>
                     )}
@@ -866,15 +888,15 @@ const styles = StyleSheet.create({
     },
     background: {
         width: '100%',
-        marginBottom: 2,
+        marginBottom: 4,
     },
     equippedTitle: {
-        marginTop: -28,
-        marginBottom: 2,
+        marginTop: -32,
+        marginBottom: 4,
         textAlign: 'center',
         color: colors.primary,
         fontSize: 20,
-        fontFamily: 'Myriad',
+        fontFamily: values.fontBold,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -888,6 +910,7 @@ const styles = StyleSheet.create({
     imageContainer: {
         width: '20%',
         aspectRatio: 1,
+        marginTop: 2,
         marginEnd: 12,
     },
     image: {
@@ -900,31 +923,28 @@ const styles = StyleSheet.create({
         right: '12.5%',
         color: 'white',
         fontSize: 16,
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
     },
     itemInfoContainer: {},
     name: {
-        fontSize: 17,
-        fontFamily: 'Myriad',
+        fontSize: 16,
+        fontFamily: values.fontBold,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
     },
     type: {
-        marginTop: 1,
         textTransform: 'capitalize',
-        fontFamily: 'Myriad_Regular',
+        fontFamily: values.fontRegular,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
     },
     level: {
-        marginTop: 1,
-        color: 'white',
-        fontFamily: 'Myriad_Regular',
+        fontFamily: values.fontRegular,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -941,11 +961,11 @@ const styles = StyleSheet.create({
     attributesContainer: {
         marginStart: 52,
         marginEnd: 48,
-        marginBottom: 24,
+        marginBottom: 16,
     },
     attribute: {
         marginTop: 2,
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -953,8 +973,6 @@ const styles = StyleSheet.create({
     buttonsContainer: {
         flexDirection: 'row',
         justifyContent: 'space-evenly',
-        // marginTop: 4,
-        // marginBottom: 20,
         marginTop: 8,
         marginStart: 24,
         marginEnd: 24,
@@ -979,16 +997,9 @@ const styles = StyleSheet.create({
         marginEnd: 4,
         marginTop: 1,
         color: 'white',
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
-    },
-    closeButton: {
-        position: 'absolute',
-        bottom: '-5%',
-        width: '11%',
-        aspectRatio: 1,
-        alignSelf: 'center',
     },
 });

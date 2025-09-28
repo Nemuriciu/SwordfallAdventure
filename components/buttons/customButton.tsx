@@ -8,6 +8,7 @@ import {
     View,
 } from 'react-native';
 import {getImage} from '../../assets/images/_index';
+import {values} from '../../utils/values.ts';
 
 interface props {
     type: ButtonType;
@@ -68,21 +69,22 @@ export function CustomButton({type, title, onPress, disabled, style}: props) {
                     disabled
                         ? disabledImage
                         : isPressed
-                        ? pressedImage
-                        : defaultImage
+                          ? pressedImage
+                          : defaultImage
                 }
                 resizeMode={'stretch'}
                 fadeDuration={0}>
-                <View style={{
-                    flex: 1,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                }}>
+                <View
+                    style={{
+                        flex: 1,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    }}>
                     <Text
                         style={{
                             textAlign: 'center',
                             color: 'white',
-                            fontFamily: 'Myriad_Regular',
+                            fontFamily: values.font,
                             textShadowColor: 'rgba(0, 0, 0, 1)',
                             textShadowOffset: {width: 1, height: 1},
                             textShadowRadius: 5,

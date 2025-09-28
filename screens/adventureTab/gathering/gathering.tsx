@@ -22,6 +22,7 @@ import ProgressBar from '../../../components/progressBar.tsx';
 import experienceJson from '../../../assets/json/experience.json';
 import {colors} from '../../../utils/colors.ts';
 import {gatheringStore} from '../../../store_zustand/gatheringStore.tsx';
+import {values} from '../../../utils/values.ts';
 
 export function Gathering() {
     const gatherLevel = gatheringStore(state => state.level);
@@ -31,11 +32,8 @@ export function Gathering() {
     const gatherTimestamp = gatheringStore(state => state.timestamp);
     const nodes = gatheringStore(state => state.nodes);
     const setGatherInfo = gatheringStore(state => state.setGatherInfo);
-    const increaseGatherLevel = gatheringStore(
-        state => state.increaseGatherLevel,
-    );
     const didMount = useRef(2);
-    // TODO: Gathering level up and experience/gather
+
     useEffect(() => {
         fetchGatheringDB();
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -55,14 +53,6 @@ export function Gathering() {
         gatherTimestamp,
         nodes,
     ]);
-
-    useEffect(() => {
-        const maxExp = experienceJson.gatheringMaxExp[gatherLevel - 1];
-        if (gatherExp >= maxExp) {
-            increaseGatherLevel(gatherExp - maxExp);
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [gatherExp]);
 
     function fetchGatheringDB() {
         const params = {
@@ -241,7 +231,7 @@ const styles = StyleSheet.create({
         marginEnd: 8,
         alignSelf: 'center',
         color: colors.experience_color,
-        fontFamily: 'Myriad_Regular',
+        fontFamily: values.fontRegular,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
@@ -253,7 +243,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         fontSize: 22,
         color: colors.experience_color,
-        fontFamily: 'Myriad',
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
