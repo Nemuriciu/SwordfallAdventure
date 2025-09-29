@@ -1,12 +1,12 @@
 import React from 'react';
 import {
+    Dimensions,
+    FlatList,
+    Image,
+    ImageBackground,
     StyleSheet,
     Text,
     View,
-    ImageBackground,
-    Image,
-    FlatList,
-    Dimensions,
 } from 'react-native';
 import {getImage} from '../../../assets/images/_index';
 import {
@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
     },
     imageContainer: {
-        width: '13%',
+        width: '12%',
         aspectRatio: 1,
         marginStart: 32,
         marginTop: 12,

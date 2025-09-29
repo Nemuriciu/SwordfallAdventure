@@ -1,12 +1,13 @@
 import React, {useState} from 'react';
-import {TouchableOpacity, Image} from 'react-native';
+import {Image, StyleProp, TouchableOpacity, ViewStyle} from 'react-native';
 import {getImage} from '../../assets/images/_index';
 
 interface props {
     onPress: () => void;
+    style?: StyleProp<ViewStyle>;
 }
 
-export function CloseButton({onPress}: props) {
+export function CloseButton({onPress, style}: props) {
     const [isPressed, setIsPressed] = useState(false);
     const [disabled, setDisabled] = useState(false);
     const defaultImage = getImage('button_close');
@@ -39,13 +40,15 @@ export function CloseButton({onPress}: props) {
             onPressOut={handlePressOut}
             activeOpacity={1}
             disabled={disabled}
-            style={{
-                position: 'absolute',
-                bottom: '-5%',
-                width: '10%',
-                aspectRatio: 1,
-                alignSelf: 'center',
-            }}>
+            style={
+                style || {
+                    position: 'absolute',
+                    bottom: '-5%',
+                    width: '10%',
+                    aspectRatio: 1,
+                    alignSelf: 'center',
+                }
+            }>
             <Image
                 source={isPressed ? pressedImage : defaultImage}
                 resizeMode={'contain'}

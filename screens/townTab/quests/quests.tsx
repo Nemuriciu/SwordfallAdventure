@@ -22,7 +22,6 @@ import {
 } from '../../../parsers/questParser.tsx';
 import {getItemImg} from '../../../parsers/itemParser.tsx';
 import {strings} from '../../../utils/strings.ts';
-import {colors} from '../../../utils/colors.ts';
 import ProgressBar from '../../../components/progressBar.tsx';
 import {
     ButtonType,
@@ -37,8 +36,18 @@ import {rewardsStore} from '../../../store_zustand/rewardsStore.tsx';
 import {questsStore} from '../../../store_zustand/questsStore.tsx';
 import {values} from '../../../utils/values.ts';
 import {itemTooltipStore} from '../../../store_zustand/itemTooltipStore.tsx';
+import {colors} from '../../../utils/colors.ts';
+import {CloseButton} from '../../../components/buttons/closeButton.tsx';
+import {Quest} from '../../../types/quest.ts';
+
+const numColumns = 2;
+const spacing = 4;
 
 export function Quests() {
+    const [containerWidth, setContainerWidth] = useState(
+        Dimensions.get('window').width,
+    );
+
     const level = userInfoStore(state => state.level);
     const rewardsInit = rewardsStore(state => state.rewardsInit);
     const questsList = questsStore(state => state.questsList);
@@ -242,39 +251,80 @@ export function Quests() {
         return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
     }
 
-    // @ts-ignore
-    const renderItem = ({item, index}) => {
+    const renderItem = ({item, index}: {item: Quest; index: number}) => {
+        const itemWidth = (containerWidth - spacing * numColumns) / numColumns;
+
         return (
             <ImageBackground
-                style={styles.questBackground}
-                source={getImage('background_node')}
+                style={[styles.questBackground, {width: itemWidth}]}
+                source={getImage('item_background_default')}
                 resizeMode={'stretch'}
                 fadeDuration={0}>
+                {/* Abandon Icon */}
                 <View style={styles.topContainer}>
-                    {/* Icon */}
-                    <Image
-                        style={styles.questIcon}
-                        source={
-                            item.type === 'hunting'
-                                ? getImage('quests_icon_hunting')
-                                : item.type === 'crafting'
-                                  ? getImage('quests_icon_crafting')
-                                  : item.type === 'gathering'
-                                    ? getImage('quests_icon_gathering')
-                                    : null
-                        }
-                        resizeMode={'stretch'}
-                        fadeDuration={0}
-                    />
-                    {/* Description */}
-                    <View style={styles.descriptionContainer}>
-                        <Text style={styles.description}>
-                            {item.description}
+                    {item.isActive && !isQuestComplete(item) && (
+                        <CloseButton
+                            style={styles.abandonButton}
+                            onPress={() => abandonQuest(index)}
+                        />
+                    )}
+                </View>
+                {/* Description */}
+                <View style={styles.descriptionContainer}>
+                    <Text style={styles.description}>{item.description}</Text>
+                </View>
+                {/*<View style={styles.descriptionContainer}/>*/}
+                {/* Rewards */}
+                <View style={styles.rewardsListContainer}>
+                    {item.rewards.length ? (
+                        <FlatList
+                            horizontal
+                            data={item.rewards}
+                            /* eslint-disable-next-line @typescript-eslint/no-shadow */
+                            renderItem={({item}) => (
+                                <TouchableOpacity
+                                    style={styles.rewardSlot}
+                                    onPress={() => itemTooltipShow(item)}>
+                                    <ImageBackground
+                                        style={styles.rewardSlot}
+                                        source={getImage(getItemImg(item.id))}
+                                        fadeDuration={0}>
+                                        <Text style={styles.rewardQuantity}>
+                                            {item.quantity > 1
+                                                ? item.quantity
+                                                : ''}
+                                        </Text>
+                                    </ImageBackground>
+                                </TouchableOpacity>
+                            )}
+                            scrollEnabled={false}
+                            overScrollMode={'never'}
+                        />
+                    ) : null}
+                </View>
+                {/* Shards & Exp */}
+                <View style={styles.currencyContainer}>
+                    <View style={styles.currencyInnerContainer}>
+                        <Image
+                            style={styles.currencyIcon}
+                            source={getImage('icon_shards')}
+                            fadeDuration={0}
+                        />
+                        <Text style={styles.currencyText}>
+                            {getQuestShards(item)}
                         </Text>
                     </View>
-                    {/* Progress Bar */}
-                    <View style={styles.progressBarContainer}>
-                        {item.isActive ? (
+                    <View style={styles.currencyInnerContainer}>
+                        <Text style={styles.expIcon}>{strings.xp}</Text>
+                        <Text style={styles.currencyText}>
+                            {getQuestExp(item, level)}
+                        </Text>
+                    </View>
+                </View>
+                {/* Progress Bar / Buttons */}
+                <View style={styles.bottomContainer}>
+                    {item.isActive && !isQuestComplete(item) ? (
+                        <View style={styles.progressBarContainer}>
                             <ProgressBar
                                 progress={item.progress / item.maxProgress}
                                 image={
@@ -283,120 +333,26 @@ export function Quests() {
                                         : 'progress_bar_orange'
                                 }
                             />
-                        ) : (
-                            <View />
-                        )}
-                        {item.isActive ? (
                             <Text style={styles.progressText}>
                                 {item.progress + '/' + item.maxProgress}
                             </Text>
-                        ) : null}
-                    </View>
-                </View>
-                <View style={styles.separatorContainer}>
-                    <Image
-                        style={styles.separator}
-                        source={getImage('icon_separator')}
-                        resizeMode={'contain'}
-                        fadeDuration={0}
-                    />
-                </View>
-                <View style={styles.bottomContainer}>
-                    {/* Shards & Exp */}
-                    <View style={styles.shardsExpContainer}>
-                        <View style={styles.shardsContainer}>
-                            {level ? (
-                                <Image
-                                    style={styles.shardsIcon}
-                                    source={getImage('icon_shards')}
-                                    resizeMode={'stretch'}
-                                    fadeDuration={0}
-                                />
-                            ) : null}
-                            {level ? (
-                                <Text
-                                    style={styles.shardsText}
-                                    adjustsFontSizeToFit={true}
-                                    numberOfLines={1}>
-                                    {getQuestShards(item)}
-                                </Text>
-                            ) : null}
                         </View>
-                        <View style={styles.expContainer}>
-                            {level ? (
-                                <Text
-                                    style={styles.expIcon}
-                                    adjustsFontSizeToFit={true}
-                                    numberOfLines={1}>
-                                    {strings.xp}
-                                </Text>
-                            ) : null}
-                            {level ? (
-                                <Text
-                                    style={styles.expText}
-                                    adjustsFontSizeToFit={true}
-                                    numberOfLines={1}>
-                                    {getQuestExp(item, level)}
-                                </Text>
-                            ) : null}
-                        </View>
-                    </View>
-                    {/* Rewards */}
-                    <View style={styles.rewardsListContainer}>
-                        {item.rewards.length ? (
-                            <FlatList
-                                horizontal
-                                data={item.rewards}
-                                /* eslint-disable-next-line @typescript-eslint/no-shadow */
-                                renderItem={({item}) => (
-                                    <TouchableOpacity
-                                        style={styles.rewardSlot}
-                                        onPress={() => itemTooltipShow(item)}>
-                                        <ImageBackground
-                                            style={styles.rewardSlot}
-                                            source={getImage(
-                                                getItemImg(item.id),
-                                            )}
-                                            fadeDuration={0}>
-                                            <Text style={styles.rewardQuantity}>
-                                                {item.quantity > 1
-                                                    ? item.quantity
-                                                    : ''}
-                                            </Text>
-                                        </ImageBackground>
-                                    </TouchableOpacity>
-                                )}
-                                scrollEnabled={false}
-                                overScrollMode={'never'}
-                            />
-                        ) : null}
-                    </View>
-                    {/* Action Button */}
-                    {item.isActive && !isQuestComplete(item) ? (
-                        <CustomButton
-                            type={ButtonType.Red}
-                            title={'Abandon'}
-                            onPress={() => abandonQuest(index)}
-                            style={styles.button}
-                        />
                     ) : (
                         <CustomButton
+                            style={styles.button}
                             type={
-                                isQuestComplete(item)
+                                item.isActive
                                     ? ButtonType.Green
                                     : ButtonType.Red
                             }
                             title={
-                                isQuestComplete(item)
-                                    ? strings.claim
-                                    : strings.start
+                                item.isActive ? strings.complete : strings.start
                             }
                             onPress={
                                 item.isActive
                                     ? () => claimQuestRewards(index)
                                     : () => startQuest(index)
                             }
-                            style={styles.button}
                         />
                     )}
                 </View>
@@ -408,33 +364,36 @@ export function Quests() {
         <ImageBackground
             style={styles.outerContainer}
             source={getImage('background_outer')}
-            resizeMode={'stretch'}>
+            resizeMode={'stretch'}
+            onLayout={e => setContainerWidth(e.nativeEvent.layout.width)}>
             <AbandonModal
                 visible={abandonVisible}
                 setVisible={setAbandonVisible}
                 index={abandonIndex}
             />
             {/* Quests Refresh Title */}
-            <Text
-                style={styles.refreshTitle}
-                adjustsFontSizeToFit={true}
-                numberOfLines={1}>
-                {strings.quests_refresh_in}
-                {formatTime(refreshTimer)}
-            </Text>
+            <View style={styles.refreshContainer}>
+                <Text
+                    style={styles.refreshText}
+                    adjustsFontSizeToFit={true}
+                    numberOfLines={1}>
+                    {strings.quests_refresh_in}
+                    {formatTime(refreshTimer)}
+                </Text>
+                <CustomButton
+                    type={ButtonType.Red}
+                    title={'Refresh'}
+                    onPress={refreshQuests}
+                    style={styles.refreshButton}
+                />
+            </View>
             {/* Quests List */}
             <FlatList
                 style={styles.questsList}
                 data={questsList}
                 renderItem={renderItem}
+                numColumns={numColumns}
                 overScrollMode={'never'}
-            />
-            {/* DEBUG */}
-            <CustomButton
-                type={ButtonType.Red}
-                title={'Refresh'}
-                onPress={refreshQuests}
-                style={styles.refreshButton}
             />
         </ImageBackground>
     );
@@ -444,10 +403,14 @@ const styles = StyleSheet.create({
     outerContainer: {
         flex: 1,
     },
-    refreshTitle: {
+    refreshContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
         marginTop: 12,
         marginBottom: 12,
-        alignSelf: 'center',
+    },
+    refreshText: {
         fontSize: 16,
         color: 'white',
         fontFamily: values.font,
@@ -455,64 +418,55 @@ const styles = StyleSheet.create({
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
     },
-    questsList: {
-        //TODO: margins
-        flex: 1,
-        marginTop: 5,
-        marginBottom: 6,
-    },
-    questBackground: {},
-    topContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginTop: 16,
-        marginStart: 32,
-        marginEnd: 16,
-    },
-    separatorContainer: {
-        marginTop: 6,
-        marginBottom: 6,
-        marginStart: 16,
-        marginEnd: 16,
-    },
-    bottomContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginStart: 24,
-        marginEnd: 16,
-        marginBottom: 8,
-    },
-    separator: {
-        width: '100%',
-    },
-    questIcon: {
-        width: '7%',
+    refreshButton: {
+        position: 'absolute',
+        right: 0,
+        marginEnd: 8,
         aspectRatio: 1,
     },
+    questsList: {
+        marginBottom: 4,
+    },
+    row: {
+        flex: 1,
+        justifyContent: 'space-between',
+    },
+    questWrapper: {},
+    questBackground: {
+        aspectRatio: 1,
+        margin: spacing / 2,
+        padding: 4,
+    },
+    topContainer: {
+        width: '12%',
+        aspectRatio: 1,
+        marginStart: 'auto',
+    },
+    abandonButton: {
+        width: '100%',
+    },
     descriptionContainer: {
-        width: '62.5%',
+        flex: 1,
+        marginTop: 4,
+        marginStart: 8,
+        marginEnd: 8,
+        justifyContent: 'center',
     },
     description: {
-        marginStart: 10,
-        marginEnd: 4,
         color: 'white',
+        textAlign: 'center',
         fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
     },
-    rewardsLabel: {
-        color: colors.primary,
-        fontFamily: values.fontRegular,
-        textShadowColor: 'rgba(0, 0, 0, 1)',
-        textShadowOffset: {width: 1, height: 1},
-        textShadowRadius: 5,
-    },
     rewardsListContainer: {
-        width: '32%',
-        height: Dimensions.get('screen').height / 24,
-        marginStart: 4,
-        marginEnd: 4,
+        alignSelf: 'center',
+        height: Dimensions.get('screen').height / 22,
+        marginStart: 12,
+        marginEnd: 12,
+        marginTop: 4,
+        marginBottom: 4,
     },
     rewardSlot: {
         aspectRatio: 1,
@@ -529,57 +483,47 @@ const styles = StyleSheet.create({
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
     },
-    shardsExpContainer: {
-        flex: 1,
+    currencyContainer: {
         flexDirection: 'row',
-        marginStart: 8,
+        justifyContent: 'space-evenly',
+        alignItems: 'center',
+        width: '100%',
     },
-    shardsContainer: {
-        flex: 1,
+    currencyInnerContainer: {
         flexDirection: 'row',
+        alignItems: 'center',
     },
-    expContainer: {
-        flex: 1,
-        flexDirection: 'row',
-    },
-    shardsIcon: {
+    currencyIcon: {
         aspectRatio: 1,
-        width: '25%',
-        height: undefined,
-    },
-    shardsText: {
-        flex: 1,
-        marginStart: 4,
-        textAlignVertical: 'center',
-        color: 'white',
-        fontFamily: values.fontRegular,
-        textShadowColor: 'rgba(0, 0, 0, 1)',
-        textShadowOffset: {width: 1, height: 1},
-        textShadowRadius: 5,
+        width: 20,
+        resizeMode: 'contain',
     },
     expIcon: {
-        width: '30%',
-        marginStart: 2,
-        textAlign: 'center',
-        fontSize: 32,
-        color: colors.primary,
+        color: colors.experience_color,
+        fontSize: 16,
         fontFamily: values.fontBold,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
     },
-    expText: {
-        flex: 1,
-        marginStart: 4,
-        textAlignVertical: 'center',
+    currencyText: {
+        marginStart: 8,
         color: 'white',
-        fontFamily: values.fontRegular,
+        fontFamily: values.font,
         textShadowColor: 'rgba(0, 0, 0, 1)',
         textShadowOffset: {width: 1, height: 1},
         textShadowRadius: 5,
     },
+    bottomContainer: {
+        width: '100%',
+        height: '15%',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 8,
+        marginBottom: 8,
+    },
     progressBarContainer: {
-        width: '30%',
+        width: '75%',
         height: 20,
         alignSelf: 'center',
     },
@@ -593,14 +537,6 @@ const styles = StyleSheet.create({
         textShadowRadius: 5,
     },
     button: {
-        width: '25%',
-        aspectRatio: 3,
-    },
-    refreshButton: {
-        width: '30%',
-        alignSelf: 'center',
-        aspectRatio: 3.5,
-        marginTop: 4,
-        marginBottom: 4,
+        width: '50%',
     },
 });
