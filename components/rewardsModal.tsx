@@ -29,16 +29,16 @@ export function RewardsModal() {
     const level = userInfoStore(state => state.level);
     const exp = userInfoStore(state => state.exp);
     const shards = userInfoStore(state => state.shards);
-    const updateExp = userInfoStore(state => state.updateExp);
-    const updateShards = userInfoStore(state => state.updateShards);
-    const increaseLevel = userInfoStore(state => state.increaseLevel);
+    const updateExp = userInfoStore(state => state.userInfoSetExp);
+    const updateShards = userInfoStore(state => state.userInfoSetShards);
+    const increaseLevel = userInfoStore(state => state.userInfoSetLevelUp);
     const inventoryList = inventoryStore(state => state.inventoryList);
     const inventoryAddItems = inventoryStore(state => state.inventoryAddItems);
     const gatherExp = gatheringStore(state => state.exp);
     const gatherLevel = gatheringStore(state => state.level);
-    const updateGatherExp = gatheringStore(state => state.updateGatherExp);
+    const updateGatherExp = gatheringStore(state => state.gatheringSetExp);
     const increaseGatherLevel = gatheringStore(
-        state => state.increaseGatherLevel,
+        state => state.gatheringSetLevelUp,
     );
     const modalVisible = rewardsStore(state => state.modalVisible);
     const rewards = rewardsStore(state => state.rewards);

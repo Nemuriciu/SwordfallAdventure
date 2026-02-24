@@ -1,15 +1,15 @@
 import cloneDeep from 'lodash.clonedeep';
 import React, {useEffect, useState} from 'react';
-import {Image, Text, StyleSheet, View, ImageBackground} from 'react-native';
+import {Image, ImageBackground, StyleSheet, Text, View} from 'react-native';
 import {getImage} from '../../../assets/images/_index';
 import {
-    getNodeRewards,
+    getNodeExperience,
+    getNodeGatheringExp,
     getNodeImg,
     getNodeName,
-    Node,
-    getNodeExperience,
+    getNodeRewards,
     getNodeShards,
-    getNodeGatheringExp,
+    Node,
 } from '../../../parsers/nodeParser.tsx';
 import {colors} from '../../../utils/colors.ts';
 import {getItemColor} from '../../../parsers/itemParser.tsx';
@@ -34,7 +34,7 @@ export function GatherNode({node, index}: props) {
     const staminaCost = Math.round(5 * (node.time / 10));
     const level = userInfoStore(state => state.level);
     const stamina = userInfoStore(state => state.stamina);
-    const updateStamina = userInfoStore(state => state.updateStamina);
+    const updateStamina = userInfoStore(state => state.userInfoSetStamina);
     const rewardsInit = rewardsStore(state => state.rewardsInit);
 
     const gatherLevel = gatheringStore(state => state.level);
@@ -43,7 +43,7 @@ export function GatherNode({node, index}: props) {
     const nodeIndex = gatheringStore(state => state.nodeIndex);
     const gatherTimestamp = gatheringStore(state => state.timestamp);
     const nodes = gatheringStore(state => state.nodes);
-    const setGatherInfo = gatheringStore(state => state.setGatherInfo);
+    const setGatherInfo = gatheringStore(state => state.gatheringSetAll);
 
     const questsList = questsStore(state => state.questsList);
     const questsSetList = questsStore(state => state.questsSetList);

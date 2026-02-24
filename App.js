@@ -1,22 +1,13 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {MainComponent} from './screens/mainComponent';
-import {createUser} from './database';
 import {useFonts} from 'expo-font';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
-
-// eslint-disable-next-line no-unused-vars
-const USERNAME = 'vlad.megaboy@gmail.com';
-// eslint-disable-next-line no-unused-vars
-const PASSWORD = '12345678';
-
-/*const UpdateExpression = "set equipment.boots=:1";
-const ExpressionAttributeValues = {
-    ":1": { M: {"name": { S: "bootsName" }} }
-};*/
-//createUser(USERNAME, PASSWORD);
-//updateDb('f304b822-2091-70ef-1610-25598420f9c3', UpdateExpression, ExpressionAttributeValues)
-//getDb('f304b822-2091-70ef-1610-25598420f9c3')
-export const Context = React.createContext('light');
+import {initializeApp} from './database';
+import 'react-native-get-random-values';
+import 'react-native-url-polyfill/auto';
+if (!global.crypto) {
+    global.crypto = require('expo-crypto');
+}
 
 function App() {
     const [fontsLoaded] = useFonts({
@@ -24,6 +15,23 @@ function App() {
         Roboto_Regular: require('./assets/fonts/Roboto-Regular.ttf'),
         Roboto_Bold: require('./assets/fonts/Roboto-Bold.ttf'),
     });
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        async function init() {
+            try {
+                await initializeApp();
+                setLoading(false);
+            } catch (err) {
+                console.error(err);
+            }
+        }
+        init().then(() => {});
+    }, []);
+
+    if (loading) {
+        return null;
+    }
 
     if (!fontsLoaded) {
         return null;
@@ -32,6 +40,7 @@ function App() {
     return (
         <SafeAreaProvider>
             <MainComponent />
+            {/* //TODO: Splash Screen Visible Until Login Ready & Databases Fetched */}
         </SafeAreaProvider>
     );
 }

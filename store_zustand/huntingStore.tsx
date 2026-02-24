@@ -1,41 +1,74 @@
 import {create} from 'zustand';
 import {Creature} from '../types/creature.ts';
+import {Zone} from '../types/zone.ts';
+import cloneDeep from 'lodash.clonedeep';
 
 export interface HuntingState {
-    depth: number;
-    killCount: number;
-    creatureList: Creature[];
-    creatureLevel: number;
-    huntingUpdate: (
-        depth: number,
-        killCount: number,
-        creatureList: Creature[],
+    zoneId: number;
+    zoneName: string;
+    zoneLevelMin: number;
+    zoneLevelMax: number;
+    zoneList: Zone[];
+
+    huntingSelectZone: (
+        zoneId: number,
+        zoneName: string,
+        zoneLevelMin: number,
+        zoneLevelMax: number,
     ) => void;
-    huntingUpdateCreatureList: (creatureList: Creature[]) => void;
-    huntingSetCreatureLevel: (creatureLevel: number) => void;
+
+    huntingSetZoneList: (zoneList: Zone[]) => void;
+    huntingSetCreatureList: (zoneId: number, creatureList: Creature[]) => void;
+    huntingSetCreatureLevel: (zoneId: number, creatureLevel: number) => void;
+    huntingSetDepth: (zoneId: number, depth: number) => void;
+    huntingSetKillCount: (zoneId: number, killCount: number) => void;
 }
 
 export const huntingStore = create<HuntingState>()(set => ({
-    depth: 0,
-    killCount: 0,
-    creatureList: [],
-    creatureLevel: 0,
-    huntingUpdate: (
-        depth: number,
-        killCount: number,
-        creatureList: Creature[],
+    zoneId: -1,
+    zoneName: '',
+    zoneLevelMin: -1,
+    zoneLevelMax: -1,
+    zoneList: [],
+
+    huntingSelectZone: (
+        zoneId: number,
+        zoneName: string,
+        zoneLevelMin: number,
+        zoneLevelMax: number,
     ) =>
         set({
-            depth: depth,
-            killCount: killCount,
-            creatureList: creatureList,
+            zoneId: zoneId,
+            zoneName: zoneName,
+            zoneLevelMin: zoneLevelMin,
+            zoneLevelMax: zoneLevelMax,
         }),
-    huntingUpdateCreatureList: (creatureList: Creature[]) =>
+    huntingSetZoneList: (zoneList: Zone[]) =>
         set({
-            creatureList: creatureList,
+            zoneList: cloneDeep(zoneList),
         }),
-    huntingSetCreatureLevel: (creatureLevel: number) =>
-        set({
-            creatureLevel: creatureLevel,
-        }),
+    huntingSetCreatureList: (zoneId: number, creatureList: Creature[]) =>
+        set(state => ({
+            zoneList: state.zoneList.map((zone, index) =>
+                index === zoneId ? {...zone, creatureList} : zone,
+            ),
+        })),
+    huntingSetCreatureLevel: (zoneId: number, creatureLevel: number) =>
+        set(state => ({
+            zoneList: state.zoneList.map((zone, index) =>
+                index === zoneId ? {...zone, creatureLevel} : zone,
+            ),
+        })),
+    huntingSetDepth: (zoneId: number, depth: number) =>
+        set(state => ({
+            zoneList: state.zoneList.map((zone, index) =>
+                index === zoneId ? {...zone, depth} : zone,
+            ),
+        })),
+    huntingSetKillCount: (zoneId: number, killCount: number) =>
+        set(state => ({
+            zoneList: state.zoneList.map((zone, index) =>
+                index === zoneId ? {...zone, killCount} : zone,
+            ),
+        })),
 }));

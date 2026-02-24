@@ -1,4 +1,5 @@
 import {
+    BackHandler,
     Image,
     ImageBackground,
     StatusBar,
@@ -37,7 +38,7 @@ export function MainComponent() {
     const exp = userInfoStore(state => state.exp);
     const networkConnection = userInfoStore(state => state.networkConnection);
     const setNetworkConnection = userInfoStore(
-        state => state.setNetworkConnection,
+        state => state.userInfoSetNetworkConnection,
     );
     const insets = useSafeAreaInsets();
     /* Verify network connection */
@@ -57,6 +58,15 @@ export function MainComponent() {
             }
         });
     }
+
+    useEffect(() => {
+        // Disabled Back Button //
+        const backHandler = BackHandler.addEventListener(
+            'hardwareBackPress',
+            () => true,
+        );
+        return () => backHandler.remove();
+    }, []);
 
     useEffect(() => {
         const maxExp = experienceJson.userMaxExp[level - 1];
@@ -137,6 +147,7 @@ export function MainComponent() {
             {networkConnection && (
                 <NavigationContainer>
                     <Tab.Navigator
+                        backBehavior={'none'}
                         screenOptions={{
                             lazy: false,
                             headerShown: false,
@@ -159,6 +170,7 @@ export function MainComponent() {
                             component={CharacterTab}
                             options={{
                                 lazy: false,
+
                                 tabBarButton: props => (
                                     // @ts-ignore
                                     <NavIcon

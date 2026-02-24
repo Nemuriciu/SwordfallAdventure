@@ -28,8 +28,6 @@ import {
     CustomButton,
 } from '../../../components/buttons/customButton.tsx';
 import cloneDeep from 'lodash.clonedeep';
-import {marshall, unmarshall} from '@aws-sdk/util-dynamodb';
-import {dynamoDb, USER_ID} from '../../../database';
 import {AbandonModal} from './abandonModal.tsx';
 import {userInfoStore} from '../../../store_zustand/userInfoStore.tsx';
 import {rewardsStore} from '../../../store_zustand/rewardsStore.tsx';
@@ -39,6 +37,9 @@ import {itemTooltipStore} from '../../../store_zustand/itemTooltipStore.tsx';
 import {colors} from '../../../utils/colors.ts';
 import {CloseButton} from '../../../components/buttons/closeButton.tsx';
 import {Quest} from '../../../types/quest.ts';
+import {GetCommand} from '@aws-sdk/lib-dynamodb';
+import {convertForDB, dynamoDB, USER_ID} from '../../../database';
+import {UpdateItemCommand} from '@aws-sdk/client-dynamodb';
 
 const numColumns = 2;
 const spacing = 4;
@@ -52,7 +53,7 @@ export function Quests() {
     const rewardsInit = rewardsStore(state => state.rewardsInit);
     const questsList = questsStore(state => state.questsList);
     const refreshTimestamp = questsStore(state => state.refreshTimestamp);
-    const questsSet = questsStore(state => state.questsSet);
+    const questsSetAll = questsStore(state => state.questsSetAll);
     const questsSetList = questsStore(state => state.questsSetList);
     const questsSetTimestamp = questsStore(state => state.questsSetTimestamp);
 
@@ -68,12 +69,14 @@ export function Quests() {
     let timer: string | number | NodeJS.Timeout | undefined;
 
     useEffect(() => {
+        // noinspection JSIgnoredPromiseFromCall
         fetchQuestsDB();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
         if (!didMount.current) {
+            // noinspection JSIgnoredPromiseFromCall
             updateQuestsDB();
         } else {
             didMount.current -= 1;
@@ -119,44 +122,51 @@ export function Quests() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [refreshTimer]);
 
-    function fetchQuestsDB() {
-        const params = {
-            TableName: 'users',
-            Key: marshall({id: USER_ID}),
-            ProjectionExpression: 'quests',
-        };
-        dynamoDb.getItem(params, function (err, data) {
-            if (err) {
-                console.log(err);
-            } else {
-                // @ts-ignore
-                const {quests} = unmarshall(data.Item);
-                questsSet(quests.questsList, quests.refreshTimestamp);
-            }
-        });
+    async function fetchQuestsDB() {
+        try {
+            const command = new GetCommand({
+                TableName: 'users',
+                Key: {
+                    id: USER_ID,
+                },
+                ProjectionExpression: 'quests',
+            });
+
+            // @ts-ignore
+            const response = await dynamoDB.send(command);
+            const {quests} = response.Item;
+            questsSetAll(quests.questsList, quests.refreshTimestamp);
+        } catch (error) {
+            console.error('Error fetching Quests:', error);
+            throw error;
+        }
     }
 
-    function updateQuestsDB() {
-        const params = {
-            TableName: 'users',
-            Key: marshall({id: USER_ID}),
-            UpdateExpression: `
-            set quests.#questsList = :questsList,
-                quests.#refreshTimestamp = :refreshTimestamp`,
-            ExpressionAttributeNames: {
-                '#questsList': 'questsList',
-                '#refreshTimestamp': 'refreshTimestamp',
-            },
-            ExpressionAttributeValues: marshall({
-                ':questsList': questsList,
-                ':refreshTimestamp': refreshTimestamp,
-            }),
-        };
-        dynamoDb.updateItem(params, function (err) {
-            if (err) {
-                console.log(err);
-            }
-        });
+    async function updateQuestsDB() {
+        try {
+            const command = new UpdateItemCommand({
+                TableName: 'users',
+                Key: {
+                    id: {S: USER_ID!},
+                },
+                UpdateExpression: 'SET quests = :quests',
+                ExpressionAttributeValues: {
+                    ':quests': {
+                        M: {
+                            questsList: convertForDB(questsList),
+                            refreshTimestamp: convertForDB(refreshTimestamp),
+                        },
+                    },
+                },
+                ReturnValues: 'ALL_NEW',
+            });
+
+            // @ts-ignore
+            await dynamoDB.send(command);
+        } catch (error) {
+            console.error('Error updating Quests:', error);
+            throw error;
+        }
     }
 
     function startQuest(index: number) {

@@ -12,7 +12,8 @@ export interface UserInfoState {
     staminaTimestamp: string;
     levelUpVisibility: boolean;
     networkConnection: boolean;
-    setUserInfo: (
+
+    userInfoSetAll: (
         username: string,
         level: number,
         exp: number,
@@ -23,18 +24,18 @@ export interface UserInfoState {
         diamonds: number,
         staminaTimestamp: string,
     ) => void;
-    updateUsername: (username: string) => void;
-    updateLevel: (level: number) => void;
-    updateExp: (exp: number) => void;
-    updateStamina: (stamina: number) => void;
-    updateStaminaMax: (staminaMax: number) => void;
-    updateStaminaTimestamp: (staminaTimestamp: string) => void;
-    updateSkillPoints: (skillPoints: number) => void;
-    updateShards: (shards: number) => void;
-    updateDiamonds: (diamonds: number) => void;
-    increaseLevel: (expTrunc: number) => void;
-    setLevelUpVisibility: (visibility: boolean) => void;
-    setNetworkConnection: (networkConnection: boolean) => void;
+    userInfoSetUsername: (username: string) => void;
+    userInfoSetLevel: (level: number) => void;
+    userInfoSetExp: (exp: number) => void;
+    userInfoSetStamina: (stamina: number) => void;
+    userInfoSetStaminaMax: (staminaMax: number) => void;
+    userInfoSetStaminaTimestamp: (staminaTimestamp: string) => void;
+    userInfoSetSkillPoints: (skillPoints: number) => void;
+    userInfoSetShards: (shards: number) => void;
+    userInfoSetDiamonds: (diamonds: number) => void;
+    userInfoSetLevelUp: (expTrunc: number) => void;
+    userInfoSetLevelUpVisibility: (visibility: boolean) => void;
+    userInfoSetNetworkConnection: (networkConnection: boolean) => void;
 }
 
 export const userInfoStore = create<UserInfoState>()(set => ({
@@ -49,7 +50,8 @@ export const userInfoStore = create<UserInfoState>()(set => ({
     staminaTimestamp: '',
     levelUpVisibility: false,
     networkConnection: false,
-    setUserInfo: (
+
+    userInfoSetAll: (
         username: string,
         level: number,
         exp: number,
@@ -72,19 +74,21 @@ export const userInfoStore = create<UserInfoState>()(set => ({
             diamonds: diamonds,
             staminaTimestamp: staminaTimestamp,
         })),
-    updateUsername: (username: string) => set(() => ({username: username})),
-    updateLevel: (level: number) => set(() => ({level: level})),
-    updateExp: (exp: number) => set(() => ({exp: exp})),
-    updateStamina: (stamina: number) => set(() => ({stamina: stamina})),
-    updateStaminaMax: (staminaMax: number) =>
+    userInfoSetUsername: (username: string) =>
+        set(() => ({username: username})),
+    userInfoSetLevel: (level: number) => set(() => ({level: level})),
+    userInfoSetExp: (exp: number) => set(() => ({exp: exp})),
+    userInfoSetStamina: (stamina: number) => set(() => ({stamina: stamina})),
+    userInfoSetStaminaMax: (staminaMax: number) =>
         set(() => ({staminaMax: staminaMax})),
-    updateStaminaTimestamp: (staminaTimestamp: string) =>
+    userInfoSetStaminaTimestamp: (staminaTimestamp: string) =>
         set(() => ({staminaTimestamp: staminaTimestamp})),
-    updateSkillPoints: (skillPoints: number) =>
+    userInfoSetSkillPoints: (skillPoints: number) =>
         set(() => ({skillPoints: skillPoints})),
-    updateShards: (shards: number) => set(() => ({shards: shards})),
-    updateDiamonds: (diamonds: number) => set(() => ({diamonds: diamonds})),
-    increaseLevel: (expTrunc: number) =>
+    userInfoSetShards: (shards: number) => set(() => ({shards: shards})),
+    userInfoSetDiamonds: (diamonds: number) =>
+        set(() => ({diamonds: diamonds})),
+    userInfoSetLevelUp: (expTrunc: number) =>
         set(state => ({
             level: state.level + 1,
             exp: expTrunc,
@@ -92,11 +96,11 @@ export const userInfoStore = create<UserInfoState>()(set => ({
             staminaTimestamp: new Date().toISOString(),
             // skillPoints: state.skillPoints + 1, // TODO: when you enable it
         })),
-    setLevelUpVisibility: (visibility: boolean) =>
+    userInfoSetLevelUpVisibility: (visibility: boolean) =>
         set(() => ({
             levelUpVisibility: visibility,
         })),
-    setNetworkConnection: (networkConnection: boolean) =>
+    userInfoSetNetworkConnection: (networkConnection: boolean) =>
         set(() => ({
             networkConnection: networkConnection,
         })),

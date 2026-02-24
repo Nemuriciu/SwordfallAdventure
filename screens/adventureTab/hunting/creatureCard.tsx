@@ -26,7 +26,7 @@ interface props {
 
 export function CreatureCard({creature, index}: props) {
     const stamina = userInfoStore(state => state.stamina);
-    const updateStamina = userInfoStore(state => state.updateStamina);
+    const userInfoSetStamina = userInfoStore(state => state.userInfoSetStamina);
     const combatShow = combatStore(state => state.combatShow);
 
     const health = attributesStore(state => state.health);
@@ -71,7 +71,7 @@ export function CreatureCard({creature, index}: props) {
                     bonusDodge: bonusDodge,
                 };
                 combatShow(creature, index, attributes, creature.stats);
-                updateStamina(stamina - staminaCost);
+                userInfoSetStamina(stamina - staminaCost);
             } else {
                 //TODO: localization
                 // Toast.show('Not enough stamina.', Toast.SHORT); TODO: Replace Toast

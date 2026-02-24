@@ -1,13 +1,13 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {
-    StyleSheet,
-    View,
-    ImageBackground,
-    Image,
-    FlatList,
-    Text,
     Dimensions,
+    FlatList,
+    Image,
+    ImageBackground,
+    StyleSheet,
+    Text,
     TouchableOpacity,
+    View,
 } from 'react-native';
 import Modal from 'react-native-modal';
 import Tooltip from 'react-native-walkthrough-tooltip';
@@ -66,13 +66,14 @@ export function Combat() {
     const health = attributesStore(state => state.health);
     const bonusHealth = attributesStore(state => state.bonusHealth);
 
-    const depth = huntingStore(state => state.depth);
-    const killCount = huntingStore(state => state.killCount);
-    const creatureList = huntingStore(state => state.creatureList);
-    const creatureLevel = huntingStore(state => state.creatureLevel);
-    const huntingUpdate = huntingStore(state => state.huntingUpdate);
-    const huntingUpdateCreatureList = huntingStore(
-        state => state.huntingUpdateCreatureList,
+    const zoneId = huntingStore(state => state.zoneId);
+    const zoneList = huntingStore(state => state.zoneList);
+    const huntingSetDepth = huntingStore(state => state.huntingSetDepth);
+    const huntingSetKillCount = huntingStore(
+        state => state.huntingSetKillCount,
+    );
+    const huntingSetCreatureList = huntingStore(
+        state => state.huntingSetCreatureList,
     );
 
     const modalVisible = combatStore(state => state.modalVisible);
@@ -106,10 +107,10 @@ export function Combat() {
     useEffect(() => {
         if (modalVisible) {
             /* Remove Creature from Hunting List */
-            const _creatureList = cloneDeep(creatureList);
+            const _creatureList = cloneDeep(zoneList[zoneId].creatureList);
             _creatureList.splice(index, 1);
             setTimeout(() => {
-                huntingUpdateCreatureList(_creatureList);
+                huntingSetCreatureList(zoneId, _creatureList);
             }, 1000);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -169,7 +170,7 @@ export function Combat() {
                                 ),
                                 getCombatShards(
                                     (creature as Creature).rarity,
-                                    depth,
+                                    zoneList[zoneId].depth,
                                 ),
                             );
                         }, 250);
@@ -198,15 +199,25 @@ export function Combat() {
                         sortQuests(_questsList);
                         questsSetList(_questsList);
 
-                        const _creatureList = cloneDeep(creatureList);
+                        const _creatureList = cloneDeep(
+                            zoneList[zoneId].creatureList,
+                        );
                         /* Roll for chance to add new creature */
                         const r = Math.random();
                         /* 10% chance to add 0 creatures (does not apply if list is empty) */
                         if (r <= 0.2) {
                             /* 20% chance to add 2 creatures */
                             _creatureList.unshift(
-                                getCreature(creatureLevel, depth),
-                                getCreature(creatureLevel, depth),
+                                getCreature(
+                                    zoneId,
+                                    zoneList[zoneId].creatureLevel,
+                                    zoneList[zoneId].depth,
+                                ),
+                                getCreature(
+                                    zoneId,
+                                    zoneList[zoneId].creatureLevel,
+                                    zoneList[zoneId].depth,
+                                ),
                             );
                         } else if (
                             (r > 0.2 && r <= 0.9) ||
@@ -214,11 +225,20 @@ export function Combat() {
                         ) {
                             /* 70% chance to add 1 creature */
                             _creatureList.unshift(
-                                getCreature(creatureLevel, depth),
+                                getCreature(
+                                    zoneId,
+                                    zoneList[zoneId].creatureLevel,
+                                    zoneList[zoneId].depth,
+                                ),
                             );
                         }
 
-                        huntingUpdate(depth, killCount + 1, _creatureList);
+                        huntingSetDepth(zoneId, zoneList[zoneId].depth);
+                        huntingSetKillCount(
+                            zoneId,
+                            zoneList[zoneId].killCount + 1,
+                        );
+                        huntingSetCreatureList(zoneId, _creatureList);
                     } else if (statsPlayer.health <= 0) {
                         /* Enemy Win */
                         _combatLog.push({
@@ -237,18 +257,24 @@ export function Combat() {
                             setCombatComplete(true);
                         }, 250);
 
-                        const _creatureList = cloneDeep(creatureList);
+                        const _creatureList = cloneDeep(
+                            zoneList[zoneId].creatureList,
+                        );
                         /* Roll for chance to add new creature */
                         const r = Math.random();
                         /* 25% chance to add 0 creatures (does not apply if list is empty) */
                         /* 75% chance to add 1 creature */
                         if (r <= 0.75 || !_creatureList.length) {
                             _creatureList.unshift(
-                                getCreature(creatureLevel, depth),
+                                getCreature(
+                                    zoneId,
+                                    zoneList[zoneId].creatureLevel,
+                                    zoneList[zoneId].depth,
+                                ),
                             );
                         }
 
-                        huntingUpdateCreatureList(_creatureList);
+                        huntingSetCreatureList(zoneId, _creatureList);
                     }
                 }
             }

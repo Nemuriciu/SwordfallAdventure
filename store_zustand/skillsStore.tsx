@@ -6,14 +6,15 @@ export interface SkillsState {
     spell_1: Skill | null;
     spell_2: Skill | null;
     spell_3: Skill | null;
-    skillsUpdate: (
+
+    skillsSetAll: (
         skills: {[key: string]: Skill},
         spell_1: Skill | null,
         spell_2: Skill | null,
         spell_3: Skill | null,
     ) => void;
-    skillsUpdateSkill: (id: string, skill: Skill) => void;
-    skillsSpellSet: (slot: number, skill: Skill | null) => void;
+    skillsSetSkill: (id: string, skill: Skill) => void;
+    skillsSetSpell: (slot: number, skill: Skill | null) => void;
 }
 
 export const skillsStore = create<SkillsState>()(set => ({
@@ -22,7 +23,7 @@ export const skillsStore = create<SkillsState>()(set => ({
     spell_2: null,
     spell_3: null,
 
-    skillsUpdate: (
+    skillsSetAll: (
         skills: {[key: string]: Skill},
         spell_1: Skill | null,
         spell_2: Skill | null,
@@ -34,7 +35,7 @@ export const skillsStore = create<SkillsState>()(set => ({
             spell_2: spell_2,
             spell_3: spell_3,
         })),
-    skillsUpdateSkill: (id: string, skill: Skill) =>
+    skillsSetSkill: (id: string, skill: Skill) =>
         set(state => {
             const skillsList = {...state.skillsList, [id]: skill};
 
@@ -55,7 +56,7 @@ export const skillsStore = create<SkillsState>()(set => ({
 
             return {skillsList, spell_1, spell_2, spell_3};
         }),
-    skillsSpellSet: (slot: number, skill: Skill | null) =>
+    skillsSetSpell: (slot: number, skill: Skill | null) =>
         set(state => {
             let {spell_1, spell_2, spell_3} = state;
 

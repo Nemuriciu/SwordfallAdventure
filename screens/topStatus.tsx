@@ -1,8 +1,6 @@
 import {Image, ImageBackground, StyleSheet, Text, View} from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import {getImage} from '../assets/images/_index';
-import {marshall, unmarshall} from '@aws-sdk/util-dynamodb';
-import {dynamoDb, USER_ID} from '../database';
 import {colors} from '../utils/colors.ts';
 import ProgressBar from '../components/progressBar.tsx';
 import experienceJson from '../assets/json/experience.json';
@@ -10,6 +8,9 @@ import {PlusButton} from '../components/buttons/plusButton.tsx';
 import {IconText} from '../components/iconText.tsx';
 import {userInfoStore} from '../store_zustand/userInfoStore.tsx';
 import {values} from '../utils/values.ts';
+import {GetCommand} from '@aws-sdk/lib-dynamodb';
+import {dynamoDB, USER_ID} from '../database';
+import {UpdateItemCommand} from '@aws-sdk/client-dynamodb';
 
 export function TopStatus() {
     const username = userInfoStore(state => state.username);
@@ -22,11 +23,13 @@ export function TopStatus() {
     const diamonds = userInfoStore(state => state.diamonds);
     const staminaTimestamp = userInfoStore(state => state.staminaTimestamp);
 
-    const setUserInfo = userInfoStore(state => state.setUserInfo);
-    const updateStaminaTimestamp = userInfoStore(
-        state => state.updateStaminaTimestamp,
+    const userInfoSetAll = userInfoStore(state => state.userInfoSetAll);
+    const userInfoSetStaminaTimestamp = userInfoStore(
+        state => state.userInfoSetStaminaTimestamp,
     );
-    const updateStamina = userInfoStore(state => state.updateStamina);
+    const userInfoSetStamina = userInfoStore(state => state.userInfoSetStamina);
+    // DEBUG
+    const userInfoSetShards = userInfoStore(state => state.userInfoSetShards);
 
     const [staminaFetched, setStaminaFetched] = useState(false);
     const [staminaTimer, setStaminaTimer] = useState(1);
@@ -37,11 +40,13 @@ export function TopStatus() {
     let timer: string | number | NodeJS.Timeout | undefined;
 
     useEffect(() => {
+        // noinspection JSIgnoredPromiseFromCall
         fetchUserInfoDB();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     useEffect(() => {
         if (!didMount_1.current) {
+            // noinspection JSIgnoredPromiseFromCall
             updateUserInfoDB();
         } else {
             didMount_1.current -= 1;
@@ -80,7 +85,7 @@ export function TopStatus() {
     useEffect(() => {
         if (!didMount_3.current) {
             if (staminaTimer <= 1 && stamina < staminaMax) {
-                updateStaminaTimestamp(new Date().toISOString());
+                userInfoSetStaminaTimestamp(new Date().toISOString());
                 startTimer(fiveMin);
             } else if (staminaTimer > 1 && stamina >= staminaMax) {
                 clearInterval(timer);
@@ -92,77 +97,68 @@ export function TopStatus() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [stamina]);
 
-    function fetchUserInfoDB() {
-        const params = {
-            TableName: 'users',
-            Key: marshall({id: USER_ID}),
-            ProjectionExpression: 'userInfo',
-        };
+    async function fetchUserInfoDB() {
+        try {
+            const command = new GetCommand({
+                TableName: 'users',
+                Key: {
+                    id: USER_ID,
+                },
+                ProjectionExpression: 'userInfo',
+            });
 
-        dynamoDb.getItem(params, function (err, data) {
-            if (err) {
-                console.log(err);
-            } else {
-                // @ts-ignore
-                const {userInfo} = unmarshall(data.Item);
-                setUserInfo(
-                    userInfo.username,
-                    userInfo.level,
-                    userInfo.exp,
-                    userInfo.stamina,
-                    userInfo.staminaMax,
-                    userInfo.skillPoints,
-                    userInfo.shards,
-                    userInfo.diamonds,
-                    userInfo.staminaTimestamp,
-                );
-            }
-        });
+            // @ts-ignore
+            const response = await dynamoDB.send(command);
+            const {userInfo} = response.Item;
+            userInfoSetAll(
+                userInfo.username,
+                userInfo.level,
+                userInfo.exp,
+                userInfo.stamina,
+                userInfo.staminaMax,
+                userInfo.skillPoints,
+                userInfo.shards,
+                userInfo.diamonds,
+                userInfo.staminaTimestamp,
+            );
+        } catch (error) {
+            console.error('Error fetching userInfo:', error);
+            throw error;
+        }
     }
 
-    function updateUserInfoDB() {
-        const params = {
-            TableName: 'users',
-            Key: marshall({id: USER_ID}),
-            UpdateExpression: `
-            set userInfo.#diamonds = :diamonds,
-                userInfo.#exp = :exp,
-                userInfo.#level = :level,
-                userInfo.#shards = :shards,
-                userInfo.#skillPoints = :skillPoints,
-                userInfo.#stamina = :stamina,
-                userInfo.#staminaMax = :staminaMax,
-                userInfo.#staminaTimestamp = :staminaTimestamp,
-                userInfo.#username = :username
-        `,
-            ExpressionAttributeNames: {
-                '#diamonds': 'diamonds',
-                '#exp': 'exp',
-                '#level': 'level',
-                '#shards': 'shards',
-                '#skillPoints': 'skillPoints',
-                '#stamina': 'stamina',
-                '#staminaMax': 'staminaMax',
-                '#staminaTimestamp': 'staminaTimestamp',
-                '#username': 'username',
-            },
-            ExpressionAttributeValues: marshall({
-                ':diamonds': diamonds,
-                ':exp': exp,
-                ':level': level,
-                ':shards': shards,
-                ':skillPoints': skillPoints,
-                ':stamina': stamina,
-                ':staminaMax': staminaMax,
-                ':staminaTimestamp': staminaTimestamp,
-                ':username': username,
-            }),
-        };
-        dynamoDb.updateItem(params, function (err) {
-            if (err) {
-                console.log(err);
-            }
-        });
+    async function updateUserInfoDB() {
+        try {
+            const command = new UpdateItemCommand({
+                TableName: 'users',
+                Key: {
+                    id: {S: USER_ID!},
+                },
+                UpdateExpression: 'SET userInfo = :userInfo',
+                ExpressionAttributeValues: {
+                    ':userInfo': {
+                        M: {
+                            username: {S: username},
+                            level: {N: level.toString()},
+                            exp: {N: exp.toString()},
+                            stamina: {N: stamina.toString()},
+                            staminaMax: {N: staminaMax.toString()},
+                            skillPoints: {N: skillPoints.toString()},
+                            shards: {N: shards.toString()},
+                            diamonds: {N: diamonds.toString()},
+                            staminaTimestamp: {S: staminaTimestamp},
+                        },
+                    },
+                },
+                ReturnValues: 'ALL_NEW',
+            });
+
+            // @ts-ignore
+            await dynamoDB.send(command);
+        } catch (error) {
+            console.error('Error updating userInfo:', error);
+            throw error;
+        }
     }
 
     function updateStaminaOffline() {
@@ -179,7 +175,7 @@ export function TopStatus() {
 
         if (stamina + staminaVal >= staminaMax) {
             if (staminaVal > 0) {
-                updateStamina(
+                userInfoSetStamina(
                     stamina + staminaVal >= staminaMax
                         ? staminaMax
                         : stamina + staminaVal,
@@ -189,7 +185,7 @@ export function TopStatus() {
             if (staminaVal > 0) {
                 /* Update Stamina */
 
-                updateStamina(
+                userInfoSetStamina(
                     stamina + staminaVal >= staminaMax
                         ? staminaMax
                         : stamina + staminaVal,
@@ -198,7 +194,7 @@ export function TopStatus() {
                 const c = new Date();
                 c.setMinutes(c.getMinutes() - (minutes % 5));
                 c.setSeconds(c.getSeconds() - seconds);
-                updateStaminaTimestamp(c.toISOString());
+                userInfoSetStaminaTimestamp(c.toISOString());
 
                 /* Start Stamina Timer */
                 startTimer(fiveMin - (new Date().getTime() - c.getTime()));
@@ -218,11 +214,11 @@ export function TopStatus() {
 
         /* Start Timer */
         if (stamina + staminaAdded < staminaMax) {
-            updateStaminaTimestamp(new Date().toISOString());
+            userInfoSetStaminaTimestamp(new Date().toISOString());
             setStaminaTimer(fiveMin);
         }
 
-        updateStamina(
+        userInfoSetStamina(
             stamina + staminaAdded >= staminaMax
                 ? staminaMax
                 : stamina + staminaAdded,
@@ -305,7 +301,12 @@ export function TopStatus() {
                         numberOfLines={1}>
                         {diamonds}
                     </Text>
-                    <PlusButton style={styles.plusButton} onPress={() => {}} />
+                    <PlusButton
+                        style={styles.plusButton}
+                        onPress={() => {
+                            userInfoSetShards(shards + 1000);
+                        }}
+                    />
                 </ImageBackground>
             </View>
 

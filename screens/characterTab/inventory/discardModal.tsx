@@ -1,15 +1,15 @@
 import React, {useState} from 'react';
-import {StyleSheet, View, ImageBackground, Text, Image} from 'react-native';
+import {Image, ImageBackground, StyleSheet, Text, View} from 'react-native';
 import Modal from 'react-native-modal';
 import {getImage} from '../../../assets/images/_index';
 import {Item} from '../../../types/item.ts';
 import SpannableBuilder from '@mj-studio/react-native-spannable-string';
 import {
+    getBreakValue,
     getItemCategory,
     getItemColor,
     getItemName,
     getItemRarity,
-    getBreakValue,
 } from '../../../parsers/itemParser.tsx';
 import {Slider} from '@miblanchard/react-native-slider';
 import {colors} from '../../../utils/colors.ts';
@@ -32,7 +32,7 @@ interface props {
 
 export function DiscardModal({visible, setVisible, item, index}: props) {
     const shards = userInfoStore(state => state.shards);
-    const updateShards = userInfoStore(state => state.updateShards);
+    const userInfoSetShards = userInfoStore(state => state.userInfoSetShards);
     const inventoryRemoveItemAt = inventoryStore(
         state => state.inventoryRemoveItemAt,
     );
@@ -46,7 +46,7 @@ export function DiscardModal({visible, setVisible, item, index}: props) {
 
         /* Add Break Shards If Item is Equipment */
         if (getItemCategory(item.id) === 'equipment') {
-            updateShards(shards + getBreakValue(item));
+            userInfoSetShards(shards + getBreakValue(item));
         }
         /* Hide Item Details */
         itemDetailsHide();

@@ -1,13 +1,14 @@
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import {getImage} from '../../../assets/images/_index';
-import {marshall, unmarshall} from '@aws-sdk/util-dynamodb';
-import {dynamoDb, USER_ID} from '../../../database';
 import {getItemImg} from '../../../parsers/itemParser.tsx';
 import {isItem, Item} from '../../../types/item';
 import {itemDetailsStore} from '../../../store_zustand/itemDetailsStore.tsx';
 import {equipmentStore} from '../../../store_zustand/equipmentStore.tsx';
 import {values} from '../../../utils/values.ts';
+import {GetCommand} from '@aws-sdk/lib-dynamodb';
+import {convertForDB, dynamoDB, USER_ID} from '../../../database';
+import {UpdateItemCommand} from '@aws-sdk/client-dynamodb';
 
 export function Equipment() {
     const helmet = equipmentStore(state => state.helmet);
@@ -23,11 +24,13 @@ export function Equipment() {
     const didMount = useRef(2);
 
     useEffect(() => {
+        // noinspection JSIgnoredPromiseFromCall
         fetchEquipmentDB();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     useEffect(() => {
         if (!didMount.current) {
+            // noinspection JSIgnoredPromiseFromCall
             updateEquipmentDB();
         } else {
             didMount.current -= 1;
@@ -35,66 +38,64 @@ export function Equipment() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [helmet, weapon, chest, offhand, gloves, pants, boots]);
 
-    function fetchEquipmentDB() {
-        const params = {
-            TableName: 'users',
-            Key: marshall({id: USER_ID}),
-            ProjectionExpression: 'equipment',
-        };
-        dynamoDb.getItem(params, function (err, data) {
-            if (err) {
-                console.log(err);
-            } else {
-                // @ts-ignore
-                const {equipment} = unmarshall(data.Item);
-                equipmentUpdate(
-                    equipment.helmet,
-                    equipment.weapon,
-                    equipment.chest,
-                    equipment.offhand,
-                    equipment.gloves,
-                    equipment.pants,
-                    equipment.boots,
-                );
-            }
-        });
+    async function fetchEquipmentDB() {
+        try {
+            const command = new GetCommand({
+                TableName: 'users',
+                Key: {
+                    id: USER_ID,
+                },
+                ProjectionExpression: 'equipment',
+            });
+
+            // @ts-ignore
+            const response = await dynamoDB.send(command);
+            const {equipment} = response.Item;
+            equipmentUpdate(
+                equipment.helmet,
+                equipment.weapon,
+                equipment.chest,
+                equipment.offhand,
+                equipment.gloves,
+                equipment.pants,
+                equipment.boots,
+            );
+        } catch (error) {
+            console.error('Error fetching Equipment:', error);
+            throw error;
+        }
     }
-    function updateEquipmentDB() {
-        const params = {
-            TableName: 'users',
-            Key: marshall({id: USER_ID}),
-            UpdateExpression: `
-            set equipment.#helmet = :helmet,
-                equipment.#weapon = :weapon,
-                equipment.#chest = :chest,
-                equipment.#offhand = :offhand,
-                equipment.#gloves = :gloves,
-                equipment.#pants = :pants,
-                equipment.#boots = :boots`,
-            ExpressionAttributeNames: {
-                '#helmet': 'helmet',
-                '#weapon': 'weapon',
-                '#chest': 'chest',
-                '#offhand': 'offhand',
-                '#gloves': 'gloves',
-                '#pants': 'pants',
-                '#boots': 'boots',
-            },
-            ExpressionAttributeValues: marshall({
-                ':helmet': helmet,
-                ':weapon': weapon,
-                ':chest': chest,
-                ':offhand': offhand,
-                ':gloves': gloves,
-                ':pants': pants,
-                ':boots': boots,
-            }),
-        };
-        dynamoDb.updateItem(params, function (err) {
-            if (err) {
-                console.log(err);
-            }
-        });
+
+    async function updateEquipmentDB() {
+        try {
+            const command = new UpdateItemCommand({
+                TableName: 'users',
+                Key: {
+                    id: {S: USER_ID!},
+                },
+                UpdateExpression: 'SET equipment = :equipment',
+                ExpressionAttributeValues: {
+                    ':equipment': {
+                        M: {
+                            boots: convertForDB(boots),
+                            chest: convertForDB(chest),
+                            gloves: convertForDB(gloves),
+                            helmet: convertForDB(helmet),
+                            offhand: convertForDB(offhand),
+                            pants: convertForDB(pants),
+                            weapon: convertForDB(weapon),
+                        },
+                    },
+                },
+                ReturnValues: 'ALL_NEW',
+            });
+
+            // @ts-ignore
+            await dynamoDB.send(command);
+        } catch (error) {
+            console.error('Error updating Equipment:', error);
+            throw error;
+        }
     }
 
     function slotPress(item: Item | {}) {

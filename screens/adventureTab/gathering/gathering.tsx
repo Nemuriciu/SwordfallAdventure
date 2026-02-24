@@ -13,16 +13,17 @@ import {
     CustomButton,
 } from '../../../components/buttons/customButton.tsx';
 import {GatherNode} from './gatherNode.tsx';
-import {marshall, unmarshall} from '@aws-sdk/util-dynamodb';
-import {dynamoDb, USER_ID} from '../../../database';
 import {getNode, Node} from '../../../parsers/nodeParser.tsx';
 import {rand} from '../../../parsers/itemParser.tsx';
-import arrayShuffle from 'array-shuffle';
+import {arrayToShuffled} from 'array-shuffle';
 import ProgressBar from '../../../components/progressBar.tsx';
 import experienceJson from '../../../assets/json/experience.json';
 import {colors} from '../../../utils/colors.ts';
 import {gatheringStore} from '../../../store_zustand/gatheringStore.tsx';
 import {values} from '../../../utils/values.ts';
+import {GetCommand} from '@aws-sdk/lib-dynamodb';
+import {convertForDB, dynamoDB, USER_ID} from '../../../database';
+import {UpdateItemCommand} from '@aws-sdk/client-dynamodb';
 
 export function Gathering() {
     const gatherLevel = gatheringStore(state => state.level);
@@ -31,15 +32,17 @@ export function Gathering() {
     const nodeIndex = gatheringStore(state => state.nodeIndex);
     const gatherTimestamp = gatheringStore(state => state.timestamp);
     const nodes = gatheringStore(state => state.nodes);
-    const setGatherInfo = gatheringStore(state => state.setGatherInfo);
+    const gatheringSetAll = gatheringStore(state => state.gatheringSetAll);
     const didMount = useRef(2);
 
     useEffect(() => {
+        // noinspection JSIgnoredPromiseFromCall
         fetchGatheringDB();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     useEffect(() => {
         if (!didMount.current) {
+            // noinspection JSIgnoredPromiseFromCall
             updateGatheringDB();
         } else {
             didMount.current -= 1;
@@ -54,63 +57,62 @@ export function Gathering() {
         nodes,
     ]);
 
-    function fetchGatheringDB() {
-        const params = {
-            TableName: 'users',
-            Key: marshall({id: USER_ID}),
-            ProjectionExpression: 'gathering',
-        };
-        dynamoDb.getItem(params, function (err, data) {
-            if (err) {
-                console.log(err);
-            } else {
-                // @ts-ignore
-                const {gathering} = unmarshall(data.Item);
-                setGatherInfo(
-                    gathering.level,
-                    gathering.experience,
-                    gathering.isGathering,
-                    gathering.nodeIndex,
-                    gathering.timestamp,
-                    gathering.nodes,
-                );
-            }
-        });
+    async function fetchGatheringDB() {
+        try {
+            const command = new GetCommand({
+                TableName: 'users',
+                Key: {
+                    id: USER_ID,
+                },
+                ProjectionExpression: 'gathering',
+            });
+
+            // @ts-ignore
+            const response = await dynamoDB.send(command);
+            const {gathering} = response.Item;
+            gatheringSetAll(
+                gathering.level,
+                gathering.experience,
+                gathering.isGathering,
+                gathering.nodeIndex,
+                gathering.gatherTimestamp,
+                gathering.nodes,
+            );
+        } catch (error) {
+            console.error('Error fetching userInfo:', error);
+            throw error;
+        }
     }
 
-    function updateGatheringDB() {
-        const params = {
-            TableName: 'users',
-            Key: marshall({id: USER_ID}),
-            UpdateExpression: `
-            set gathering.#experience = :experience,
-                gathering.#isGathering = :isGathering,
-                gathering.#level = :level,
-                gathering.#nodeIndex = :nodeIndex,
-                gathering.#nodes = :nodes,
-                gathering.#timestamp = :timestamp`,
-            ExpressionAttributeNames: {
-                '#experience': 'experience',
-                '#isGathering': 'isGathering',
-                '#level': 'level',
-                '#nodeIndex': 'nodeIndex',
-                '#nodes': 'nodes',
-                '#timestamp': 'timestamp',
-            },
-            ExpressionAttributeValues: marshall({
-                ':experience': gatherExp,
-                ':isGathering': isGathering,
-                ':level': gatherLevel,
-                ':nodeIndex': nodeIndex,
-                ':nodes': nodes,
-                ':timestamp': gatherTimestamp,
-            }),
-        };
-        dynamoDb.updateItem(params, function (err) {
-            if (err) {
-                console.log(err);
-            }
-        });
+    async function updateGatheringDB() {
+        try {
+            const command = new UpdateItemCommand({
+                TableName: 'users',
+                Key: {
+                    id: {S: USER_ID!},
+                },
+                UpdateExpression: 'SET gathering = :gathering',
+                ExpressionAttributeValues: {
+                    ':gathering': {
+                        M: {
+                            experience: {N: gatherExp.toString()},
+                            isGathering: {BOOL: isGathering},
+                            level: {N: gatherLevel.toString()},
+                            nodeIndex: {N: nodeIndex.toString()},
+                            nodes: convertForDB(nodes),
+                            gatherTimestamp: {S: gatherTimestamp},
+                        },
+                    },
+                },
+                ReturnValues: 'ALL_NEW',
+            });
+
+            // @ts-ignore
+            await dynamoDB.send(command);
+        } catch (error) {
+            console.error('Error updating userInfo:', error);
+            throw error;
+        }
     }
 
     function refreshNodes() {
@@ -130,15 +132,15 @@ export function Gathering() {
             nodeList.push(getNode('herb', gatherLevel));
         }
 
-        nodeList = arrayShuffle(nodeList);
+        const shuffledNodeList = arrayToShuffled(nodeList);
 
-        setGatherInfo(
+        gatheringSetAll(
             gatherLevel,
             gatherExp,
             isGathering,
             nodeIndex,
             gatherTimestamp,
-            nodeList,
+            shuffledNodeList,
         );
     }
 
@@ -148,7 +150,7 @@ export function Gathering() {
             const date = new Date();
             date.setDate(date.getDate() - 1);
 
-            setGatherInfo(
+            gatheringSetAll(
                 gatherLevel,
                 gatherExp,
                 isGathering,

@@ -4,7 +4,8 @@ import {addItem} from '../utils/arrayUtils.ts';
 
 export interface InventoryState {
     inventoryList: (Item | {})[];
-    inventoryUpdate: (list: (Item | {})[]) => void;
+
+    inventorySetList: (list: (Item | {})[]) => void;
     inventoryAddItems: (items: Item[]) => void;
     inventoryAddItemAt: (item: Item, index: number) => void;
     inventoryRemoveItemAt: (index: number, quantity: number) => void;
@@ -17,7 +18,8 @@ export interface InventoryState {
 
 export const inventoryStore = create<InventoryState>()(set => ({
     inventoryList: new Array(36).fill({}),
-    inventoryUpdate: (list: (Item | {})[]) =>
+
+    inventorySetList: (list: (Item | {})[]) =>
         set({
             inventoryList: Array.from(list),
         }),

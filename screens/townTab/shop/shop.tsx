@@ -12,10 +12,7 @@ import {
     ButtonType,
     CustomButton,
 } from '../../../components/buttons/customButton.tsx';
-import {marshall, unmarshall} from '@aws-sdk/util-dynamodb';
-import {dynamoDb, USER_ID} from '../../../database';
 import {TitleSeparator} from '../../../components/titleSeparator.tsx';
-import {questsStore} from '../../../store_zustand/questsStore.tsx';
 import {values} from '../../../utils/values.ts';
 
 // TODO: Generate shop items + DB + Refresh Timer
@@ -81,38 +78,6 @@ export function Shop() {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [refreshTimer]);*/
-
-    function fetchShopDB() {
-        const params = {
-            TableName: 'users',
-            Key: marshall({id: USER_ID}),
-            ProjectionExpression: 'shop',
-        };
-        dynamoDb.getItem(params, function (err, data) {
-            if (err) {
-                console.log(err);
-            } else {
-                // @ts-ignore
-                // TODO:
-            }
-        });
-    }
-
-    function updateShopDB() {
-        /*const params = {
-            TableName: 'users',
-            Key: marshall({id: USER_ID}),
-            UpdateExpression: 'set quests = :val',
-            ExpressionAttributeValues: marshall({
-                ':val': shopList,
-            }),
-        };
-        dynamoDb.updateItem(params, function (err) {
-            if (err) {
-                console.log(err);
-            }
-        });*/
-    }
 
     function refreshShop() {}
 

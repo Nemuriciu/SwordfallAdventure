@@ -1,118 +1,83 @@
-import AWS from 'aws-sdk';
-import {marshall} from '@aws-sdk/util-dynamodb';
-import {initializeQuests} from './parsers/questParser';
+// noinspection SpellCheckingInspection
+
 import {
-    CREATURE_COUNT_MAX,
-    CREATURE_COUNT_MIN,
-    getCreature,
-} from './parsers/creatureParser';
-import {rand} from './parsers/itemParser';
-import {initializeSkills} from './parsers/skillParser';
-//import "react-native-get-random-values";
-//import 'react-native-url-polyfill/auto';
-//import {ReadableStream} from 'web-streams-polyfill/ponyfill';
+    CognitoIdentityProviderClient,
+    InitiateAuthCommand,
+} from '@aws-sdk/client-cognito-identity-provider';
+import {fromCognitoIdentityPool} from '@aws-sdk/credential-provider-cognito-identity';
+import {CognitoIdentityClient} from '@aws-sdk/client-cognito-identity';
+import {DynamoDBClient} from '@aws-sdk/client-dynamodb';
+import {jwtDecode} from 'jwt-decode';
 
-//globalThis.ReadableStream = ReadableStream;
-
-export const USER_ID = '33b49812-d0f1-7019-44e6-3ad9b23c4e71';
-
-const REGION = 'eu-central-1';
-const ACCESS_KEY = 'AKIA5FTZAJQTUM5R4P6Y';
-const SECRET_ACCESS_KEY = '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';
-//const IDENTITY_POOL_ID = "eu-central-1:79f5853a-ecd6-4bfa-aca5-3ef58d9a32a4"
-const USER_POOL_ID = 'eu-central-1_gr3bGMesN';
 const CLIENT_ID = '4cdj9pi9adms4tm5udhsv3aoe9';
+const REGION = 'eu-central-1';
+const USER_POOL_ID = 'eu-central-1_gr3bGMesN';
+const IDENTITY_POOL_ID = 'eu-central-1:79f5853a-ecd6-4bfa-aca5-3ef58d9a32a4';
 
-AWS.config.update({
-    region: REGION,
-    credentials: new AWS.Credentials({
-        accessKeyId: ACCESS_KEY,
-        secretAccessKey: SECRET_ACCESS_KEY,
-    }),
-});
+const email = 'vlad.megaboy@gmail.com';
+const password = '12345678';
 
-const cognito = new AWS.CognitoIdentityServiceProvider();
-export const dynamoDb = new AWS.DynamoDB();
+export let dynamoDB = null;
+export let USER_ID = null;
+export async function initializeApp() {
+    const credentials = await login();
 
-/* Creating Account */
-export function createUser(username, password) {
-    const params = {
-        UserPoolId: USER_POOL_ID,
-        MessageAction: 'SUPPRESS', //TODO: Email Verification
-        Username: username,
-        TemporaryPassword: password,
-    };
-
-    cognito.adminCreateUser(params, function (err, data) {
-        /* Exception handling */
-        if (err) {
-            switch (err.name) {
-                case 'UsernameExistsException':
-                    //console.log("Username Already Exists")
-                    break;
-                default:
-                    console.error(err);
-            }
-        } else {
-            /* Create DB User Entry */
-            createUserEntry(data.User.Username, username);
-
-            /* Change Password to Permanent */
-            const passParams = {
-                Username: username,
-                Password: password,
-                Permanent: true,
-                UserPoolId: USER_POOL_ID,
-            };
-
-            cognito.adminSetUserPassword(passParams, function (err2) {
-                /* Exception handling */
-                if (err2) {
-                    console.error(err2);
-                } else {
-                    /* Login */
-                    authUser(username, password);
-                }
-            });
-        }
+    dynamoDB = new DynamoDBClient({
+        region: REGION,
+        credentials: credentials,
     });
+
+    await dynamoDB.config.credentials();
 }
-/* User Login */
-export function authUser(username, password) {
-    const params = {
+
+async function login() {
+    const loginCommand = new InitiateAuthCommand({
         AuthFlow: 'USER_PASSWORD_AUTH',
+        ClientId: CLIENT_ID,
         AuthParameters: {
-            USERNAME: username,
+            USERNAME: email,
             PASSWORD: password,
         },
-        ClientId: CLIENT_ID,
-    };
-
-    cognito.initiateAuth(params, function (err, data) {
-        /* Exception handling */
-        if (err) {
-            switch (err.name) {
-                case 'NotAuthorizedException':
-                    console.log('Incorrect username or password.'); //TODO:
-                    break;
-                case 'TooManyRequestsException':
-                    console.log('Too many requests. Please try again later.'); //TODO:
-                    break;
-                default:
-                    console.error(err);
-            }
-            return null;
-        } else {
-            if (data.AuthenticationResult) {
-                return data.AuthenticationResult.AccessToken;
-            } else if (data.ChallengeName === 'NEW_PASSWORD_REQUIRED') {
-                console.error('NEEDS PASSWORD CHANGE');
-            }
-        }
     });
+
+    try {
+        const client = new CognitoIdentityProviderClient({region: REGION});
+        const loginResponse = await client.send(loginCommand);
+        // TODO: Manage Success/Fail Login
+        try {
+            const idToken = loginResponse.AuthenticationResult.IdToken;
+            USER_ID = jwtDecode(idToken).sub;
+            return await getAwsCredentials(idToken);
+        } catch (error) {
+            console.error('Get Credentials Error:', error);
+        }
+    } catch (error) {
+        console.error('Login Command Error:', error);
+        /*if (error.name === 'NotAuthorizedException') {
+            console.error('Invalid username or password.');
+        } else if (error.name === 'UserNotConfirmedException') {
+            console.error('User is not confirmed.');
+        }*/
+    }
 }
+
+async function getAwsCredentials(idToken) {
+    const identity = new CognitoIdentityClient({
+        region: REGION,
+        credentials: fromCognitoIdentityPool({
+            clientConfig: {region: REGION},
+            identityPoolId: IDENTITY_POOL_ID,
+            logins: {
+                [`cognito-idp.${REGION}.amazonaws.com/${USER_POOL_ID}`]:
+                    idToken,
+            },
+        }),
+    });
+    return await identity.config.credentials();
+}
+
 /* Create Entry in Database on Registration */ //TODO:
-function createUserEntry(userID, username) {
+/*function createUserEntry(userID, username) {
     const params = {
         Item: marshall({
             id: userID,
@@ -177,4 +142,18 @@ function createUserEntry(userID, username) {
             console.log(err);
         }
     });
+}*/
+
+export function convertForDB(value) {
+    if (value === null || value === undefined) return {NULL: true};
+    if (typeof value === 'boolean') return {BOOL: value};
+    if (typeof value === 'string') return {S: value};
+    if (typeof value === 'number') return {N: value.toString()};
+    if (Array.isArray(value)) return {L: value.map(convertForDB)};
+    if (typeof value === 'object') {
+        const M = {};
+        for (const k in value) M[k] = convertForDB(value[k]);
+        return {M};
+    }
+    throw new Error('Unsupported type');
 }

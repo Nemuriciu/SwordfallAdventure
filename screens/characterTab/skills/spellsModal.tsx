@@ -1,12 +1,12 @@
 import React, {useEffect, useState} from 'react';
 import {
-    StyleSheet,
-    View,
-    ImageBackground,
-    Text,
     FlatList,
     Image,
+    ImageBackground,
+    StyleSheet,
+    Text,
     TouchableOpacity,
+    View,
 } from 'react-native';
 import Modal from 'react-native-modal';
 import {getImage} from '../../../assets/images/_index';
@@ -30,7 +30,7 @@ interface props {
 
 export function SpellsModal({visible, setVisible, slot}: props) {
     const skillsList = skillsStore(state => state.skillsList);
-    const skillsSpellSet = skillsStore(state => state.skillsSpellSet);
+    const skillsSetSpell = skillsStore(state => state.skillsSetSpell);
 
     const [spellsList, setSpellsList] = useState<Skill[]>([]);
     const [disabled, setDisabled] = useState(false);
@@ -55,7 +55,7 @@ export function SpellsModal({visible, setVisible, slot}: props) {
         if (!disabled) {
             setDisabled(true);
 
-            skillsSpellSet(slot, spell);
+            skillsSetSpell(slot, spell);
             setVisible(false);
 
             setTimeout(() => {

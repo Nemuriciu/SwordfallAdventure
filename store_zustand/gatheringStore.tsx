@@ -9,7 +9,8 @@ export interface GatheringState {
     nodeIndex: number;
     timestamp: string;
     nodes: Node[];
-    setGatherInfo: (
+
+    gatheringSetAll: (
         level: number,
         exp: number,
         isGathering: boolean,
@@ -17,8 +18,8 @@ export interface GatheringState {
         timestamp: string,
         nodes: Node[],
     ) => void;
-    updateGatherExp: (exp: number) => void;
-    increaseGatherLevel: (expTrunc: number) => void;
+    gatheringSetExp: (exp: number) => void;
+    gatheringSetLevelUp: (expTrunc: number) => void;
 }
 
 export const gatheringStore = create<GatheringState>()(set => ({
@@ -29,7 +30,7 @@ export const gatheringStore = create<GatheringState>()(set => ({
     timestamp: '',
     nodes: [],
 
-    setGatherInfo: (
+    gatheringSetAll: (
         level: number,
         exp: number,
         isGathering: boolean,
@@ -45,13 +46,12 @@ export const gatheringStore = create<GatheringState>()(set => ({
             timestamp: timestamp,
             nodes: cloneDeep(nodes),
         }),
-
-    updateGatherExp: (exp: number) =>
+    gatheringSetExp: (exp: number) =>
         set({
             exp: exp,
         }),
 
-    increaseGatherLevel: (expTrunc: number) =>
+    gatheringSetLevelUp: (expTrunc: number) =>
         set(state => ({
             level: state.level + 1,
             exp: expTrunc,

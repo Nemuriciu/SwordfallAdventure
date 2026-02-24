@@ -1,13 +1,13 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {useEffect, useState} from 'react';
 import {
+    Image,
+    ImageBackground,
     StyleSheet,
     Text,
-    View,
-    ImageBackground,
-    Image,
-    TouchableOpacity,
     TextInput,
+    TouchableOpacity,
+    View,
 } from 'react-native';
 import Modal from 'react-native-modal';
 import {getImage} from '../../../assets/images/_index';
@@ -44,7 +44,9 @@ interface props {
 
 export function SkillsDetails() {
     const skillPoints = userInfoStore(state => state.skillPoints);
-    const updateSkillPoints = userInfoStore(state => state.updateSkillPoints);
+    const userInfoSetSkillPoints = userInfoStore(
+        state => state.userInfoSetSkillPoints,
+    );
 
     const modalVisible = skillDetailsStore(state => state.modalVisible);
     const skill = skillDetailsStore(state => state.skill);
@@ -54,7 +56,7 @@ export function SkillsDetails() {
     const skillsDetailsUpdateSkill = skillDetailsStore(
         state => state.skillsDetailsUpdateSkill,
     );
-    const skillsUpdateSkill = skillsStore(state => state.skillsUpdateSkill);
+    const skillsSetSkill = skillsStore(state => state.skillsSetSkill);
 
     const [pointsAvailable, setPointsAvailable] = useState(0);
     const [pointsSpent, setPointsSpent] = useState(0);
@@ -97,9 +99,9 @@ export function SkillsDetails() {
             const _skill = cloneDeep(skill) as Skill;
             _skill.points = pointsSpent;
             /* Update Player Available Skill Points */
-            updateSkillPoints(pointsAvailable);
+            userInfoSetSkillPoints(pointsAvailable);
             /* Update Skill Points spent */
-            skillsUpdateSkill(_skill.id, _skill);
+            skillsSetSkill(_skill.id, _skill);
             /* Update Selected Skill */
             skillsDetailsUpdateSkill(_skill);
 

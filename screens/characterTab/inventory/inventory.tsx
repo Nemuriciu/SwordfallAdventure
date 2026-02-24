@@ -1,11 +1,11 @@
 import {
     FlatList,
-    Text,
+    Image,
     ImageBackground,
     StyleSheet,
-    View,
-    Image,
+    Text,
     TouchableOpacity,
+    View,
 } from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import {
@@ -20,8 +20,6 @@ import {
     ButtonType,
     CustomButton,
 } from '../../../components/buttons/customButton.tsx';
-import {marshall, unmarshall} from '@aws-sdk/util-dynamodb';
-import {dynamoDb, USER_ID} from '../../../database';
 import {Category, isItem, Item} from '../../../types/item';
 import {strings} from '../../../utils/strings.ts';
 import {BreakAllModal} from './breakAllModal.tsx';
@@ -35,6 +33,9 @@ import {itemDetailsStore} from '../../../store_zustand/itemDetailsStore.tsx';
 import {inventoryStore} from '../../../store_zustand/inventoryStore.tsx';
 import {userInfoStore} from '../../../store_zustand/userInfoStore.tsx';
 import {values} from '../../../utils/values.ts';
+import {GetCommand} from '@aws-sdk/lib-dynamodb';
+import {convertForDB, dynamoDB, USER_ID} from '../../../database';
+import {UpdateItemCommand} from '@aws-sdk/client-dynamodb';
 
 const COLUMN_NR = 7;
 
@@ -42,7 +43,7 @@ export function Inventory() {
     const level = userInfoStore(state => state.level);
 
     const inventoryList = inventoryStore(state => state.inventoryList);
-    const inventoryUpdate = inventoryStore(state => state.inventoryUpdate);
+    const inventorySetList = inventoryStore(state => state.inventorySetList);
     const inventoryAddItems = inventoryStore(state => state.inventoryAddItems);
     const [usedSlots, setUsedSlots] = useState<number>(
         inventoryList.filter(item => isItem(item)).length,
@@ -56,12 +57,14 @@ export function Inventory() {
     const itemShow = itemDetailsStore(state => state.itemDetailsShow);
 
     useEffect(() => {
+        // noinspection JSIgnoredPromiseFromCall
         fetchInventoryDB();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     useEffect(() => {
         setUsedSlots(inventoryList.filter(item => isItem(item)).length);
         if (!didMount.current) {
+            // noinspection JSIgnoredPromiseFromCall
             updateInventoryDB();
         } else {
             didMount.current -= 1;
@@ -69,34 +72,47 @@ export function Inventory() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [inventoryList]);
 
-    function fetchInventoryDB() {
-        const params = {
-            TableName: 'users',
-            Key: marshall({id: USER_ID}),
-            ProjectionExpression: 'inventory',
-        };
-        dynamoDb.getItem(params, function (err, data) {
-            if (err) {
-                console.log(err);
-            } else {
-                // @ts-ignore
-                inventoryUpdate(unmarshall(data.Item).inventory.inventoryList);
-            }
-        });
+    async function fetchInventoryDB() {
+        try {
+            const command = new GetCommand({
+                TableName: 'users',
+                Key: {
+                    id: USER_ID,
+                },
+                ProjectionExpression: 'inventory',
+            });
+
+            // @ts-ignore
+            const response = await dynamoDB.send(command);
+            const {inventory} = response.Item;
+            inventorySetList(inventory.inventoryList);
+        } catch (error) {
+            console.error('Error fetching Inventory:', error);
+            throw error;
+        }
     }
 
-    function updateInventoryDB() {
-        const params = {
-            TableName: 'users',
-            Key: marshall({id: USER_ID}),
-            UpdateExpression: 'set inventory.inventoryList = :val',
-            ExpressionAttributeValues: marshall({':val': inventoryList}),
-        };
-        dynamoDb.updateItem(params, function (err) {
-            if (err) {
-                console.log(err);
-            }
-        });
+    async function updateInventoryDB() {
+        try {
+            const command = new UpdateItemCommand({
+                TableName: 'users',
+                Key: {
+                    id: {S: USER_ID!},
+                },
+                UpdateExpression:
+                    'SET inventory.inventoryList = :inventoryList',
+                ExpressionAttributeValues: {
+                    ':inventoryList': convertForDB(inventoryList),
+                },
+                ReturnValues: 'ALL_NEW',
+            });
+
+            // @ts-ignore
+            await dynamoDB.send(command);
+        } catch (error) {
+            console.error('Error updating Inventory:', error);
+            throw error;
+        }
     }
 
     function addItemOnPress() {
@@ -111,13 +127,13 @@ export function Inventory() {
         sortInventoryList(inventoryClone);
 
         if (!areListsIdentical(inventoryClone, inventoryList)) {
-            inventoryUpdate(inventoryClone);
+            inventorySetList(inventoryClone);
         }
     }
 
     function clearInventoryList() {
         if (usedSlots > 0) {
-            inventoryUpdate(clearInventory(inventoryList));
+            inventorySetList(clearInventory(inventoryList));
         }
     }
 

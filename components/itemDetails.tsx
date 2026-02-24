@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {StyleSheet, Text, View, ImageBackground, Image} from 'react-native';
+import {Image, ImageBackground, StyleSheet, Text, View} from 'react-native';
 import Modal from 'react-native-modal';
 import {isItem, Item} from '../types/item.ts';
 import {
@@ -41,7 +41,7 @@ export function ItemDetails() {
 
     const level = userInfoStore(state => state.level);
     const shards = userInfoStore(state => state.shards);
-    const updateShards = userInfoStore(state => state.updateShards);
+    const updateShards = userInfoStore(state => state.userInfoSetShards);
 
     const modalVisible = itemDetailsStore(state => state.modalVisible);
     const item = itemDetailsStore(state => state.item);

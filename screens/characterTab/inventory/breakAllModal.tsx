@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {StyleSheet, View, ImageBackground, Text, Image} from 'react-native';
+import {Image, ImageBackground, StyleSheet, Text, View} from 'react-native';
 import Modal from 'react-native-modal';
 import {getImage} from '../../../assets/images/_index';
 import SpannableBuilder from '@mj-studio/react-native-spannable-string';
@@ -28,7 +28,7 @@ interface props {
 
 export function BreakAllModal({visible, setVisible, rarity}: props) {
     const shards = userInfoStore(state => state.shards);
-    const updateShards = userInfoStore(state => state.updateShards);
+    const userInfoSetShards = userInfoStore(state => state.userInfoSetShards);
 
     const inventoryList = inventoryStore(state => state.inventoryList);
     const inventoryRemoveMultipleItemsAt = inventoryStore(
@@ -67,7 +67,7 @@ export function BreakAllModal({visible, setVisible, rarity}: props) {
     function removeAllEquipment() {
         setDisabled(true);
 
-        updateShards(shards + shardsAmount);
+        userInfoSetShards(shards + shardsAmount);
         /* Remove items from inventoryList */
         inventoryRemoveMultipleItemsAt(
             removedItems,

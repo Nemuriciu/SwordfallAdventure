@@ -10,6 +10,7 @@ export interface EquipmentState {
     gloves: Item | {};
     pants: Item | {};
     boots: Item | {};
+
     equipmentUpdate: (
         helmet: Item | {},
         weapon: Item | {},
@@ -37,6 +38,7 @@ export const equipmentStore = create<EquipmentState>()(set => ({
     gloves: {},
     pants: {},
     boots: {},
+
     equipmentUpdate: (
         helmet: Item | {},
         weapon: Item | {},

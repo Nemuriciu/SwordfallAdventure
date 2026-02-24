@@ -13,20 +13,21 @@ import {ButtonGroup} from '@rneui/themed';
 import {strings} from '../../../utils/strings.ts';
 import {colors} from '../../../utils/colors.ts';
 import {SkillsIcon} from './skillsIcon.tsx';
-import {marshall, unmarshall} from '@aws-sdk/util-dynamodb';
-import {dynamoDb, USER_ID} from '../../../database';
 import {SkillsDetails} from './skillsDetails.tsx';
 import {getSkillImg} from '../../../parsers/skillParser.tsx';
 import {SpellsModal} from './spellsModal.tsx';
 import {skillsStore} from '../../../store_zustand/skillsStore.tsx';
 import {values} from '../../../utils/values.ts';
+import {GetCommand} from '@aws-sdk/lib-dynamodb';
+import {convertForDB, dynamoDB, USER_ID} from '../../../database';
+import {UpdateItemCommand} from '@aws-sdk/client-dynamodb';
 
 export function Skills() {
     const skillsList = skillsStore(state => state.skillsList);
     const spell_1 = skillsStore(state => state.spell_1);
     const spell_2 = skillsStore(state => state.spell_2);
     const spell_3 = skillsStore(state => state.spell_3);
-    const skillsUpdate = skillsStore(state => state.skillsUpdate);
+    const skillsSetAll = skillsStore(state => state.skillsSetAll);
 
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [spellsListVisible, setSpellsListVisible] = useState(false);
@@ -34,12 +35,14 @@ export function Skills() {
     const didMount = useRef(2);
 
     useEffect(() => {
+        // noinspection JSIgnoredPromiseFromCall
         fetchSkillsDB();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
         if (!didMount.current) {
+            // noinspection JSIgnoredPromiseFromCall
             updateSkillsDB();
         } else {
             didMount.current -= 1;
@@ -47,55 +50,58 @@ export function Skills() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [skillsList, spell_1, spell_2, spell_3]);
 
-    function fetchSkillsDB() {
-        const params = {
-            TableName: 'users',
-            Key: marshall({id: USER_ID}),
-            ProjectionExpression: 'skills',
-        };
-        dynamoDb.getItem(params, function (err, data) {
-            if (err) {
-                console.log(err);
-            } else {
-                // @ts-ignore
-                const {skills} = unmarshall(data.Item);
-                skillsUpdate(
-                    skills.skillsList,
-                    skills.spell_1,
-                    skills.spell_2,
-                    skills.spell_3,
-                );
-            }
-        });
+    async function fetchSkillsDB() {
+        try {
+            const command = new GetCommand({
+                TableName: 'users',
+                Key: {
+                    id: USER_ID,
+                },
+                ProjectionExpression: 'skills',
+            });
+
+            // @ts-ignore
+            const response = await dynamoDB.send(command);
+            const {skills} = response.Item;
+            skillsSetAll(
+                skills.skillsList,
+                skills.spell_1,
+                skills.spell_2,
+                skills.spell_3,
+            );
+        } catch (error) {
+            console.error('Error fetching Skills:', error);
+            throw error;
+        }
     }
 
-    function updateSkillsDB() {
-        const params = {
-            TableName: 'users',
-            Key: marshall({id: USER_ID}),
-            UpdateExpression: `
-            set skills.#skillsList = :skillsList,
-                skills.#spell_1 = :spell_1,
-                skills.#spell_2 = :spell_2,
-                skills.#spell_3 = :spell_3`,
-            ExpressionAttributeNames: {
-                '#skillsList': 'skillsList',
-                '#spell_1': 'spell_1',
-                '#spell_2': 'spell_2',
-                '#spell_3': 'spell_3',
-            },
-            ExpressionAttributeValues: marshall({
-                ':skillsList': skillsList,
-                ':spell_1': spell_1,
-                ':spell_2': spell_2,
-                ':spell_3': spell_3,
-            }),
-        };
-        dynamoDb.updateItem(params, function (err) {
-            if (err) {
-                console.log(err);
-            }
-        });
+    async function updateSkillsDB() {
+        try {
+            const command = new UpdateItemCommand({
+                TableName: 'users',
+                Key: {
+                    id: {S: USER_ID!},
+                },
+                UpdateExpression: 'SET skills = :skills',
+                ExpressionAttributeValues: {
+                    ':skills': {
+                        M: {
+                            skillsList: convertForDB(skillsList),
+                            spell_1: convertForDB(spell_1),
+                            spell_2: convertForDB(spell_2),
+                            spell_3: convertForDB(spell_3),
+                        },
+                    },
+                },
+                ReturnValues: 'ALL_NEW',
+            });
+
+            // @ts-ignore
+            await dynamoDB.send(command);
+        } catch (error) {
+            console.error('Error updating Skills:', error);
+            throw error;
+        }
     }
 
     return (

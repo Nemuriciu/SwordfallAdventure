@@ -25,7 +25,11 @@ export function getCreatureImg(id: string): string {
     return creaturesJson[id].img;
 }
 
-export function getCreature(level: number, depth: number): Creature {
+export function getCreature(
+    zoneId: number,
+    level: number,
+    depth: number,
+): Creature {
     const creatures = Object.keys(creaturesJson);
     const creatureId = creatures[rand(0, creatures.length - 1)];
 
