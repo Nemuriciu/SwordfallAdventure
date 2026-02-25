@@ -160,47 +160,59 @@ export function Hunting() {
                     style={styles.scrollView}
                     alwaysBounceVertical={false}>
                     <ZoneCard
-                        zoneName={'Forest_1'}
+                        zoneName={'Whispering Meadow'}
                         zoneLevelMin={1}
                         zoneLevelMax={4}
-                        image={'forest'}
+                        image={'zone_0_whispering_meadow'}
                         hasQuest={false}
-                        onPress={() => huntingSelectZone(0, 'Forest_1', 1, 4)}
+                        onPress={() =>
+                            huntingSelectZone(0, 'Whispering Meadow', 1, 4)
+                        }
                     />
                     <ZoneCard
-                        zoneName={'Forest_2'}
+                        zoneName={'Ironcrag Highlands'}
                         zoneLevelMin={5}
                         zoneLevelMax={7}
-                        image={'forest'}
+                        image={'zone_1_ironcrag_highlands'}
                         hasQuest={false}
-                        onPress={() => huntingSelectZone(1, 'Forest_2', 5, 7)}
+                        onPress={() =>
+                            // huntingSelectZone(1, 'Ironcrag Highlands', 5, 7)
+                            {}
+                        }
                     />
                     <ZoneCard
-                        zoneName={'Forest'}
+                        zoneName={'Gloomroot Forest'}
                         zoneLevelMin={8}
                         zoneLevelMax={10}
-                        image={'forest'}
+                        image={'zone_2_gloomroot_forest'}
                         hasQuest={false}
-                        onPress={() => huntingSelectZone(2, '', 8, 10)}
-                        // onPress={() => {}}
+                        onPress={() =>
+                            // huntingSelectZone(2, 'Gloomroot Forest', 8, 10)
+                            {}
+                        }
                     />
+                    {/*Increase the size of the title height, make it 15% of the image height, but keep the rest of the image the same. Keep the same font and color for the title.*/}
                     <ZoneCard
-                        zoneName={'Forest'}
+                        zoneName={'Frostveil Tundra'}
                         zoneLevelMin={11}
                         zoneLevelMax={13}
-                        image={'forest'}
+                        image={'zone_3_frostveil_tundra'}
                         hasQuest={false}
-                        // onPress={() => huntingSelectZone(3, '', 11, 13)}
-                        onPress={() => {}}
+                        onPress={() =>
+                            // huntingSelectZone(3, 'Frostveil Tundra', 11, 13)
+                            {}
+                        }
                     />
                     <ZoneCard
-                        zoneName={'Forest'}
+                        zoneName={'Ashenfire Wastes'}
                         zoneLevelMin={14}
                         zoneLevelMax={16}
-                        image={'forest'}
+                        image={'zone_4_ashenfire_wastes'}
                         hasQuest={false}
-                        // onPress={() => huntingSelectZone(4, '', 14, 16)}
-                        onPress={() => {}}
+                        onPress={() =>
+                            // huntingSelectZone(4, 'Ashenfire Wastes', 14, 16)
+                            {}
+                        }
                     />
                 </ScrollView>
             )}

@@ -146,6 +146,7 @@ export function Combat() {
                         _combatLog.push({
                             username: username,
                             opponent: getCreatureName(
+                                zoneId,
                                 (creature as Creature).id,
                             ),
                             turn: false,
@@ -188,6 +189,7 @@ export function Combat() {
                                 if (
                                     quest.description.includes(
                                         getCreatureName(
+                                            zoneId,
                                             (creature as Creature).id,
                                         ),
                                     )
@@ -243,6 +245,7 @@ export function Combat() {
                         /* Enemy Win */
                         _combatLog.push({
                             username: getCreatureName(
+                                zoneId,
                                 (creature as Creature).id,
                             ),
                             opponent: username,
@@ -305,7 +308,7 @@ export function Combat() {
                 if (Math.random() <= _statsEnemy.dodge) {
                     _combatLog.push({
                         username: username,
-                        opponent: getCreatureName(_creature.id),
+                        opponent: getCreatureName(zoneId, _creature.id),
                         turn: turn,
                         atkType: 'Spell' + atkType + 'Dodge',
                         damage: 0,
@@ -322,7 +325,7 @@ export function Combat() {
                         damage = Math.round(damage * 1.5);
                         _combatLog.push({
                             username: username,
-                            opponent: getCreatureName(_creature.id),
+                            opponent: getCreatureName(zoneId, _creature.id),
                             turn: turn,
                             atkType: 'Spell' + atkType + 'Crit',
                             damage: damage,
@@ -331,7 +334,7 @@ export function Combat() {
                     } else {
                         _combatLog.push({
                             username: username,
-                            opponent: getCreatureName(_creature.id),
+                            opponent: getCreatureName(zoneId, _creature.id),
                             turn: turn,
                             atkType: 'Spell' + atkType,
                             damage: damage,
@@ -390,7 +393,7 @@ export function Combat() {
                 if (Math.random() <= _statsEnemy.dodge) {
                     _combatLog.push({
                         username: username,
-                        opponent: getCreatureName(_creature.id),
+                        opponent: getCreatureName(zoneId, _creature.id),
                         turn: turn,
                         atkType: 'Dodge',
                         damage: 0,
@@ -406,7 +409,7 @@ export function Combat() {
                         damage = Math.round(damage * 1.5);
                         _combatLog.push({
                             username: username,
-                            opponent: getCreatureName(_creature.id),
+                            opponent: getCreatureName(zoneId, _creature.id),
                             turn: turn,
                             atkType: atkType + 'Crit',
                             damage: damage,
@@ -414,7 +417,7 @@ export function Combat() {
                     } else {
                         _combatLog.push({
                             username: username,
-                            opponent: getCreatureName(_creature.id),
+                            opponent: getCreatureName(zoneId, _creature.id),
                             turn: turn,
                             atkType: atkType,
                             damage: damage,
@@ -476,7 +479,7 @@ export function Combat() {
                         );
                         _combatLog.push({
                             username: username,
-                            opponent: getCreatureName(_creature.id),
+                            opponent: getCreatureName(zoneId, _creature.id),
                             turn: turn,
                             atkType: effect.type,
                             damage: damage,
@@ -576,7 +579,7 @@ export function Combat() {
                 /* Basic Attack */
                 if (Math.random() <= _statsPlayer.dodge) {
                     _combatLog.push({
-                        username: getCreatureName(_creature.id),
+                        username: getCreatureName(zoneId, _creature.id),
                         opponent: username,
                         turn: turn,
                         atkType: 'Dodge',
@@ -588,7 +591,7 @@ export function Combat() {
                     if (Math.random() <= _statsPlayer.critical) {
                         damage = Math.round(damage * 1.5);
                         _combatLog.push({
-                            username: getCreatureName(_creature.id),
+                            username: getCreatureName(zoneId, _creature.id),
                             opponent: username,
                             turn: turn,
                             atkType: atkType + 'Crit',
@@ -596,7 +599,7 @@ export function Combat() {
                         });
                     } else {
                         _combatLog.push({
-                            username: getCreatureName(_creature.id),
+                            username: getCreatureName(zoneId, _creature.id),
                             opponent: username,
                             turn: turn,
                             atkType: atkType,
@@ -658,7 +661,7 @@ export function Combat() {
                             0,
                         );
                         _combatLog.push({
-                            username: getCreatureName(_creature.id),
+                            username: getCreatureName(zoneId, _creature.id),
                             opponent: username,
                             turn: turn,
                             atkType: effect.type,
@@ -1103,7 +1106,7 @@ export function Combat() {
                                     <Image
                                         style={styles.avatar}
                                         source={getImage(
-                                            getCreatureImg(creature.id),
+                                            getCreatureImg(zoneId, creature.id),
                                         )}
                                         resizeMode={'stretch'}
                                     />

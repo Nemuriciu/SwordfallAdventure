@@ -18,6 +18,7 @@ import {combatStore} from '../../../store_zustand/combatStore.tsx';
 import {attributesStore} from '../../../store_zustand/attributesStore.tsx';
 import {Stats} from '../../../types/stats.ts';
 import {values} from '../../../utils/values.ts';
+import {huntingStore} from '../../../store_zustand/huntingStore.tsx';
 
 interface props {
     creature: Creature;
@@ -25,6 +26,7 @@ interface props {
 }
 
 export function CreatureCard({creature, index}: props) {
+    const zoneId = huntingStore(state => state.zoneId);
     const stamina = userInfoStore(state => state.stamina);
     const userInfoSetStamina = userInfoStore(state => state.userInfoSetStamina);
     const combatShow = combatStore(state => state.combatShow);
@@ -90,7 +92,7 @@ export function CreatureCard({creature, index}: props) {
             <View style={styles.avatarContainer}>
                 <Image
                     style={styles.avatar}
-                    source={getImage(getCreatureImg(creature.id))}
+                    source={getImage(getCreatureImg(zoneId, creature.id))}
                     resizeMode={'stretch'}
                     fadeDuration={0}
                 />
@@ -120,7 +122,7 @@ export function CreatureCard({creature, index}: props) {
                         styles.name,
                         {color: getItemColor(creature.rarity)},
                     ]}>
-                    {getCreatureName(creature.id)}
+                    {getCreatureName(zoneId, creature.id)}
                 </Text>
                 <View style={styles.bottomContainer}>
                     <View style={styles.statsContainer}>

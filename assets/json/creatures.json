@@ -1,124 +1,37 @@
 {
-  "10000": {
-    "name": "Wild Boar",
-    "img": "creature_icon_wild_boar"
-  },
-  "10001": {
-    "name": "Dire Wolf",
-    "img": "creature_icon_dire_wolf"
-  },
-  "10002": {
-    "name": "Colossal Treant",
-    "img": "creature_icon_colossal_treant"
-  },
-  "10003": {
-    "name": "Gnashing Tiger",
-    "img": "creature_icon_gnashing_tiger"
-  },
-  "10004": {
-    "name": "Swift Eagle",
-    "img": "creature_icon_swift_eagle"
-  },
-  "10005": {
-    "name": "Salamander",
-    "img": "creature_icon_salamander"
-  },
-  "10006": {
-    "name": "Cursed Stag",
-    "img": "creature_icon_cursed_stag"
-  },
-  "10007": {
-    "name": "Grizzly Bear",
-    "img": "creature_icon_grizzly_bear"
-  },
-  "10008": {
-    "name": "Crazed Fox",
-    "img": "creature_icon_crazed_fox"
-  },
-  "10009": {
-    "name": "Werewolf",
-    "img": "creature_icon_werewolf"
-  },
-  "10010": {
-    "name": "Corrupted Owl",
-    "img": "creature_icon_corrupted_owl"
-  },
-  "10011": {
-    "name": "Terror Bloom",
-    "img": "creature_icon_terror_bloom"
-  },
-  "10012": {
-    "name": "Forest Giant",
-    "img": "creature_icon_forest_giant"
-  },
-  "10013": {
-    "name": "Greenwood Drake",
-    "img": "creature_icon_greenwood_drake"
-  },
-  "10014": {
-    "name": "Alpha Prowler",
-    "img": "creature_icon_alpha_prowler"
-  },
-
-
-  "10015": {
-    "name": "Pit Viper",
-    "img": "creature_icon_pit_viper"
-  },
-  "10016": {
-    "name": "Black Recluse",
-    "img": "creature_icon_black_recluse"
-  },
-  "10017": {
-    "name": "Swamp Gator",
-    "img": "creature_icon_swamp_gator"
-  },
-  "10018": {
-    "name": "Rabid Bat",
-    "img": "creature_icon_rabid_bat"
-  },
-  "10019": {
-    "name": "Poisonous Toad",
-    "img": "creature_icon_poisonous_toad"
-  },
-  "10020": {
-    "name": "Lurking Fangtooth",
-    "img": "creature_icon_lurking_fangtooth"
-  },
-  "10021": {
-    "name": "Diseased Rat",
-    "img": "creature_icon_diseased_rat"
-  },
-  "10022": {
-    "name": "Crawler",
-    "img": "creature_icon_crawler"
-  },
-  "10023": {
-    "name": "Venom Stinger",
-    "img": "creature_icon_venom_stinger"
-  },
-  "10024": {
-    "name": "Lizardman",
-    "img": "creature_icon_lizardman"
-  },
-  "10025": {
-    "name": "Basilisk",
-    "img": "creature_icon_basilisk"
-  },
-  "10026": {
-    "name": "Sludge Zombie",
-    "img": "creature_icon_sludge_zombie"
-  },
-  "10027": {
-    "name": "Oozeling",
-    "img": "creature_icon_oozeling"
-  },
-  "10028": {
-    "name": "Fen Pincher",
-    "img": "creature_icon_fen_pincher"
-  },
-  "10029": {
-    "name": "Bog Lord",
-    "img": "creature_icon_bog_lord"
-  }
+    "zone_0": {
+        "10000": {
+            "name": "Bramble Fox"
+        },
+        "10001": {
+            "name": "Field Sproutling"
+        },
+        "10002": {
+            "name": "Flicker Moth"
+        },
+        "10003": {
+            "name": "Greenhopper"
+        },
+        "10004": {
+            "name": "Meadow Slime"
+        },
+        "10005": {
+            "name": "Mossback Turtle"
+        },
+        "10006": {
+            "name": "Petal Wisp"
+        },
+        "10007": {
+            "name": "Prairie Wolf"
+        },
+        "10008": {
+            "name": "Softshell Tortoise"
+        },
+        "10009": {
+            "name": "Tiny Burrow Rat"
+        },
+        "10010": {
+            "name": "Wandering Scarecrow"
+        }
+    }
 }

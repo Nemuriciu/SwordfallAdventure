@@ -16,13 +16,21 @@ import {Item} from '../types/item.ts';
 export const CREATURE_COUNT_MIN = 5;
 export const CREATURE_COUNT_MAX = 7;
 
-export function getCreatureName(id: string): string {
-    // @ts-ignore
-    return creaturesJson[id].name;
+export function getCreatureName(zoneId: number, id: string): string {
+    return creaturesJson[`zone_${zoneId}` as keyof typeof creaturesJson]?.[
+        id as keyof typeof creaturesJson.zone_0
+    ]?.name;
 }
-export function getCreatureImg(id: string): string {
-    // @ts-ignore
-    return creaturesJson[id].img;
+export function getCreatureImg(zoneId: number, id: string): string {
+    const name =
+        creaturesJson[`zone_${zoneId}` as keyof typeof creaturesJson]?.[
+            id as keyof typeof creaturesJson.zone_0
+        ]?.name;
+    return `creature_icon_${name
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9\s]/g, '') // remove special characters
+        .replace(/\s+/g, '_')}`;
 }
 
 export function getCreature(
@@ -30,7 +38,9 @@ export function getCreature(
     level: number,
     depth: number,
 ): Creature {
-    const creatures = Object.keys(creaturesJson);
+    const creatures = Object.keys(
+        creaturesJson[`zone_${zoneId}` as keyof typeof creaturesJson],
+    );
     const creatureId = creatures[rand(0, creatures.length - 1)];
 
     // @ts-ignore

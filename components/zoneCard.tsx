@@ -1,7 +1,12 @@
 import React, {useState} from 'react';
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {
+    ImageBackground,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
+} from 'react-native';
 import {getImage} from '../assets/images/_index';
-import {Card} from '@rneui/themed';
 import {values} from '../utils/values.ts';
 import {colors} from '../utils/colors.ts';
 
@@ -38,21 +43,24 @@ export function ZoneCard({
 
     return (
         <TouchableOpacity onPress={handlePress} activeOpacity={0.5}>
-            <Card
-                containerStyle={[
+            <View
+                style={[
                     styles.zoneCard,
                     {borderColor: hasQuest ? colors.primary : 'gray'},
                 ]}>
-                <Card.Image source={getImage(image)}>
+                <ImageBackground
+                    style={styles.zoneCardImage}
+                    source={getImage(image)}
+                    resizeMode={'stretch'}>
                     <View style={styles.zoneTopContainer}>
                         <Text style={styles.zoneLevel}>
                             Lv. {zoneLevelMin} - {zoneLevelMax}
                         </Text>
                         {/* TODO: Quest Icon */}
                     </View>
-                    <Text style={styles.zoneTitle}>{zoneName}</Text>
-                </Card.Image>
-            </Card>
+                    {/*<Text style={styles.zoneTitle}>{zoneName}</Text>*/}
+                </ImageBackground>
+            </View>
         </TouchableOpacity>
     );
 }
@@ -60,13 +68,16 @@ const styles = StyleSheet.create({
     zoneCard: {
         flex: 1,
         padding: 2,
-        marginStart: 24,
-        marginEnd: 24,
+        marginStart: 40,
+        marginEnd: 40,
         marginTop: 4,
         marginBottom: 4,
         backgroundColor: 'transparent',
         borderRadius: 4,
         borderWidth: 2,
+    },
+    zoneCardImage: {
+        aspectRatio: 1.5,
     },
     zoneTopContainer: {
         flex: 1,
