@@ -1,14 +1,18 @@
 {
-  "hunting": {
-    "minAmount": 3,
-    "maxAmount": 6
-  },
-  "gathering": {
-    "minAmount": 30,
-    "maxAmount": 90
-  },
-  "crafting": {
-    "minAmount": 1,
-    "maxAmount": 2
-  }
+    "hunting": {
+        "minAmount": 4,
+        "maxAmount": 6
+    },
+    "gathering": {
+        "minAmount": 30,
+        "maxAmount": 90
+    },
+    "crafting": {
+        "minAmount": 1,
+        "maxAmount": 2
+    },
+
+    "questItem": {
+        "zone_0": ["1300", "1301", "1302"]
+    }
 }

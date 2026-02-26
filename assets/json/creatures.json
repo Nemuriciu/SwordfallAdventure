@@ -1,37 +1,52 @@
 {
     "zone_0": {
         "10000": {
-            "name": "Bramble Fox"
+            "name": "Bramble Fox",
+            "questItem": "1301"
         },
         "10001": {
-            "name": "Field Sproutling"
+            "name": "Field Sproutling",
+            "questItem": "1300"
         },
         "10002": {
-            "name": "Flicker Moth"
+            "name": "Flicker Moth",
+            "questItem": "1302"
         },
         "10003": {
-            "name": "Greenhopper"
+            "name": "Greenhopper",
+            "questItem": "1302"
         },
         "10004": {
-            "name": "Meadow Slime"
+            "name": "Meadow Slime",
+            "questItem": "1300"
         },
         "10005": {
-            "name": "Mossback Turtle"
+            "name": "Mossback Turtle",
+            "questItem": "1302"
         },
         "10006": {
-            "name": "Petal Wisp"
+            "name": "Petal Wisp",
+            "questItem": "1300"
         },
         "10007": {
-            "name": "Prairie Wolf"
+            "name": "Prairie Wolf",
+            "questItem": "1301"
         },
         "10008": {
-            "name": "Softshell Tortoise"
+            "name": "Softshell Tortoise",
+            "questItem": "1302"
         },
         "10009": {
-            "name": "Tiny Burrow Rat"
+            "name": "Tiny Burrow Rat",
+            "questItem": "1301"
         },
         "10010": {
-            "name": "Wandering Scarecrow"
+            "name": "Wandering Scarecrow",
+            "questItem": "1300"
         }
-    }
+    },
+    "zone_1": {},
+    "zone_2": {},
+    "zone_3": {},
+    "zone_4": {}
 }

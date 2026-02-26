@@ -1,6 +1,7 @@
 import {create} from 'zustand';
 import {isItem, Item} from '../types/item.ts';
 import {addItem} from '../utils/arrayUtils.ts';
+import {getItemCategory} from '../parsers/itemParser.tsx';
 
 export interface InventoryState {
     inventoryList: (Item | {})[];
@@ -25,13 +26,15 @@ export const inventoryStore = create<InventoryState>()(set => ({
         }),
     inventoryAddItems: (items: Item[]) =>
         set(state => ({
-            inventoryList: items.reduce(
-                (newList, item) => {
-                    addItem(item, newList);
-                    return newList;
-                },
-                [...state.inventoryList],
-            ),
+            inventoryList: items
+                .filter(item => getItemCategory(item.id) !== 'quest')
+                .reduce(
+                    (newList, item) => {
+                        addItem(item, newList);
+                        return newList;
+                    },
+                    [...state.inventoryList],
+                ),
         })),
 
     inventoryAddItemAt: (item: Item, index: number) =>

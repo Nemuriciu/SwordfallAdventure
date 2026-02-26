@@ -1,3 +1,5 @@
+// noinspection SpellCheckingInspection
+
 import {
     FlatList,
     ImageBackground,
@@ -28,6 +30,9 @@ import {ZoneCard} from '../../../components/zoneCard.tsx';
 import {GetCommand} from '@aws-sdk/lib-dynamodb';
 import {convertForDB, dynamoDB, USER_ID} from '../../../database';
 import {UpdateItemCommand} from '@aws-sdk/client-dynamodb';
+import {isQuestCreature} from '../../../parsers/questParser.tsx';
+import {questsStore} from '../../../store_zustand/questsStore.tsx';
+import creaturesJson from '../../../assets/json/creatures.json';
 
 export function Hunting() {
     const level = userInfoStore(state => state.level);
@@ -48,9 +53,9 @@ export function Hunting() {
     const huntingSetKillCount = huntingStore(
         state => state.huntingSetKillCount,
     );
+    const questsList = questsStore(state => state.questsList);
 
     const didMount = useRef(1);
-    const didMount_1 = useRef(1);
 
     useEffect(() => {
         // noinspection JSIgnoredPromiseFromCall
@@ -66,16 +71,6 @@ export function Hunting() {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [zoneList]);
-    /*useEffect(() => {
-        if (!didMount_1.current) {
-            if (!creatureLevel) {
-                huntingSetCreatureLevel(zoneId, level);
-            }
-        } else {
-            didMount_1.current -= 1;
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [level]);*/
 
     async function fetchHuntingDB() {
         try {
@@ -128,10 +123,12 @@ export function Hunting() {
         huntingSetCreatureLevel(zoneId, zoneList[zoneId].creatureLevel + 1);
     }
 
+    // TODO: Decrease creatures bonus stats
+    // TODO: Remove rare creatures when lowering depth
     function decreaseDepth() {
         const _depth = zoneList[zoneId].depth - 1;
-        //TODO: Decrease creatures bonus stats
 
+        huntingSetKillCount(zoneId, 0);
         huntingSetDepth(zoneId, _depth);
     }
 
@@ -145,8 +142,23 @@ export function Hunting() {
             );
         }
 
+        huntingSetKillCount(zoneId, 0);
         huntingSetDepth(zoneId, _depth);
         huntingSetCreatureList(zoneId, _creatureList);
+    }
+
+    function zoneHasQuest(zoneId: number): boolean {
+        if (zoneId >= 0 && questsList.length && zoneList.length) {
+            const zoneCreatures = Object.keys(
+                creaturesJson[`zone_${zoneId}` as keyof typeof creaturesJson],
+            );
+            for (let i = 0; i < zoneCreatures.length; i++) {
+                const creatureId = zoneCreatures[i];
+                if (isQuestCreature(questsList, zoneId, creatureId))
+                    return true;
+            }
+        }
+        return false;
     }
 
     return (
@@ -159,56 +171,56 @@ export function Hunting() {
                 <ScrollView
                     style={styles.scrollView}
                     alwaysBounceVertical={false}>
+                    {/* Card Title is 15% height */}
                     <ZoneCard
-                        zoneName={'Whispering Meadow'}
+                        playerLevel={level}
                         zoneLevelMin={1}
                         zoneLevelMax={4}
                         image={'zone_0_whispering_meadow'}
-                        hasQuest={false}
+                        hasQuest={level >= 1 ? zoneHasQuest(0) : false}
                         onPress={() =>
                             huntingSelectZone(0, 'Whispering Meadow', 1, 4)
                         }
                     />
                     <ZoneCard
-                        zoneName={'Ironcrag Highlands'}
+                        playerLevel={level}
                         zoneLevelMin={5}
                         zoneLevelMax={7}
                         image={'zone_1_ironcrag_highlands'}
-                        hasQuest={false}
+                        hasQuest={level >= 5 ? zoneHasQuest(1) : false}
                         onPress={() =>
                             // huntingSelectZone(1, 'Ironcrag Highlands', 5, 7)
                             {}
                         }
                     />
                     <ZoneCard
-                        zoneName={'Gloomroot Forest'}
+                        playerLevel={level}
                         zoneLevelMin={8}
                         zoneLevelMax={10}
                         image={'zone_2_gloomroot_forest'}
-                        hasQuest={false}
+                        hasQuest={level >= 8 ? zoneHasQuest(2) : false}
                         onPress={() =>
                             // huntingSelectZone(2, 'Gloomroot Forest', 8, 10)
                             {}
                         }
                     />
-                    {/*Increase the size of the title height, make it 15% of the image height, but keep the rest of the image the same. Keep the same font and color for the title.*/}
                     <ZoneCard
-                        zoneName={'Frostveil Tundra'}
+                        playerLevel={level}
                         zoneLevelMin={11}
                         zoneLevelMax={13}
                         image={'zone_3_frostveil_tundra'}
-                        hasQuest={false}
+                        hasQuest={level >= 11 ? zoneHasQuest(3) : false}
                         onPress={() =>
                             // huntingSelectZone(3, 'Frostveil Tundra', 11, 13)
                             {}
                         }
                     />
                     <ZoneCard
-                        zoneName={'Ashenfire Wastes'}
+                        playerLevel={level}
                         zoneLevelMin={14}
                         zoneLevelMax={16}
                         image={'zone_4_ashenfire_wastes'}
-                        hasQuest={false}
+                        hasQuest={level >= 14 ? zoneHasQuest(4) : false}
                         onPress={() =>
                             // huntingSelectZone(4, 'Ashenfire Wastes', 14, 16)
                             {}
@@ -263,7 +275,9 @@ export function Hunting() {
                                 style={styles.creaturePlusButton}
                                 onPress={increaseCreatureLevel}
                                 disabled={
-                                    zoneList[zoneId].creatureLevel >= level
+                                    zoneList[zoneId].creatureLevel >= level ||
+                                    zoneList[zoneId].creatureLevel >=
+                                        zoneLevelMax
                                 }
                             />
                         </ImageBackground>

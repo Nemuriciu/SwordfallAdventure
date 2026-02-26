@@ -15,6 +15,7 @@ export interface CombatState {
     effectsEnemy: Effect[];
     combatLog: Log[];
     playerTurn: boolean;
+
     combatShow: (
         creature: Creature,
         index: number,
@@ -42,6 +43,7 @@ export const combatStore = create<CombatState>()(set => ({
     effectsEnemy: [],
     combatLog: [],
     playerTurn: true,
+
     combatShow: (
         creature: Creature,
         index: number,

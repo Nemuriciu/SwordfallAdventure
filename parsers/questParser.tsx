@@ -1,11 +1,16 @@
-import creatureJson from '../assets/json/creatures.json';
 import experienceJson from '../assets/json/experience.json';
 import questsJson from '../assets/json/quests.json';
 import {Quest} from '../types/quest.ts';
-import {getChest, getKey, getRandomEquip, rand} from './itemParser.tsx';
-import {getCreatureName} from './creatureParser.tsx';
+import {
+    getChest,
+    getItemName,
+    getKey,
+    getRandomEquip,
+    rand,
+} from './itemParser.tsx';
 import {Item} from '../types/item.ts';
 import shardsJson from '../assets/json/shards.json';
+import {getCreatureQuestItem} from './creatureParser.tsx';
 
 export const QUESTS_AMOUNT: number = 8;
 export const QUESTS_HUNTING_AMOUNT: number = 5;
@@ -21,15 +26,18 @@ export function generateQuest(type: string, level: number): Quest {
             minAmount = questsJson.hunting.minAmount;
             maxAmount = questsJson.hunting.maxAmount;
             amount = rand(minAmount, maxAmount);
-            const creatureId =
-                Object.keys(creatureJson)[
-                    rand(0, Object.keys(creatureJson).length - 1)
-                ];
+            const zoneId = getZoneRange(level);
+            // @ts-ignore
+            const zoneQuestItems = questsJson.questItem[`zone_${zoneId}`];
+            const questItemId =
+                zoneQuestItems[rand(0, zoneQuestItems.length - 1)];
+            const questItemName = getItemName(questItemId);
 
             return {
                 type: type,
                 rarity: 'common',
-                description: `Hunt ${amount} ${getCreatureName(creatureId)}`,
+                description: `Collect ${amount} ${questItemName} from hunting`,
+                questItem: questItemName,
                 progress: 0,
                 maxProgress: amount,
                 rewards: getQuestRewards('common', level),
@@ -46,6 +54,7 @@ export function generateQuest(type: string, level: number): Quest {
                 type: type,
                 rarity: 'common',
                 description: `Gather ${gatherType} for ${amount} min`,
+                questItem: gatherType,
                 progress: 0,
                 maxProgress: amount,
                 rewards: getQuestRewards('common', level),
@@ -60,6 +69,7 @@ export function generateQuest(type: string, level: number): Quest {
                 type: type,
                 rarity: 'common',
                 description: `Craft ${amount} item(s)`,
+                questItem: '',
                 progress: 0,
                 maxProgress: amount,
                 rewards: getQuestRewards('common', level),
@@ -73,6 +83,21 @@ export function generateQuest(type: string, level: number): Quest {
 
 export function isQuestComplete(quest: Quest): boolean {
     return quest.progress >= quest.maxProgress;
+}
+
+export function isQuestCreature(
+    questsList: Quest[],
+    zoneId: number,
+    creatureId: string,
+): boolean {
+    return questsList.some(
+        quest =>
+            quest.isActive &&
+            quest.type === 'hunting' &&
+            !isQuestComplete(quest) &&
+            quest.questItem ===
+                getItemName(getCreatureQuestItem(zoneId, creatureId)),
+    );
 }
 
 export function sortQuests(list: Quest[]) {
@@ -366,4 +391,8 @@ function getQuestRewards(questRarity: string, level: number): Item[] {
     }
 
     return rewards;
+}
+
+function getZoneRange(level: number): number {
+    return level <= 4 ? 0 : Math.floor((level - 5) / 3) + 1;
 }

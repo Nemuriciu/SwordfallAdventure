@@ -19,6 +19,8 @@ import {attributesStore} from '../../../store_zustand/attributesStore.tsx';
 import {Stats} from '../../../types/stats.ts';
 import {values} from '../../../utils/values.ts';
 import {huntingStore} from '../../../store_zustand/huntingStore.tsx';
+import {questsStore} from '../../../store_zustand/questsStore.tsx';
+import {isQuestCreature} from '../../../parsers/questParser.tsx';
 
 interface props {
     creature: Creature;
@@ -28,6 +30,7 @@ interface props {
 export function CreatureCard({creature, index}: props) {
     const zoneId = huntingStore(state => state.zoneId);
     const stamina = userInfoStore(state => state.stamina);
+    const questsList = questsStore(state => state.questsList);
     const userInfoSetStamina = userInfoStore(state => state.userInfoSetStamina);
     const combatShow = combatStore(state => state.combatShow);
 
@@ -90,12 +93,20 @@ export function CreatureCard({creature, index}: props) {
             style={styles.container}
             source={getImage('background_node')}>
             <View style={styles.avatarContainer}>
-                <Image
+                <ImageBackground
                     style={styles.avatar}
                     source={getImage(getCreatureImg(zoneId, creature.id))}
                     resizeMode={'stretch'}
-                    fadeDuration={0}
-                />
+                    fadeDuration={0}>
+                    {isQuestCreature(questsList, zoneId, creature.id) && (
+                        <ImageBackground
+                            style={styles.questIcon}
+                            source={getImage('quests_icon_quest')}
+                            resizeMode={'stretch'}
+                            fadeDuration={0}
+                        />
+                    )}
+                </ImageBackground>
                 <Image
                     style={styles.avatarFrame}
                     source={getImage('avatar_frame_' + creature.rarity)}
@@ -224,8 +235,13 @@ const styles = StyleSheet.create({
         marginStart: 16,
     },
     avatar: {
-        width: '100%',
-        height: '100%',
+        aspectRatio: 1,
+    },
+    questIcon: {
+        flex: 0.4,
+        marginEnd: -4,
+        alignSelf: 'flex-end',
+        aspectRatio: 1,
     },
     avatarFrame: {
         position: 'absolute',

@@ -1,1887 +1,1903 @@
 {
-  "1000": {
-    "name": "Silver Chest",
-    "img": "item_chest_silver_chest",
-    "category": "chest",
-    "type": "chest",
-    "rarity": "common"
-  },
-  "1001": {
-    "name": "Emerald Chest",
-    "img": "item_chest_emerald_chest",
-    "category": "chest",
-    "type": "chest",
-    "rarity": "uncommon"
-  },
-  "1002": {
-    "name": "Sapphire Chest",
-    "img": "item_chest_sapphire_chest",
-    "category": "chest",
-    "type": "chest",
-    "rarity": "rare"
-  },
-  "1003": {
-    "name": "Amethyst Chest",
-    "img": "item_chest_amethyst_chest",
-    "category": "chest",
-    "type": "chest",
-    "rarity": "epic"
-  },
+    "1000": {
+        "name": "Silver Chest",
+        "img": "item_chest_silver_chest",
+        "category": "chest",
+        "type": "chest",
+        "rarity": "common"
+    },
+    "1001": {
+        "name": "Emerald Chest",
+        "img": "item_chest_emerald_chest",
+        "category": "chest",
+        "type": "chest",
+        "rarity": "uncommon"
+    },
+    "1002": {
+        "name": "Sapphire Chest",
+        "img": "item_chest_sapphire_chest",
+        "category": "chest",
+        "type": "chest",
+        "rarity": "rare"
+    },
+    "1003": {
+        "name": "Amethyst Chest",
+        "img": "item_chest_amethyst_chest",
+        "category": "chest",
+        "type": "chest",
+        "rarity": "epic"
+    },
 
-  "1004": {
-    "name": "Vial of Giants",
-    "img": "item_potion_vial_of_giants",
-    "category": "consumable",
-    "type": "potion",
-    "rarity": "common"
-  },
-  "1005": {
-    "name": "Vial of Spellpower",
-    "img": "item_potion_vial_of_spellpower",
-    "category": "consumable",
-    "type": "potion",
-    "rarity": "common"
-  },
-  "1006": {
-    "name": "Vial of Earth",
-    "img": "item_potion_vial_of_earth",
-    "category": "consumable",
-    "type": "potion",
-    "rarity": "common"
-  },
-  "1007": {
-    "name": "Vial of Protection",
-    "img": "item_potion_vial_of_protection",
-    "category": "consumable",
-    "type": "potion",
-    "rarity": "common"
-  },
-  "1008": {
-    "name": "Elixir of Giants",
-    "img": "item_potion_elixir_of_giants",
-    "category": "consumable",
-    "type": "potion",
-    "rarity": "uncommon"
-  },
-  "1009": {
-    "name": "Elixir of Spellpower",
-    "img": "item_potion_elixir_of_spellpower",
-    "category": "consumable",
-    "type": "potion",
-    "rarity": "uncommon"
-  },
-  "1010": {
-    "name": "Elixir of Earth",
-    "img": "item_potion_elixir_of_earth",
-    "category": "consumable",
-    "type": "potion",
-    "rarity": "uncommon"
-  },
-  "1011": {
-    "name": "Elixir of Protection",
-    "img": "item_potion_elixir_of_protection",
-    "category": "consumable",
-    "type": "potion",
-    "rarity": "uncommon"
-  },
-  "1012": {
-    "name": "Draught of Giants",
-    "img": "item_potion_draught_of_giants",
-    "category": "consumable",
-    "type": "potion",
-    "rarity": "rare"
-  },
-  "1013": {
-    "name": "Draught of Spellpower",
-    "img": "item_potion_draught_of_spellpower",
-    "category": "consumable",
-    "type": "potion",
-    "rarity": "rare"
-  },
-  "1014": {
-    "name": "Draught of Earth",
-    "img": "item_potion_draught_of_earth",
-    "category": "consumable",
-    "type": "potion",
-    "rarity": "rare"
-  },
-  "1015": {
-    "name": "Draught of Protection",
-    "img": "item_potion_draught_of_protection",
-    "category": "consumable",
-    "type": "potion",
-    "rarity": "rare"
-  },
-  "1016": {
-    "name": "Flask of Giants",
-    "img": "item_potion_flask_of_giants",
-    "category": "consumable",
-    "type": "potion",
-    "rarity": "epic"
-  },
-  "1017": {
-    "name": "Flask of Spellpower",
-    "img": "item_potion_flask_of_spellpower",
-    "category": "consumable",
-    "type": "potion",
-    "rarity": "epic"
-  },
-  "1018": {
-    "name": "Flask of Earth",
-    "img": "item_potion_flask_of_earth",
-    "category": "consumable",
-    "type": "potion",
-    "rarity": "epic"
-  },
-  "1019": {
-    "name": "Flask of Protection",
-    "img": "item_potion_flask_of_protection",
-    "category": "consumable",
-    "type": "potion",
-    "rarity": "epic"
-  },
+    "1004": {
+        "name": "Vial of Giants",
+        "img": "item_potion_vial_of_giants",
+        "category": "consumable",
+        "type": "potion",
+        "rarity": "common"
+    },
+    "1005": {
+        "name": "Vial of Spellpower",
+        "img": "item_potion_vial_of_spellpower",
+        "category": "consumable",
+        "type": "potion",
+        "rarity": "common"
+    },
+    "1006": {
+        "name": "Vial of Earth",
+        "img": "item_potion_vial_of_earth",
+        "category": "consumable",
+        "type": "potion",
+        "rarity": "common"
+    },
+    "1007": {
+        "name": "Vial of Protection",
+        "img": "item_potion_vial_of_protection",
+        "category": "consumable",
+        "type": "potion",
+        "rarity": "common"
+    },
+    "1008": {
+        "name": "Elixir of Giants",
+        "img": "item_potion_elixir_of_giants",
+        "category": "consumable",
+        "type": "potion",
+        "rarity": "uncommon"
+    },
+    "1009": {
+        "name": "Elixir of Spellpower",
+        "img": "item_potion_elixir_of_spellpower",
+        "category": "consumable",
+        "type": "potion",
+        "rarity": "uncommon"
+    },
+    "1010": {
+        "name": "Elixir of Earth",
+        "img": "item_potion_elixir_of_earth",
+        "category": "consumable",
+        "type": "potion",
+        "rarity": "uncommon"
+    },
+    "1011": {
+        "name": "Elixir of Protection",
+        "img": "item_potion_elixir_of_protection",
+        "category": "consumable",
+        "type": "potion",
+        "rarity": "uncommon"
+    },
+    "1012": {
+        "name": "Draught of Giants",
+        "img": "item_potion_draught_of_giants",
+        "category": "consumable",
+        "type": "potion",
+        "rarity": "rare"
+    },
+    "1013": {
+        "name": "Draught of Spellpower",
+        "img": "item_potion_draught_of_spellpower",
+        "category": "consumable",
+        "type": "potion",
+        "rarity": "rare"
+    },
+    "1014": {
+        "name": "Draught of Earth",
+        "img": "item_potion_draught_of_earth",
+        "category": "consumable",
+        "type": "potion",
+        "rarity": "rare"
+    },
+    "1015": {
+        "name": "Draught of Protection",
+        "img": "item_potion_draught_of_protection",
+        "category": "consumable",
+        "type": "potion",
+        "rarity": "rare"
+    },
+    "1016": {
+        "name": "Flask of Giants",
+        "img": "item_potion_flask_of_giants",
+        "category": "consumable",
+        "type": "potion",
+        "rarity": "epic"
+    },
+    "1017": {
+        "name": "Flask of Spellpower",
+        "img": "item_potion_flask_of_spellpower",
+        "category": "consumable",
+        "type": "potion",
+        "rarity": "epic"
+    },
+    "1018": {
+        "name": "Flask of Earth",
+        "img": "item_potion_flask_of_earth",
+        "category": "consumable",
+        "type": "potion",
+        "rarity": "epic"
+    },
+    "1019": {
+        "name": "Flask of Protection",
+        "img": "item_potion_flask_of_protection",
+        "category": "consumable",
+        "type": "potion",
+        "rarity": "epic"
+    },
 
-  "1020": {
-    "name": "Rusty Axe",
-    "img": "item_equip_rusty_axe",
-    "category": "equipment",
-    "type": "weapon",
-    "rarity": "common"
-  },
-  "1021": {
-    "name": "Iron Shiv",
-    "img": "item_equip_iron_shiv",
-    "category": "equipment",
-    "type": "weapon",
-    "rarity": "common"
-  },
-  "1022": {
-    "name": "Fighter's Bow",
-    "img": "item_equip_fighters_bow",
-    "category": "equipment",
-    "type": "weapon",
-    "rarity": "common"
-  },
-  "1023": {
-    "name": "Lost Hammer",
-    "img": "item_equip_lost_hammer",
-    "category": "equipment",
-    "type": "weapon",
-    "rarity": "common"
-  },
-  "1024": {
-    "name": "Seer's Crossbow",
-    "img": "item_equip_seers_crossbow",
-    "category": "equipment",
-    "type": "weapon",
-    "rarity": "common"
-  },
-  "1025": {
-    "name": "Glammered Spear",
-    "img": "item_equip_glammered_spear",
-    "category": "equipment",
-    "type": "weapon",
-    "rarity": "common"
-  },
-  "1026": {
-    "name": "Writer's Staff",
-    "img": "item_equip_writers_staff",
-    "category": "equipment",
-    "type": "weapon",
-    "rarity": "common"
-  },
-  "1027": {
-    "name": "Icy Longsword",
-    "img": "item_equip_icy_longsword",
-    "category": "equipment",
-    "type": "weapon",
-    "rarity": "common"
-  },
-  "1028": {
-    "name": "Crafter's Axe",
-    "img": "item_equip_crafters_axe",
-    "category": "equipment",
-    "type": "weapon",
-    "rarity": "common"
-  },
-  "1029": {
-    "name": "Prismatic Rod",
-    "img": "item_equip_prismatic_rod",
-    "category": "equipment",
-    "type": "weapon",
-    "rarity": "common"
-  },
-  "1030": {
-    "name": "Steady Greatsword",
-    "img": "item_equip_steady_greatsword",
-    "category": "equipment",
-    "type": "weapon",
-    "rarity": "uncommon"
-  },
-  "1031": {
-    "name": "Bloodstrike Sticker",
-    "img": "item_equip_bloodstrike_sticker",
-    "category": "equipment",
-    "type": "weapon",
-    "rarity": "uncommon"
-  },
-  "1032": {
-    "name": "Elven Longbow",
-    "img": "item_equip_elven_longbow",
-    "category": "equipment",
-    "type": "weapon",
-    "rarity": "uncommon"
-  },
-  "1033": {
-    "name": "Etched Scimitar",
-    "img": "item_equip_etched_scimitar",
-    "category": "equipment",
-    "type": "weapon",
-    "rarity": "uncommon"
-  },
-  "1034": {
-    "name": "Glacial Smasher",
-    "img": "item_equip_glacial_smasher",
-    "category": "equipment",
-    "type": "weapon",
-    "rarity": "uncommon"
-  },
-  "1035": {
-    "name": "Headhunter's Bone Dagger",
-    "img": "item_equip_headhunters_bone_dagger",
-    "category": "equipment",
-    "type": "weapon",
-    "rarity": "uncommon"
-  },
-  "1036": {
-    "name": "Marauder Reaper",
-    "img": "item_equip_marauder_reaper",
-    "category": "equipment",
-    "type": "weapon",
-    "rarity": "uncommon"
-  },
-  "1037": {
-    "name": "Razorwind Crossbow",
-    "img": "item_equip_razorwind_crossbow",
-    "category": "equipment",
-    "type": "weapon",
-    "rarity": "uncommon"
-  },
-  "1038": {
-    "name": "Runed Eagle Staff",
-    "img": "item_equip_runed_eagle_staff",
-    "category": "equipment",
-    "type": "weapon",
-    "rarity": "uncommon"
-  },
-  "1039": {
-    "name": "Watcher's Glaive",
-    "img": "item_equip_watchers_glaive",
-    "category": "equipment",
-    "type": "weapon",
-    "rarity": "uncommon"
-  },
-  "1040": {
-    "name": "Wind Saber",
-    "img": "item_equip_wind_saber",
-    "category": "equipment",
-    "type": "weapon",
-    "rarity": "uncommon"
-  },
-  "1041": {
-    "name": "Drake Slayer Sword",
-    "img": "item_equip_drake_slayer_sword",
-    "category": "equipment",
-    "type": "weapon",
-    "rarity": "rare"
-  },
-  "1042": {
-    "name": "Deflected Winds Bow",
-    "img": "item_equip_deflected_winds_bow",
-    "category": "equipment",
-    "type": "weapon",
-    "rarity": "rare"
-  },
-  "1043": {
-    "name": "Flame Corruption Dirk",
-    "img": "item_equip_flame_corruption_dirk",
-    "category": "equipment",
-    "type": "weapon",
-    "rarity": "rare"
-  },
-  "1044": {
-    "name": "Hexbreaker Sword",
-    "img": "item_equip_hexbreaker_sword",
-    "category": "equipment",
-    "type": "weapon",
-    "rarity": "rare"
-  },
-  "1045": {
-    "name": "Icy Chains Staff",
-    "img": "item_equip_icy_chains_staff",
-    "category": "equipment",
-    "type": "weapon",
-    "rarity": "rare"
-  },
-  "1046": {
-    "name": "Lightning's Blast Hammer",
-    "img": "item_equip_lightnings_blast_hammer",
-    "category": "equipment",
-    "type": "weapon",
-    "rarity": "rare"
-  },
-  "1047": {
-    "name": "Rune Crusher Warhammer",
-    "img": "item_equip_rune_crusher_warhammer",
-    "category": "equipment",
-    "type": "weapon",
-    "rarity": "rare"
-  },
-  "1048": {
-    "name": "Shadowgazer Dagger",
-    "img": "item_equip_shadowgazer_dagger",
-    "category": "equipment",
-    "type": "weapon",
-    "rarity": "rare"
-  },
-  "1049": {
-    "name": "Skull Carver Axe",
-    "img": "item_equip_skull_carver_axe",
-    "category": "equipment",
-    "type": "weapon",
-    "rarity": "rare"
-  },
-  "1050": {
-    "name": "Staff of Lawful Sage",
-    "img": "item_equip_staff_of_lawful_sage",
-    "category": "equipment",
-    "type": "weapon",
-    "rarity": "rare"
-  },
-  "1051": {
-    "name": "Sword of Elemental Sorcery",
-    "img": "item_equip_sword_of_elemental_sorcery",
-    "category": "equipment",
-    "type": "weapon",
-    "rarity": "rare"
-  },
-  "1052": {
-    "name": "Unspeakable Golden Spear",
-    "img": "item_equip_unspeakable_golden_spear",
-    "category": "equipment",
-    "type": "weapon",
-    "rarity": "rare"
-  },
-  "1053": {
-    "name": "Waraxe of the Accursed",
-    "img": "item_equip_waraxe_of_the_accursed",
-    "category": "equipment",
-    "type": "weapon",
-    "rarity": "rare"
-  },
-  "1054": {
-    "name": "Axe of Frigid Terror",
-    "img": "item_equip_axe_of_frigid_terror",
-    "category": "equipment",
-    "type": "weapon",
-    "rarity": "epic"
-  },
-  "1055": {
-    "name": "Broken Netherlight",
-    "img": "item_equip_broken_netherlight",
-    "category": "equipment",
-    "type": "weapon",
-    "rarity": "epic"
-  },
-  "1056": {
-    "name": "Celestial Binder",
-    "img": "item_equip_celestial_binder",
-    "category": "equipment",
-    "type": "weapon",
-    "rarity": "epic"
-  },
-  "1057": {
-    "name": "Comet Crusher",
-    "img": "item_equip_comet_crusher",
-    "category": "equipment",
-    "type": "weapon",
-    "rarity": "epic"
-  },
-  "1058": {
-    "name": "Crying Focus",
-    "img": "item_equip_crying_focus",
-    "category": "equipment",
-    "type": "weapon",
-    "rarity": "epic"
-  },
-  "1059": {
-    "name": "Echo of Dusk",
-    "img": "item_equip_echo_of_dusk",
-    "category": "equipment",
-    "type": "weapon",
-    "rarity": "epic"
-  },
-  "1060": {
-    "name": "Flamefury Sword",
-    "img": "item_equip_flamefury_sword",
-    "category": "equipment",
-    "type": "weapon",
-    "rarity": "epic"
-  },
-  "1061": {
-    "name": "Night's Kiss",
-    "img": "item_equip_nights_kiss",
-    "category": "equipment",
-    "type": "weapon",
-    "rarity": "epic"
-  },
-  "1062": {
-    "name": "Quicksilver Trident",
-    "img": "item_equip_quicksilver_trident",
-    "category": "equipment",
-    "type": "weapon",
-    "rarity": "epic"
-  },
-  "1063": {
-    "name": "Souleater's Shiv",
-    "img": "item_equip_souleaters_shiv",
-    "category": "equipment",
-    "type": "weapon",
-    "rarity": "epic"
-  },
-  "1064": {
-    "name": "Spectre Lord Waraxe",
-    "img": "item_equip_spectre_lord_waraxe",
-    "category": "equipment",
-    "type": "weapon",
-    "rarity": "epic"
-  },
-  "1065": {
-    "name": "Storm's Fury",
-    "img": "item_equip_storms_fury",
-    "category": "equipment",
-    "type": "weapon",
-    "rarity": "epic"
-  },
-  "1066": {
-    "name": "Damaged Buckler",
-    "img": "item_equip_damaged_buckler",
-    "category": "equipment",
-    "type": "offhand",
-    "rarity": "common"
-  },
-  "1067": {
-    "name": "Wooden Shield",
-    "img": "item_equip_wooden_shield",
-    "category": "equipment",
-    "type": "offhand",
-    "rarity": "common"
-  },
-  "1068": {
-    "name": "Breaker's Buckler",
-    "img": "item_equip_breakers_buckler",
-    "category": "equipment",
-    "type": "offhand",
-    "rarity": "common"
-  },
-  "1069": {
-    "name": "Traveler Shield",
-    "img": "item_equip_traveler_shield",
-    "category": "equipment",
-    "type": "offhand",
-    "rarity": "common"
-  },
-  "1070": {
-    "name": "Bone Guard",
-    "img": "item_equip_bone_guard",
-    "category": "equipment",
-    "type": "offhand",
-    "rarity": "common"
-  },
-  "1071": {
-    "name": "Warrior's Shield",
-    "img": "item_equip_warriors_shield",
-    "category": "equipment",
-    "type": "offhand",
-    "rarity": "common"
-  },
-  "1072": {
-    "name": "Faithful Shield",
-    "img": "item_equip_faithful_shield",
-    "category": "equipment",
-    "type": "offhand",
-    "rarity": "uncommon"
-  },
-  "1073": {
-    "name": "Glorious Defender",
-    "img": "item_equip_glorious_defender",
-    "category": "equipment",
-    "type": "offhand",
-    "rarity": "uncommon"
-  },
-  "1074": {
-    "name": "Knight's Barrier",
-    "img": "item_equip_knights_barrier",
-    "category": "equipment",
-    "type": "offhand",
-    "rarity": "uncommon"
-  },
-  "1075": {
-    "name": "Strider's Tower Shield",
-    "img": "item_equip_striders_tower_shield",
-    "category": "equipment",
-    "type": "offhand",
-    "rarity": "uncommon"
-  },
-  "1076": {
-    "name": "Tyrant's Guard",
-    "img": "item_equip_tyrants_guard",
-    "category": "equipment",
-    "type": "offhand",
-    "rarity": "uncommon"
-  },
-  "1077": {
-    "name": "Shield of Cursed Thoughts",
-    "img": "item_equip_shield_of_cursed_thoughts",
-    "category": "equipment",
-    "type": "offhand",
-    "rarity": "rare"
-  },
-  "1078": {
-    "name": "Buckler of Triumph Deflection",
-    "img": "item_equip_buckler_of_triumph_deflection",
-    "category": "equipment",
-    "type": "offhand",
-    "rarity": "rare"
-  },
-  "1079": {
-    "name": "Corrupted Archmage's Shield",
-    "img": "item_equip_corrupted_archmages_shield",
-    "category": "equipment",
-    "type": "offhand",
-    "rarity": "rare"
-  },
-  "1080": {
-    "name": "Forbidden Tower Shield",
-    "img": "item_equip_forbidden_tower_shield",
-    "category": "equipment",
-    "type": "offhand",
-    "rarity": "rare"
-  },
-  "1081": {
-    "name": "Shield of Dwarven Greed",
-    "img": "item_equip_shield_of_dwarven_greed",
-    "category": "equipment",
-    "type": "offhand",
-    "rarity": "rare"
-  },
-  "1082": {
-    "name": "Shield of Truth",
-    "img": "item_equip_shield_of_truth",
-    "category": "equipment",
-    "type": "offhand",
-    "rarity": "rare"
-  },
-  "1083": {
-    "name": "Bloodcursed Kite Shield",
-    "img": "item_equip_bloodcursed_kite_shield",
-    "category": "equipment",
-    "type": "offhand",
-    "rarity": "epic"
-  },
-  "1084": {
-    "name": "Champion's Grasp Shield",
-    "img": "item_equip_champions_grasp_shield",
-    "category": "equipment",
-    "type": "offhand",
-    "rarity": "epic"
-  },
-  "1085": {
-    "name": "Dragonbreath's Blockade",
-    "img": "item_equip_dragonbreaths_blockade",
-    "category": "equipment",
-    "type": "offhand",
-    "rarity": "epic"
-  },
-  "1086": {
-    "name": "King's Destiny Aegis",
-    "img": "item_equip_kings_destiny_aegis",
-    "category": "equipment",
-    "type": "offhand",
-    "rarity": "epic"
-  },
-  "1087": {
-    "name": "Silverlight Sentry",
-    "img": "item_equip_silverlight_sentry",
-    "category": "equipment",
-    "type": "offhand",
-    "rarity": "epic"
-  },
-  "1088": {
-    "name": "Wall of Broken Voices",
-    "img": "item_equip_wall_of_broken_voices",
-    "category": "equipment",
-    "type": "offhand",
-    "rarity": "epic"
-  },
-  "1089": {
-    "name": "Warden's Sorrow Shield",
-    "img": "item_equip_wardens_sorrow_shield",
-    "category": "equipment",
-    "type": "offhand",
-    "rarity": "epic"
-  },
-  "1090": {
-    "name": "Iron Helmet",
-    "img": "item_equip_iron_helmet",
-    "category": "equipment",
-    "type": "helmet",
-    "rarity": "common"
-  },
-  "1091": {
-    "name": "Stained Cowl",
-    "img": "item_equip_stained_cowl",
-    "category": "equipment",
-    "type": "helmet",
-    "rarity": "common"
-  },
-  "1092": {
-    "name": "Brigandine Plate Helmet",
-    "img": "item_equip_brigandine_plate_helmet",
-    "category": "equipment",
-    "type": "helmet",
-    "rarity": "common"
-  },
-  "1093": {
-    "name": "Stalker's Bandana",
-    "img": "item_equip_stalkers_bandana",
-    "category": "equipment",
-    "type": "helmet",
-    "rarity": "common"
-  },
-  "1094": {
-    "name": "Studded Cap",
-    "img": "item_equip_studded_cap",
-    "category": "equipment",
-    "type": "helmet",
-    "rarity": "common"
-  },
-  "1095": {
-    "name": "Tarnished Headguard",
-    "img": "item_equip_tarnished_headguard",
-    "category": "equipment",
-    "type": "helmet",
-    "rarity": "common"
-  },
-  "1096": {
-    "name": "Light Plate Helmet",
-    "img": "item_equip_light_plate_helmet",
-    "category": "equipment",
-    "type": "helmet",
-    "rarity": "uncommon"
-  },
-  "1097": {
-    "name": "Aspirant's Helmet",
-    "img": "item_equip_aspirants_helmet",
-    "category": "equipment",
-    "type": "helmet",
-    "rarity": "uncommon"
-  },
-  "1098": {
-    "name": "Dread Headgear",
-    "img": "item_equip_dread_headgear",
-    "category": "equipment",
-    "type": "helmet",
-    "rarity": "uncommon"
-  },
-  "1099": {
-    "name": "Guardian's Greathelm",
-    "img": "item_equip_guardians_greathelm",
-    "category": "equipment",
-    "type": "helmet",
-    "rarity": "uncommon"
-  },
-  "1100": {
-    "name": "Nightshade's Hood",
-    "img": "item_equip_nightshades_hood",
-    "category": "equipment",
-    "type": "helmet",
-    "rarity": "uncommon"
-  },
-  "1101": {
-    "name": "Tempered Skullguard",
-    "img": "item_equip_tempered_skullguard",
-    "category": "equipment",
-    "type": "helmet",
-    "rarity": "uncommon"
-  },
-  "1102": {
-    "name": "Darkcloud Hood",
-    "img": "item_equip_darkcloud_hood",
-    "category": "equipment",
-    "type": "helmet",
-    "rarity": "rare"
-  },
-  "1103": {
-    "name": "Dark Animator's Mask",
-    "img": "item_equip_dark_animators_mask",
-    "category": "equipment",
-    "type": "helmet",
-    "rarity": "rare"
-  },
-  "1104": {
-    "name": "Divine Seer's Helmet",
-    "img": "item_equip_divine_seers_helmet",
-    "category": "equipment",
-    "type": "helmet",
-    "rarity": "rare"
-  },
-  "1105": {
-    "name": "Immovable Nomad's Helmet",
-    "img": "item_equip_immovable_nomads_helmet",
-    "category": "equipment",
-    "type": "helmet",
-    "rarity": "rare"
-  },
-  "1106": {
-    "name": "Oathsworn Helmet",
-    "img": "item_equip_oathsworn_helmet",
-    "category": "equipment",
-    "type": "helmet",
-    "rarity": "rare"
-  },
-  "1107": {
-    "name": "Serpent's Whisper Cowl",
-    "img": "item_equip_serpents_whisper_cowl",
-    "category": "equipment",
-    "type": "helmet",
-    "rarity": "rare"
-  },
-  "1108": {
-    "name": "Bloodsurged Coif of Power",
-    "img": "item_equip_bloodsurged_coif_of_power",
-    "category": "equipment",
-    "type": "helmet",
-    "rarity": "epic"
-  },
-  "1109": {
-    "name": "Broken Conqueror Headpiece",
-    "img": "item_equip_broken_conqueror_headpiece",
-    "category": "equipment",
-    "type": "helmet",
-    "rarity": "epic"
-  },
-  "1110": {
-    "name": "Burning Anger Facemask",
-    "img": "item_equip_burning_anger_facemask",
-    "category": "equipment",
-    "type": "helmet",
-    "rarity": "epic"
-  },
-  "1111": {
-    "name": "Helm of Setting Sun",
-    "img": "item_equip_helm_of_setting_sun",
-    "category": "equipment",
-    "type": "helmet",
-    "rarity": "epic"
-  },
-  "1112": {
-    "name": "Hood of Ancient Blessing",
-    "img": "item_equip_hood_of_ancient_blessing",
-    "category": "equipment",
-    "type": "helmet",
-    "rarity": "epic"
-  },
-  "1113": {
-    "name": "Twilight's Voice Hat",
-    "img": "item_equip_twilights_voice_hat",
-    "category": "equipment",
-    "type": "helmet",
-    "rarity": "epic"
-  },
-  "1114": {
-    "name": "Leather Armor",
-    "img": "item_equip_leather_armor",
-    "category": "equipment",
-    "type": "chest",
-    "rarity": "common"
-  },
-  "1115": {
-    "name": "Studded Armor",
-    "img": "item_equip_studded_armor",
-    "category": "equipment",
-    "type": "chest",
-    "rarity": "common"
-  },
-  "1116": {
-    "name": "Sturdy Shirt",
-    "img": "item_equip_sturdy_shirt",
-    "category": "equipment",
-    "type": "chest",
-    "rarity": "common"
-  },
-  "1117": {
-    "name": "Apprentice's Robe",
-    "img": "item_equip_apprentices_robe",
-    "category": "equipment",
-    "type": "chest",
-    "rarity": "common"
-  },
-  "1118": {
-    "name": "Battered Jerkin",
-    "img": "item_equip_battered_jerkin",
-    "category": "equipment",
-    "type": "chest",
-    "rarity": "common"
-  },
-  "1119": {
-    "name": "Simple Quilted Armor",
-    "img": "item_equip_simple_quilted_armor",
-    "category": "equipment",
-    "type": "chest",
-    "rarity": "uncommon"
-  },
-  "1120": {
-    "name": "Ironforged Chainmail",
-    "img": "item_equip_ironforged_chainmail",
-    "category": "equipment",
-    "type": "chest",
-    "rarity": "uncommon"
-  },
-  "1121": {
-    "name": "Overlord's Chestpiece",
-    "img": "item_equip_overlords_chestpiece",
-    "category": "equipment",
-    "type": "chest",
-    "rarity": "uncommon"
-  },
-  "1122": {
-    "name": "Sorcerer's Robe",
-    "img": "item_equip_sorcerers_robe",
-    "category": "equipment",
-    "type": "chest",
-    "rarity": "uncommon"
-  },
-  "1123": {
-    "name": "Soulfire Armor",
-    "img": "item_equip_soulfire_armor",
-    "category": "equipment",
-    "type": "chest",
-    "rarity": "uncommon"
-  },
-  "1124": {
-    "name": "Warlord's Breastplate",
-    "img": "item_equip_warlords_breastplate",
-    "category": "equipment",
-    "type": "chest",
-    "rarity": "uncommon"
-  },
-  "1125": {
-    "name": "Crusader's Valor Chestplate",
-    "img": "item_equip_crusaders_valor_chestplate",
-    "category": "equipment",
-    "type": "chest",
-    "rarity": "rare"
-  },
-  "1126": {
-    "name": "Corrupted Misfortune Robe",
-    "img": "item_equip_corrupted_misfortune_robe",
-    "category": "equipment",
-    "type": "chest",
-    "rarity": "rare"
-  },
-  "1127": {
-    "name": "Exalted Amazon Armor",
-    "img": "item_equip_exalted_amazon_armor",
-    "category": "equipment",
-    "type": "chest",
-    "rarity": "rare"
-  },
-  "1128": {
-    "name": "Robe of Deathly Nature",
-    "img": "item_equip_robe_of_deathly_nature",
-    "category": "equipment",
-    "type": "chest",
-    "rarity": "rare"
-  },
-  "1129": {
-    "name": "Searing Hate Leather Armor",
-    "img": "item_equip_searing_hate_leather_armor",
-    "category": "equipment",
-    "type": "chest",
-    "rarity": "rare"
-  },
-  "1130": {
-    "name": "Wind Ritual Robe",
-    "img": "item_equip_wind_ritual_robe",
-    "category": "equipment",
-    "type": "chest",
-    "rarity": "rare"
-  },
-  "1131": {
-    "name": "Arcane Mantle of Pride",
-    "img": "item_equip_arcane_mantle_of_pride",
-    "category": "equipment",
-    "type": "chest",
-    "rarity": "epic"
-  },
-  "1132": {
-    "name": "Robes of Eternal Decay",
-    "img": "item_equip_robes_of_eternal_decay",
-    "category": "equipment",
-    "type": "chest",
-    "rarity": "epic"
-  },
-  "1133": {
-    "name": "Broken Demon Chestguard",
-    "img": "item_equip_broken_demon_chestguard",
-    "category": "equipment",
-    "type": "chest",
-    "rarity": "epic"
-  },
-  "1134": {
-    "name": "Fleeting Winds Chestplate",
-    "img": "item_equip_fleeting_winds_chestplate",
-    "category": "equipment",
-    "type": "chest",
-    "rarity": "epic"
-  },
-  "1135": {
-    "name": "Infinite Desire Vest",
-    "img": "item_equip_infinite_desire_vest",
-    "category": "equipment",
-    "type": "chest",
-    "rarity": "epic"
-  },
-  "1136": {
-    "name": "Restored Fires Robe",
-    "img": "item_equip_restored_fires_robe",
-    "category": "equipment",
-    "type": "chest",
-    "rarity": "epic"
-  },
-  "1137": {
-    "name": "Tunic of Lost Flames",
-    "img": "item_equip_tunic_of_lost_flames",
-    "category": "equipment",
-    "type": "chest",
-    "rarity": "epic"
-  },
-  "1138": {
-    "name": "Warped Steward's Tunic",
-    "img": "item_equip_warped_stewards_tunic",
-    "category": "equipment",
-    "type": "chest",
-    "rarity": "epic"
-  },
-  "1139": {
-    "name": "Silk Legguards",
-    "img": "item_equip_silk_legguards",
-    "category": "equipment",
-    "type": "pants",
-    "rarity": "common"
-  },
-  "1140": {
-    "name": "Shaggy Pants",
-    "img": "item_equip_shaggy_pants",
-    "category": "equipment",
-    "type": "pants",
-    "rarity": "common"
-  },
-  "1141": {
-    "name": "Kingly Garment",
-    "img": "item_equip_kingly_garment",
-    "category": "equipment",
-    "type": "pants",
-    "rarity": "common"
-  },
-  "1142": {
-    "name": "Light Trousers",
-    "img": "item_equip_light_trousers",
-    "category": "equipment",
-    "type": "pants",
-    "rarity": "common"
-  },
-  "1143": {
-    "name": "Rough Leggings",
-    "img": "item_equip_rough_leggings",
-    "category": "equipment",
-    "type": "pants",
-    "rarity": "common"
-  },
-  "1144": {
-    "name": "Brawler Legguards",
-    "img": "item_equip_brawler_legguards",
-    "category": "equipment",
-    "type": "pants",
-    "rarity": "uncommon"
-  },
-  "1145": {
-    "name": "Dread Leg Armor",
-    "img": "item_equip_dread_leg_armor",
-    "category": "equipment",
-    "type": "pants",
-    "rarity": "uncommon"
-  },
-  "1146": {
-    "name": "Shadowsilk Skirt",
-    "img": "item_equip_shadowsilk_skirt",
-    "category": "equipment",
-    "type": "pants",
-    "rarity": "uncommon"
-  },
-  "1147": {
-    "name": "Sinful Leggings",
-    "img": "item_equip_sinful_leggings",
-    "category": "equipment",
-    "type": "pants",
-    "rarity": "uncommon"
-  },
-  "1148": {
-    "name": "Valiant Legplates",
-    "img": "item_equip_valiant_legplates",
-    "category": "equipment",
-    "type": "pants",
-    "rarity": "uncommon"
-  },
-  "1149": {
-    "name": "Templar's Legplates",
-    "img": "item_equip_templars_legplates",
-    "category": "equipment",
-    "type": "pants",
-    "rarity": "rare"
-  },
-  "1150": {
-    "name": "Elven Invoker Legguards",
-    "img": "item_equip_elven_invoker_legguards",
-    "category": "equipment",
-    "type": "pants",
-    "rarity": "rare"
-  },
-  "1151": {
-    "name": "Hypnotist's Golden Skirt",
-    "img": "item_equip_hypnotists_golden_skirt",
-    "category": "equipment",
-    "type": "pants",
-    "rarity": "rare"
-  },
-  "1152": {
-    "name": "Infernal Spider's Pants",
-    "img": "item_equip_infernal_spiders_pants",
-    "category": "equipment",
-    "type": "pants",
-    "rarity": "rare"
-  },
-  "1153": {
-    "name": "Wise Titan Greaves",
-    "img": "item_equip_wise_titan_greaves",
-    "category": "equipment",
-    "type": "pants",
-    "rarity": "rare"
-  },
-  "1154": {
-    "name": "Ancient King's Legplates",
-    "img": "item_equip_ancient_kings_legplates",
-    "category": "equipment",
-    "type": "pants",
-    "rarity": "epic"
-  },
-  "1155": {
-    "name": "Celestial Power Greaves",
-    "img": "item_equip_celestial_power_greaves",
-    "category": "equipment",
-    "type": "pants",
-    "rarity": "epic"
-  },
-  "1156": {
-    "name": "Hallowed Souls Legguards",
-    "img": "item_equip_hallowed_souls_legguards",
-    "category": "equipment",
-    "type": "pants",
-    "rarity": "epic"
-  },
-  "1157": {
-    "name": "Obsidian Nightmare Platelegs",
-    "img": "item_equip_obsidian_nightmare_platelegs",
-    "category": "equipment",
-    "type": "pants",
-    "rarity": "epic"
-  },
-  "1158": {
-    "name": "Prophet's Gift Legwraps",
-    "img": "item_equip_prophets_gift_legwraps",
-    "category": "equipment",
-    "type": "pants",
-    "rarity": "epic"
-  },
-  "1159": {
-    "name": "Foul Gloves",
-    "img": "item_equip_foul_gloves",
-    "category": "equipment",
-    "type": "gloves",
-    "rarity": "common"
-  },
-  "1160": {
-    "name": "Divine Handwraps",
-    "img": "item_equip_divine_handwraps",
-    "category": "equipment",
-    "type": "gloves",
-    "rarity": "common"
-  },
-  "1161": {
-    "name": "Bleached Gloves",
-    "img": "item_equip_bleached_gloves",
-    "category": "equipment",
-    "type": "gloves",
-    "rarity": "common"
-  },
-  "1162": {
-    "name": "Tanned Grips",
-    "img": "item_equip_tanned_grips",
-    "category": "equipment",
-    "type": "gloves",
-    "rarity": "common"
-  },
-  "1163": {
-    "name": "Tribal Handwraps",
-    "img": "item_equip_tribal_handwraps",
-    "category": "equipment",
-    "type": "gloves",
-    "rarity": "common"
-  },
-  "1164": {
-    "name": "Deeptide Handwraps",
-    "img": "item_equip_deeptide_handwraps",
-    "category": "equipment",
-    "type": "gloves",
-    "rarity": "uncommon"
-  },
-  "1165": {
-    "name": "Assassin's Grips",
-    "img": "item_equip_assassins_grips",
-    "category": "equipment",
-    "type": "gloves",
-    "rarity": "uncommon"
-  },
-  "1166": {
-    "name": "Pathfinder's Gloves",
-    "img": "item_equip_pathfinders_gloves",
-    "category": "equipment",
-    "type": "gloves",
-    "rarity": "uncommon"
-  },
-  "1167": {
-    "name": "Runic Handcovers",
-    "img": "item_equip_runic_handcovers",
-    "category": "equipment",
-    "type": "gloves",
-    "rarity": "uncommon"
-  },
-  "1168": {
-    "name": "Zealot Gauntlets",
-    "img": "item_equip_zealot_gauntlets",
-    "category": "equipment",
-    "type": "gloves",
-    "rarity": "uncommon"
-  },
-  "1169": {
-    "name": "Fallen Bandit's Gloves",
-    "img": "item_equip_fallen_bandits_gloves",
-    "category": "equipment",
-    "type": "gloves",
-    "rarity": "rare"
-  },
-  "1170": {
-    "name": "Berserker Slaying Gauntlets",
-    "img": "item_equip_berserker_slaying_gauntlets",
-    "category": "equipment",
-    "type": "gloves",
-    "rarity": "rare"
-  },
-  "1171": {
-    "name": "Lawless Handguards",
-    "img": "item_equip_lawless_handguards",
-    "category": "equipment",
-    "type": "gloves",
-    "rarity": "rare"
-  },
-  "1172": {
-    "name": "Torturer's Gloves",
-    "img": "item_equip_torturers_gloves",
-    "category": "equipment",
-    "type": "gloves",
-    "rarity": "rare"
-  },
-  "1173": {
-    "name": "Viper's Seduction Handwraps",
-    "img": "item_equip_vipers_seduction_handwraps",
-    "category": "equipment",
-    "type": "gloves",
-    "rarity": "rare"
-  },
-  "1174": {
-    "name": "Grasps of Blood Infusion",
-    "img": "item_equip_grasps_of_blood_infusion",
-    "category": "equipment",
-    "type": "gloves",
-    "rarity": "epic"
-  },
-  "1175": {
-    "name": "Handguards of Agony",
-    "img": "item_equip_handguards_of_agony",
-    "category": "equipment",
-    "type": "gloves",
-    "rarity": "epic"
-  },
-  "1176": {
-    "name": "Hands of Hallowed Might",
-    "img": "item_equip_hands_of_hallowed_might",
-    "category": "equipment",
-    "type": "gloves",
-    "rarity": "epic"
-  },
-  "1177": {
-    "name": "Twisted Runes Bracers",
-    "img": "item_equip_twisted_runes_bracers",
-    "category": "equipment",
-    "type": "gloves",
-    "rarity": "epic"
-  },
-  "1178": {
-    "name": "Warfists of Ancestral Spite",
-    "img": "item_equip_warfists_of_ancestral_spite",
-    "category": "equipment",
-    "type": "gloves",
-    "rarity": "epic"
-  },
-  "1179": {
-    "name": "Clean Shoes",
-    "img": "item_equip_clean_shoes",
-    "category": "equipment",
-    "type": "boots",
-    "rarity": "common"
-  },
-  "1180": {
-    "name": "Lizard's Shoes",
-    "img": "item_equip_lizards_shoes",
-    "category": "equipment",
-    "type": "boots",
-    "rarity": "common"
-  },
-  "1181": {
-    "name": "Farmer's Boots",
-    "img": "item_equip_farmers_boots",
-    "category": "equipment",
-    "type": "boots",
-    "rarity": "common"
-  },
-  "1182": {
-    "name": "Soft Tramplers",
-    "img": "item_equip_soft_tramplers",
-    "category": "equipment",
-    "type": "boots",
-    "rarity": "common"
-  },
-  "1183": {
-    "name": "Tattered Boots",
-    "img": "item_equip_tattered_boots",
-    "category": "equipment",
-    "type": "boots",
-    "rarity": "common"
-  },
-  "1184": {
-    "name": "Scout's Boots",
-    "img": "item_equip_scouts_boots",
-    "category": "equipment",
-    "type": "boots",
-    "rarity": "uncommon"
-  },
-  "1185": {
-    "name": "Ascendant Sabatons",
-    "img": "item_equip_ascendant_sabatons",
-    "category": "equipment",
-    "type": "boots",
-    "rarity": "uncommon"
-  },
-  "1186": {
-    "name": "Commander's Greaves",
-    "img": "item_equip_commanders_greaves",
-    "category": "equipment",
-    "type": "boots",
-    "rarity": "uncommon"
-  },
-  "1187": {
-    "name": "Corsair Shoes",
-    "img": "item_equip_corsair_shoes",
-    "category": "equipment",
-    "type": "boots",
-    "rarity": "uncommon"
-  },
-  "1188": {
-    "name": "Greyhound Warboots",
-    "img": "item_equip_greyhound_warboots",
-    "category": "equipment",
-    "type": "boots",
-    "rarity": "uncommon"
-  },
-  "1189": {
-    "name": "Unyielding Sabatons",
-    "img": "item_equip_unyielding_sabatons",
-    "category": "equipment",
-    "type": "boots",
-    "rarity": "rare"
-  },
-  "1190": {
-    "name": "Boots of Choking Webs",
-    "img": "item_equip_boots_of_choking_webs",
-    "category": "equipment",
-    "type": "boots",
-    "rarity": "rare"
-  },
-  "1191": {
-    "name": "Colossus Sabatons",
-    "img": "item_equip_colossus_sabatons",
-    "category": "equipment",
-    "type": "boots",
-    "rarity": "rare"
-  },
-  "1192": {
-    "name": "Prismatic Assault Warboots",
-    "img": "item_equip_prismatic_assault_warboots",
-    "category": "equipment",
-    "type": "boots",
-    "rarity": "rare"
-  },
-  "1193": {
-    "name": "Sunblast Treads",
-    "img": "item_equip_sunblast_treads",
-    "category": "equipment",
-    "type": "boots",
-    "rarity": "rare"
-  },
-  "1194": {
-    "name": "Boots of Sunfire Vision",
-    "img": "item_equip_boots_of_sunfire_vision",
-    "category": "equipment",
-    "type": "boots",
-    "rarity": "epic"
-  },
-  "1195": {
-    "name": "Mammoth's Desolation",
-    "img": "item_equip_mammoths_desolation",
-    "category": "equipment",
-    "type": "boots",
-    "rarity": "epic"
-  },
-  "1196": {
-    "name": "Phantom Walkers",
-    "img": "item_equip_phantom_walkers",
-    "category": "equipment",
-    "type": "boots",
-    "rarity": "epic"
-  },
-  "1197": {
-    "name": "Soul Defiler Footpads",
-    "img": "item_equip_soul_defiler_footpads",
-    "category": "equipment",
-    "type": "boots",
-    "rarity": "epic"
-  },
-  "1198": {
-    "name": "Treads of Frozen Damnation",
-    "img": "item_equip_treads_of_frozen_damnation",
-    "category": "equipment"
-  },
+    "1020": {
+        "name": "Rusty Axe",
+        "img": "item_equip_rusty_axe",
+        "category": "equipment",
+        "type": "weapon",
+        "rarity": "common"
+    },
+    "1021": {
+        "name": "Iron Shiv",
+        "img": "item_equip_iron_shiv",
+        "category": "equipment",
+        "type": "weapon",
+        "rarity": "common"
+    },
+    "1022": {
+        "name": "Fighter's Bow",
+        "img": "item_equip_fighters_bow",
+        "category": "equipment",
+        "type": "weapon",
+        "rarity": "common"
+    },
+    "1023": {
+        "name": "Lost Hammer",
+        "img": "item_equip_lost_hammer",
+        "category": "equipment",
+        "type": "weapon",
+        "rarity": "common"
+    },
+    "1024": {
+        "name": "Seer's Crossbow",
+        "img": "item_equip_seers_crossbow",
+        "category": "equipment",
+        "type": "weapon",
+        "rarity": "common"
+    },
+    "1025": {
+        "name": "Glammered Spear",
+        "img": "item_equip_glammered_spear",
+        "category": "equipment",
+        "type": "weapon",
+        "rarity": "common"
+    },
+    "1026": {
+        "name": "Writer's Staff",
+        "img": "item_equip_writers_staff",
+        "category": "equipment",
+        "type": "weapon",
+        "rarity": "common"
+    },
+    "1027": {
+        "name": "Icy Longsword",
+        "img": "item_equip_icy_longsword",
+        "category": "equipment",
+        "type": "weapon",
+        "rarity": "common"
+    },
+    "1028": {
+        "name": "Crafter's Axe",
+        "img": "item_equip_crafters_axe",
+        "category": "equipment",
+        "type": "weapon",
+        "rarity": "common"
+    },
+    "1029": {
+        "name": "Prismatic Rod",
+        "img": "item_equip_prismatic_rod",
+        "category": "equipment",
+        "type": "weapon",
+        "rarity": "common"
+    },
+    "1030": {
+        "name": "Steady Greatsword",
+        "img": "item_equip_steady_greatsword",
+        "category": "equipment",
+        "type": "weapon",
+        "rarity": "uncommon"
+    },
+    "1031": {
+        "name": "Bloodstrike Sticker",
+        "img": "item_equip_bloodstrike_sticker",
+        "category": "equipment",
+        "type": "weapon",
+        "rarity": "uncommon"
+    },
+    "1032": {
+        "name": "Elven Longbow",
+        "img": "item_equip_elven_longbow",
+        "category": "equipment",
+        "type": "weapon",
+        "rarity": "uncommon"
+    },
+    "1033": {
+        "name": "Etched Scimitar",
+        "img": "item_equip_etched_scimitar",
+        "category": "equipment",
+        "type": "weapon",
+        "rarity": "uncommon"
+    },
+    "1034": {
+        "name": "Glacial Smasher",
+        "img": "item_equip_glacial_smasher",
+        "category": "equipment",
+        "type": "weapon",
+        "rarity": "uncommon"
+    },
+    "1035": {
+        "name": "Headhunter's Bone Dagger",
+        "img": "item_equip_headhunters_bone_dagger",
+        "category": "equipment",
+        "type": "weapon",
+        "rarity": "uncommon"
+    },
+    "1036": {
+        "name": "Marauder Reaper",
+        "img": "item_equip_marauder_reaper",
+        "category": "equipment",
+        "type": "weapon",
+        "rarity": "uncommon"
+    },
+    "1037": {
+        "name": "Razorwind Crossbow",
+        "img": "item_equip_razorwind_crossbow",
+        "category": "equipment",
+        "type": "weapon",
+        "rarity": "uncommon"
+    },
+    "1038": {
+        "name": "Runed Eagle Staff",
+        "img": "item_equip_runed_eagle_staff",
+        "category": "equipment",
+        "type": "weapon",
+        "rarity": "uncommon"
+    },
+    "1039": {
+        "name": "Watcher's Glaive",
+        "img": "item_equip_watchers_glaive",
+        "category": "equipment",
+        "type": "weapon",
+        "rarity": "uncommon"
+    },
+    "1040": {
+        "name": "Wind Saber",
+        "img": "item_equip_wind_saber",
+        "category": "equipment",
+        "type": "weapon",
+        "rarity": "uncommon"
+    },
+    "1041": {
+        "name": "Drake Slayer Sword",
+        "img": "item_equip_drake_slayer_sword",
+        "category": "equipment",
+        "type": "weapon",
+        "rarity": "rare"
+    },
+    "1042": {
+        "name": "Deflected Winds Bow",
+        "img": "item_equip_deflected_winds_bow",
+        "category": "equipment",
+        "type": "weapon",
+        "rarity": "rare"
+    },
+    "1043": {
+        "name": "Flame Corruption Dirk",
+        "img": "item_equip_flame_corruption_dirk",
+        "category": "equipment",
+        "type": "weapon",
+        "rarity": "rare"
+    },
+    "1044": {
+        "name": "Hexbreaker Sword",
+        "img": "item_equip_hexbreaker_sword",
+        "category": "equipment",
+        "type": "weapon",
+        "rarity": "rare"
+    },
+    "1045": {
+        "name": "Icy Chains Staff",
+        "img": "item_equip_icy_chains_staff",
+        "category": "equipment",
+        "type": "weapon",
+        "rarity": "rare"
+    },
+    "1046": {
+        "name": "Lightning's Blast Hammer",
+        "img": "item_equip_lightnings_blast_hammer",
+        "category": "equipment",
+        "type": "weapon",
+        "rarity": "rare"
+    },
+    "1047": {
+        "name": "Rune Crusher Warhammer",
+        "img": "item_equip_rune_crusher_warhammer",
+        "category": "equipment",
+        "type": "weapon",
+        "rarity": "rare"
+    },
+    "1048": {
+        "name": "Shadowgazer Dagger",
+        "img": "item_equip_shadowgazer_dagger",
+        "category": "equipment",
+        "type": "weapon",
+        "rarity": "rare"
+    },
+    "1049": {
+        "name": "Skull Carver Axe",
+        "img": "item_equip_skull_carver_axe",
+        "category": "equipment",
+        "type": "weapon",
+        "rarity": "rare"
+    },
+    "1050": {
+        "name": "Staff of Lawful Sage",
+        "img": "item_equip_staff_of_lawful_sage",
+        "category": "equipment",
+        "type": "weapon",
+        "rarity": "rare"
+    },
+    "1051": {
+        "name": "Sword of Elemental Sorcery",
+        "img": "item_equip_sword_of_elemental_sorcery",
+        "category": "equipment",
+        "type": "weapon",
+        "rarity": "rare"
+    },
+    "1052": {
+        "name": "Unspeakable Golden Spear",
+        "img": "item_equip_unspeakable_golden_spear",
+        "category": "equipment",
+        "type": "weapon",
+        "rarity": "rare"
+    },
+    "1053": {
+        "name": "Waraxe of the Accursed",
+        "img": "item_equip_waraxe_of_the_accursed",
+        "category": "equipment",
+        "type": "weapon",
+        "rarity": "rare"
+    },
+    "1054": {
+        "name": "Axe of Frigid Terror",
+        "img": "item_equip_axe_of_frigid_terror",
+        "category": "equipment",
+        "type": "weapon",
+        "rarity": "epic"
+    },
+    "1055": {
+        "name": "Broken Netherlight",
+        "img": "item_equip_broken_netherlight",
+        "category": "equipment",
+        "type": "weapon",
+        "rarity": "epic"
+    },
+    "1056": {
+        "name": "Celestial Binder",
+        "img": "item_equip_celestial_binder",
+        "category": "equipment",
+        "type": "weapon",
+        "rarity": "epic"
+    },
+    "1057": {
+        "name": "Comet Crusher",
+        "img": "item_equip_comet_crusher",
+        "category": "equipment",
+        "type": "weapon",
+        "rarity": "epic"
+    },
+    "1058": {
+        "name": "Crying Focus",
+        "img": "item_equip_crying_focus",
+        "category": "equipment",
+        "type": "weapon",
+        "rarity": "epic"
+    },
+    "1059": {
+        "name": "Echo of Dusk",
+        "img": "item_equip_echo_of_dusk",
+        "category": "equipment",
+        "type": "weapon",
+        "rarity": "epic"
+    },
+    "1060": {
+        "name": "Flamefury Sword",
+        "img": "item_equip_flamefury_sword",
+        "category": "equipment",
+        "type": "weapon",
+        "rarity": "epic"
+    },
+    "1061": {
+        "name": "Night's Kiss",
+        "img": "item_equip_nights_kiss",
+        "category": "equipment",
+        "type": "weapon",
+        "rarity": "epic"
+    },
+    "1062": {
+        "name": "Quicksilver Trident",
+        "img": "item_equip_quicksilver_trident",
+        "category": "equipment",
+        "type": "weapon",
+        "rarity": "epic"
+    },
+    "1063": {
+        "name": "Souleater's Shiv",
+        "img": "item_equip_souleaters_shiv",
+        "category": "equipment",
+        "type": "weapon",
+        "rarity": "epic"
+    },
+    "1064": {
+        "name": "Spectre Lord Waraxe",
+        "img": "item_equip_spectre_lord_waraxe",
+        "category": "equipment",
+        "type": "weapon",
+        "rarity": "epic"
+    },
+    "1065": {
+        "name": "Storm's Fury",
+        "img": "item_equip_storms_fury",
+        "category": "equipment",
+        "type": "weapon",
+        "rarity": "epic"
+    },
+    "1066": {
+        "name": "Damaged Buckler",
+        "img": "item_equip_damaged_buckler",
+        "category": "equipment",
+        "type": "offhand",
+        "rarity": "common"
+    },
+    "1067": {
+        "name": "Wooden Shield",
+        "img": "item_equip_wooden_shield",
+        "category": "equipment",
+        "type": "offhand",
+        "rarity": "common"
+    },
+    "1068": {
+        "name": "Breaker's Buckler",
+        "img": "item_equip_breakers_buckler",
+        "category": "equipment",
+        "type": "offhand",
+        "rarity": "common"
+    },
+    "1069": {
+        "name": "Traveler Shield",
+        "img": "item_equip_traveler_shield",
+        "category": "equipment",
+        "type": "offhand",
+        "rarity": "common"
+    },
+    "1070": {
+        "name": "Bone Guard",
+        "img": "item_equip_bone_guard",
+        "category": "equipment",
+        "type": "offhand",
+        "rarity": "common"
+    },
+    "1071": {
+        "name": "Warrior's Shield",
+        "img": "item_equip_warriors_shield",
+        "category": "equipment",
+        "type": "offhand",
+        "rarity": "common"
+    },
+    "1072": {
+        "name": "Faithful Shield",
+        "img": "item_equip_faithful_shield",
+        "category": "equipment",
+        "type": "offhand",
+        "rarity": "uncommon"
+    },
+    "1073": {
+        "name": "Glorious Defender",
+        "img": "item_equip_glorious_defender",
+        "category": "equipment",
+        "type": "offhand",
+        "rarity": "uncommon"
+    },
+    "1074": {
+        "name": "Knight's Barrier",
+        "img": "item_equip_knights_barrier",
+        "category": "equipment",
+        "type": "offhand",
+        "rarity": "uncommon"
+    },
+    "1075": {
+        "name": "Strider's Tower Shield",
+        "img": "item_equip_striders_tower_shield",
+        "category": "equipment",
+        "type": "offhand",
+        "rarity": "uncommon"
+    },
+    "1076": {
+        "name": "Tyrant's Guard",
+        "img": "item_equip_tyrants_guard",
+        "category": "equipment",
+        "type": "offhand",
+        "rarity": "uncommon"
+    },
+    "1077": {
+        "name": "Shield of Cursed Thoughts",
+        "img": "item_equip_shield_of_cursed_thoughts",
+        "category": "equipment",
+        "type": "offhand",
+        "rarity": "rare"
+    },
+    "1078": {
+        "name": "Buckler of Triumph Deflection",
+        "img": "item_equip_buckler_of_triumph_deflection",
+        "category": "equipment",
+        "type": "offhand",
+        "rarity": "rare"
+    },
+    "1079": {
+        "name": "Corrupted Archmage's Shield",
+        "img": "item_equip_corrupted_archmages_shield",
+        "category": "equipment",
+        "type": "offhand",
+        "rarity": "rare"
+    },
+    "1080": {
+        "name": "Forbidden Tower Shield",
+        "img": "item_equip_forbidden_tower_shield",
+        "category": "equipment",
+        "type": "offhand",
+        "rarity": "rare"
+    },
+    "1081": {
+        "name": "Shield of Dwarven Greed",
+        "img": "item_equip_shield_of_dwarven_greed",
+        "category": "equipment",
+        "type": "offhand",
+        "rarity": "rare"
+    },
+    "1082": {
+        "name": "Shield of Truth",
+        "img": "item_equip_shield_of_truth",
+        "category": "equipment",
+        "type": "offhand",
+        "rarity": "rare"
+    },
+    "1083": {
+        "name": "Bloodcursed Kite Shield",
+        "img": "item_equip_bloodcursed_kite_shield",
+        "category": "equipment",
+        "type": "offhand",
+        "rarity": "epic"
+    },
+    "1084": {
+        "name": "Champion's Grasp Shield",
+        "img": "item_equip_champions_grasp_shield",
+        "category": "equipment",
+        "type": "offhand",
+        "rarity": "epic"
+    },
+    "1085": {
+        "name": "Dragonbreath's Blockade",
+        "img": "item_equip_dragonbreaths_blockade",
+        "category": "equipment",
+        "type": "offhand",
+        "rarity": "epic"
+    },
+    "1086": {
+        "name": "King's Destiny Aegis",
+        "img": "item_equip_kings_destiny_aegis",
+        "category": "equipment",
+        "type": "offhand",
+        "rarity": "epic"
+    },
+    "1087": {
+        "name": "Silverlight Sentry",
+        "img": "item_equip_silverlight_sentry",
+        "category": "equipment",
+        "type": "offhand",
+        "rarity": "epic"
+    },
+    "1088": {
+        "name": "Wall of Broken Voices",
+        "img": "item_equip_wall_of_broken_voices",
+        "category": "equipment",
+        "type": "offhand",
+        "rarity": "epic"
+    },
+    "1089": {
+        "name": "Warden's Sorrow Shield",
+        "img": "item_equip_wardens_sorrow_shield",
+        "category": "equipment",
+        "type": "offhand",
+        "rarity": "epic"
+    },
+    "1090": {
+        "name": "Iron Helmet",
+        "img": "item_equip_iron_helmet",
+        "category": "equipment",
+        "type": "helmet",
+        "rarity": "common"
+    },
+    "1091": {
+        "name": "Stained Cowl",
+        "img": "item_equip_stained_cowl",
+        "category": "equipment",
+        "type": "helmet",
+        "rarity": "common"
+    },
+    "1092": {
+        "name": "Brigandine Plate Helmet",
+        "img": "item_equip_brigandine_plate_helmet",
+        "category": "equipment",
+        "type": "helmet",
+        "rarity": "common"
+    },
+    "1093": {
+        "name": "Stalker's Bandana",
+        "img": "item_equip_stalkers_bandana",
+        "category": "equipment",
+        "type": "helmet",
+        "rarity": "common"
+    },
+    "1094": {
+        "name": "Studded Cap",
+        "img": "item_equip_studded_cap",
+        "category": "equipment",
+        "type": "helmet",
+        "rarity": "common"
+    },
+    "1095": {
+        "name": "Tarnished Headguard",
+        "img": "item_equip_tarnished_headguard",
+        "category": "equipment",
+        "type": "helmet",
+        "rarity": "common"
+    },
+    "1096": {
+        "name": "Light Plate Helmet",
+        "img": "item_equip_light_plate_helmet",
+        "category": "equipment",
+        "type": "helmet",
+        "rarity": "uncommon"
+    },
+    "1097": {
+        "name": "Aspirant's Helmet",
+        "img": "item_equip_aspirants_helmet",
+        "category": "equipment",
+        "type": "helmet",
+        "rarity": "uncommon"
+    },
+    "1098": {
+        "name": "Dread Headgear",
+        "img": "item_equip_dread_headgear",
+        "category": "equipment",
+        "type": "helmet",
+        "rarity": "uncommon"
+    },
+    "1099": {
+        "name": "Guardian's Greathelm",
+        "img": "item_equip_guardians_greathelm",
+        "category": "equipment",
+        "type": "helmet",
+        "rarity": "uncommon"
+    },
+    "1100": {
+        "name": "Nightshade's Hood",
+        "img": "item_equip_nightshades_hood",
+        "category": "equipment",
+        "type": "helmet",
+        "rarity": "uncommon"
+    },
+    "1101": {
+        "name": "Tempered Skullguard",
+        "img": "item_equip_tempered_skullguard",
+        "category": "equipment",
+        "type": "helmet",
+        "rarity": "uncommon"
+    },
+    "1102": {
+        "name": "Darkcloud Hood",
+        "img": "item_equip_darkcloud_hood",
+        "category": "equipment",
+        "type": "helmet",
+        "rarity": "rare"
+    },
+    "1103": {
+        "name": "Dark Animator's Mask",
+        "img": "item_equip_dark_animators_mask",
+        "category": "equipment",
+        "type": "helmet",
+        "rarity": "rare"
+    },
+    "1104": {
+        "name": "Divine Seer's Helmet",
+        "img": "item_equip_divine_seers_helmet",
+        "category": "equipment",
+        "type": "helmet",
+        "rarity": "rare"
+    },
+    "1105": {
+        "name": "Immovable Nomad's Helmet",
+        "img": "item_equip_immovable_nomads_helmet",
+        "category": "equipment",
+        "type": "helmet",
+        "rarity": "rare"
+    },
+    "1106": {
+        "name": "Oathsworn Helmet",
+        "img": "item_equip_oathsworn_helmet",
+        "category": "equipment",
+        "type": "helmet",
+        "rarity": "rare"
+    },
+    "1107": {
+        "name": "Serpent's Whisper Cowl",
+        "img": "item_equip_serpents_whisper_cowl",
+        "category": "equipment",
+        "type": "helmet",
+        "rarity": "rare"
+    },
+    "1108": {
+        "name": "Bloodsurged Coif of Power",
+        "img": "item_equip_bloodsurged_coif_of_power",
+        "category": "equipment",
+        "type": "helmet",
+        "rarity": "epic"
+    },
+    "1109": {
+        "name": "Broken Conqueror Headpiece",
+        "img": "item_equip_broken_conqueror_headpiece",
+        "category": "equipment",
+        "type": "helmet",
+        "rarity": "epic"
+    },
+    "1110": {
+        "name": "Burning Anger Facemask",
+        "img": "item_equip_burning_anger_facemask",
+        "category": "equipment",
+        "type": "helmet",
+        "rarity": "epic"
+    },
+    "1111": {
+        "name": "Helm of Setting Sun",
+        "img": "item_equip_helm_of_setting_sun",
+        "category": "equipment",
+        "type": "helmet",
+        "rarity": "epic"
+    },
+    "1112": {
+        "name": "Hood of Ancient Blessing",
+        "img": "item_equip_hood_of_ancient_blessing",
+        "category": "equipment",
+        "type": "helmet",
+        "rarity": "epic"
+    },
+    "1113": {
+        "name": "Twilight's Voice Hat",
+        "img": "item_equip_twilights_voice_hat",
+        "category": "equipment",
+        "type": "helmet",
+        "rarity": "epic"
+    },
+    "1114": {
+        "name": "Leather Armor",
+        "img": "item_equip_leather_armor",
+        "category": "equipment",
+        "type": "chest",
+        "rarity": "common"
+    },
+    "1115": {
+        "name": "Studded Armor",
+        "img": "item_equip_studded_armor",
+        "category": "equipment",
+        "type": "chest",
+        "rarity": "common"
+    },
+    "1116": {
+        "name": "Sturdy Shirt",
+        "img": "item_equip_sturdy_shirt",
+        "category": "equipment",
+        "type": "chest",
+        "rarity": "common"
+    },
+    "1117": {
+        "name": "Apprentice's Robe",
+        "img": "item_equip_apprentices_robe",
+        "category": "equipment",
+        "type": "chest",
+        "rarity": "common"
+    },
+    "1118": {
+        "name": "Battered Jerkin",
+        "img": "item_equip_battered_jerkin",
+        "category": "equipment",
+        "type": "chest",
+        "rarity": "common"
+    },
+    "1119": {
+        "name": "Simple Quilted Armor",
+        "img": "item_equip_simple_quilted_armor",
+        "category": "equipment",
+        "type": "chest",
+        "rarity": "uncommon"
+    },
+    "1120": {
+        "name": "Ironforged Chainmail",
+        "img": "item_equip_ironforged_chainmail",
+        "category": "equipment",
+        "type": "chest",
+        "rarity": "uncommon"
+    },
+    "1121": {
+        "name": "Overlord's Chestpiece",
+        "img": "item_equip_overlords_chestpiece",
+        "category": "equipment",
+        "type": "chest",
+        "rarity": "uncommon"
+    },
+    "1122": {
+        "name": "Sorcerer's Robe",
+        "img": "item_equip_sorcerers_robe",
+        "category": "equipment",
+        "type": "chest",
+        "rarity": "uncommon"
+    },
+    "1123": {
+        "name": "Soulfire Armor",
+        "img": "item_equip_soulfire_armor",
+        "category": "equipment",
+        "type": "chest",
+        "rarity": "uncommon"
+    },
+    "1124": {
+        "name": "Warlord's Breastplate",
+        "img": "item_equip_warlords_breastplate",
+        "category": "equipment",
+        "type": "chest",
+        "rarity": "uncommon"
+    },
+    "1125": {
+        "name": "Crusader's Valor Chestplate",
+        "img": "item_equip_crusaders_valor_chestplate",
+        "category": "equipment",
+        "type": "chest",
+        "rarity": "rare"
+    },
+    "1126": {
+        "name": "Corrupted Misfortune Robe",
+        "img": "item_equip_corrupted_misfortune_robe",
+        "category": "equipment",
+        "type": "chest",
+        "rarity": "rare"
+    },
+    "1127": {
+        "name": "Exalted Amazon Armor",
+        "img": "item_equip_exalted_amazon_armor",
+        "category": "equipment",
+        "type": "chest",
+        "rarity": "rare"
+    },
+    "1128": {
+        "name": "Robe of Deathly Nature",
+        "img": "item_equip_robe_of_deathly_nature",
+        "category": "equipment",
+        "type": "chest",
+        "rarity": "rare"
+    },
+    "1129": {
+        "name": "Searing Hate Leather Armor",
+        "img": "item_equip_searing_hate_leather_armor",
+        "category": "equipment",
+        "type": "chest",
+        "rarity": "rare"
+    },
+    "1130": {
+        "name": "Wind Ritual Robe",
+        "img": "item_equip_wind_ritual_robe",
+        "category": "equipment",
+        "type": "chest",
+        "rarity": "rare"
+    },
+    "1131": {
+        "name": "Arcane Mantle of Pride",
+        "img": "item_equip_arcane_mantle_of_pride",
+        "category": "equipment",
+        "type": "chest",
+        "rarity": "epic"
+    },
+    "1132": {
+        "name": "Robes of Eternal Decay",
+        "img": "item_equip_robes_of_eternal_decay",
+        "category": "equipment",
+        "type": "chest",
+        "rarity": "epic"
+    },
+    "1133": {
+        "name": "Broken Demon Chestguard",
+        "img": "item_equip_broken_demon_chestguard",
+        "category": "equipment",
+        "type": "chest",
+        "rarity": "epic"
+    },
+    "1134": {
+        "name": "Fleeting Winds Chestplate",
+        "img": "item_equip_fleeting_winds_chestplate",
+        "category": "equipment",
+        "type": "chest",
+        "rarity": "epic"
+    },
+    "1135": {
+        "name": "Infinite Desire Vest",
+        "img": "item_equip_infinite_desire_vest",
+        "category": "equipment",
+        "type": "chest",
+        "rarity": "epic"
+    },
+    "1136": {
+        "name": "Restored Fires Robe",
+        "img": "item_equip_restored_fires_robe",
+        "category": "equipment",
+        "type": "chest",
+        "rarity": "epic"
+    },
+    "1137": {
+        "name": "Tunic of Lost Flames",
+        "img": "item_equip_tunic_of_lost_flames",
+        "category": "equipment",
+        "type": "chest",
+        "rarity": "epic"
+    },
+    "1138": {
+        "name": "Warped Steward's Tunic",
+        "img": "item_equip_warped_stewards_tunic",
+        "category": "equipment",
+        "type": "chest",
+        "rarity": "epic"
+    },
+    "1139": {
+        "name": "Silk Legguards",
+        "img": "item_equip_silk_legguards",
+        "category": "equipment",
+        "type": "pants",
+        "rarity": "common"
+    },
+    "1140": {
+        "name": "Shaggy Pants",
+        "img": "item_equip_shaggy_pants",
+        "category": "equipment",
+        "type": "pants",
+        "rarity": "common"
+    },
+    "1141": {
+        "name": "Kingly Garment",
+        "img": "item_equip_kingly_garment",
+        "category": "equipment",
+        "type": "pants",
+        "rarity": "common"
+    },
+    "1142": {
+        "name": "Light Trousers",
+        "img": "item_equip_light_trousers",
+        "category": "equipment",
+        "type": "pants",
+        "rarity": "common"
+    },
+    "1143": {
+        "name": "Rough Leggings",
+        "img": "item_equip_rough_leggings",
+        "category": "equipment",
+        "type": "pants",
+        "rarity": "common"
+    },
+    "1144": {
+        "name": "Brawler Legguards",
+        "img": "item_equip_brawler_legguards",
+        "category": "equipment",
+        "type": "pants",
+        "rarity": "uncommon"
+    },
+    "1145": {
+        "name": "Dread Leg Armor",
+        "img": "item_equip_dread_leg_armor",
+        "category": "equipment",
+        "type": "pants",
+        "rarity": "uncommon"
+    },
+    "1146": {
+        "name": "Shadowsilk Skirt",
+        "img": "item_equip_shadowsilk_skirt",
+        "category": "equipment",
+        "type": "pants",
+        "rarity": "uncommon"
+    },
+    "1147": {
+        "name": "Sinful Leggings",
+        "img": "item_equip_sinful_leggings",
+        "category": "equipment",
+        "type": "pants",
+        "rarity": "uncommon"
+    },
+    "1148": {
+        "name": "Valiant Legplates",
+        "img": "item_equip_valiant_legplates",
+        "category": "equipment",
+        "type": "pants",
+        "rarity": "uncommon"
+    },
+    "1149": {
+        "name": "Templar's Legplates",
+        "img": "item_equip_templars_legplates",
+        "category": "equipment",
+        "type": "pants",
+        "rarity": "rare"
+    },
+    "1150": {
+        "name": "Elven Invoker Legguards",
+        "img": "item_equip_elven_invoker_legguards",
+        "category": "equipment",
+        "type": "pants",
+        "rarity": "rare"
+    },
+    "1151": {
+        "name": "Hypnotist's Golden Skirt",
+        "img": "item_equip_hypnotists_golden_skirt",
+        "category": "equipment",
+        "type": "pants",
+        "rarity": "rare"
+    },
+    "1152": {
+        "name": "Infernal Spider's Pants",
+        "img": "item_equip_infernal_spiders_pants",
+        "category": "equipment",
+        "type": "pants",
+        "rarity": "rare"
+    },
+    "1153": {
+        "name": "Wise Titan Greaves",
+        "img": "item_equip_wise_titan_greaves",
+        "category": "equipment",
+        "type": "pants",
+        "rarity": "rare"
+    },
+    "1154": {
+        "name": "Ancient King's Legplates",
+        "img": "item_equip_ancient_kings_legplates",
+        "category": "equipment",
+        "type": "pants",
+        "rarity": "epic"
+    },
+    "1155": {
+        "name": "Celestial Power Greaves",
+        "img": "item_equip_celestial_power_greaves",
+        "category": "equipment",
+        "type": "pants",
+        "rarity": "epic"
+    },
+    "1156": {
+        "name": "Hallowed Souls Legguards",
+        "img": "item_equip_hallowed_souls_legguards",
+        "category": "equipment",
+        "type": "pants",
+        "rarity": "epic"
+    },
+    "1157": {
+        "name": "Obsidian Nightmare Platelegs",
+        "img": "item_equip_obsidian_nightmare_platelegs",
+        "category": "equipment",
+        "type": "pants",
+        "rarity": "epic"
+    },
+    "1158": {
+        "name": "Prophet's Gift Legwraps",
+        "img": "item_equip_prophets_gift_legwraps",
+        "category": "equipment",
+        "type": "pants",
+        "rarity": "epic"
+    },
+    "1159": {
+        "name": "Foul Gloves",
+        "img": "item_equip_foul_gloves",
+        "category": "equipment",
+        "type": "gloves",
+        "rarity": "common"
+    },
+    "1160": {
+        "name": "Divine Handwraps",
+        "img": "item_equip_divine_handwraps",
+        "category": "equipment",
+        "type": "gloves",
+        "rarity": "common"
+    },
+    "1161": {
+        "name": "Bleached Gloves",
+        "img": "item_equip_bleached_gloves",
+        "category": "equipment",
+        "type": "gloves",
+        "rarity": "common"
+    },
+    "1162": {
+        "name": "Tanned Grips",
+        "img": "item_equip_tanned_grips",
+        "category": "equipment",
+        "type": "gloves",
+        "rarity": "common"
+    },
+    "1163": {
+        "name": "Tribal Handwraps",
+        "img": "item_equip_tribal_handwraps",
+        "category": "equipment",
+        "type": "gloves",
+        "rarity": "common"
+    },
+    "1164": {
+        "name": "Deeptide Handwraps",
+        "img": "item_equip_deeptide_handwraps",
+        "category": "equipment",
+        "type": "gloves",
+        "rarity": "uncommon"
+    },
+    "1165": {
+        "name": "Assassin's Grips",
+        "img": "item_equip_assassins_grips",
+        "category": "equipment",
+        "type": "gloves",
+        "rarity": "uncommon"
+    },
+    "1166": {
+        "name": "Pathfinder's Gloves",
+        "img": "item_equip_pathfinders_gloves",
+        "category": "equipment",
+        "type": "gloves",
+        "rarity": "uncommon"
+    },
+    "1167": {
+        "name": "Runic Handcovers",
+        "img": "item_equip_runic_handcovers",
+        "category": "equipment",
+        "type": "gloves",
+        "rarity": "uncommon"
+    },
+    "1168": {
+        "name": "Zealot Gauntlets",
+        "img": "item_equip_zealot_gauntlets",
+        "category": "equipment",
+        "type": "gloves",
+        "rarity": "uncommon"
+    },
+    "1169": {
+        "name": "Fallen Bandit's Gloves",
+        "img": "item_equip_fallen_bandits_gloves",
+        "category": "equipment",
+        "type": "gloves",
+        "rarity": "rare"
+    },
+    "1170": {
+        "name": "Berserker Slaying Gauntlets",
+        "img": "item_equip_berserker_slaying_gauntlets",
+        "category": "equipment",
+        "type": "gloves",
+        "rarity": "rare"
+    },
+    "1171": {
+        "name": "Lawless Handguards",
+        "img": "item_equip_lawless_handguards",
+        "category": "equipment",
+        "type": "gloves",
+        "rarity": "rare"
+    },
+    "1172": {
+        "name": "Torturer's Gloves",
+        "img": "item_equip_torturers_gloves",
+        "category": "equipment",
+        "type": "gloves",
+        "rarity": "rare"
+    },
+    "1173": {
+        "name": "Viper's Seduction Handwraps",
+        "img": "item_equip_vipers_seduction_handwraps",
+        "category": "equipment",
+        "type": "gloves",
+        "rarity": "rare"
+    },
+    "1174": {
+        "name": "Grasps of Blood Infusion",
+        "img": "item_equip_grasps_of_blood_infusion",
+        "category": "equipment",
+        "type": "gloves",
+        "rarity": "epic"
+    },
+    "1175": {
+        "name": "Handguards of Agony",
+        "img": "item_equip_handguards_of_agony",
+        "category": "equipment",
+        "type": "gloves",
+        "rarity": "epic"
+    },
+    "1176": {
+        "name": "Hands of Hallowed Might",
+        "img": "item_equip_hands_of_hallowed_might",
+        "category": "equipment",
+        "type": "gloves",
+        "rarity": "epic"
+    },
+    "1177": {
+        "name": "Twisted Runes Bracers",
+        "img": "item_equip_twisted_runes_bracers",
+        "category": "equipment",
+        "type": "gloves",
+        "rarity": "epic"
+    },
+    "1178": {
+        "name": "Warfists of Ancestral Spite",
+        "img": "item_equip_warfists_of_ancestral_spite",
+        "category": "equipment",
+        "type": "gloves",
+        "rarity": "epic"
+    },
+    "1179": {
+        "name": "Clean Shoes",
+        "img": "item_equip_clean_shoes",
+        "category": "equipment",
+        "type": "boots",
+        "rarity": "common"
+    },
+    "1180": {
+        "name": "Lizard's Shoes",
+        "img": "item_equip_lizards_shoes",
+        "category": "equipment",
+        "type": "boots",
+        "rarity": "common"
+    },
+    "1181": {
+        "name": "Farmer's Boots",
+        "img": "item_equip_farmers_boots",
+        "category": "equipment",
+        "type": "boots",
+        "rarity": "common"
+    },
+    "1182": {
+        "name": "Soft Tramplers",
+        "img": "item_equip_soft_tramplers",
+        "category": "equipment",
+        "type": "boots",
+        "rarity": "common"
+    },
+    "1183": {
+        "name": "Tattered Boots",
+        "img": "item_equip_tattered_boots",
+        "category": "equipment",
+        "type": "boots",
+        "rarity": "common"
+    },
+    "1184": {
+        "name": "Scout's Boots",
+        "img": "item_equip_scouts_boots",
+        "category": "equipment",
+        "type": "boots",
+        "rarity": "uncommon"
+    },
+    "1185": {
+        "name": "Ascendant Sabatons",
+        "img": "item_equip_ascendant_sabatons",
+        "category": "equipment",
+        "type": "boots",
+        "rarity": "uncommon"
+    },
+    "1186": {
+        "name": "Commander's Greaves",
+        "img": "item_equip_commanders_greaves",
+        "category": "equipment",
+        "type": "boots",
+        "rarity": "uncommon"
+    },
+    "1187": {
+        "name": "Corsair Shoes",
+        "img": "item_equip_corsair_shoes",
+        "category": "equipment",
+        "type": "boots",
+        "rarity": "uncommon"
+    },
+    "1188": {
+        "name": "Greyhound Warboots",
+        "img": "item_equip_greyhound_warboots",
+        "category": "equipment",
+        "type": "boots",
+        "rarity": "uncommon"
+    },
+    "1189": {
+        "name": "Unyielding Sabatons",
+        "img": "item_equip_unyielding_sabatons",
+        "category": "equipment",
+        "type": "boots",
+        "rarity": "rare"
+    },
+    "1190": {
+        "name": "Boots of Choking Webs",
+        "img": "item_equip_boots_of_choking_webs",
+        "category": "equipment",
+        "type": "boots",
+        "rarity": "rare"
+    },
+    "1191": {
+        "name": "Colossus Sabatons",
+        "img": "item_equip_colossus_sabatons",
+        "category": "equipment",
+        "type": "boots",
+        "rarity": "rare"
+    },
+    "1192": {
+        "name": "Prismatic Assault Warboots",
+        "img": "item_equip_prismatic_assault_warboots",
+        "category": "equipment",
+        "type": "boots",
+        "rarity": "rare"
+    },
+    "1193": {
+        "name": "Sunblast Treads",
+        "img": "item_equip_sunblast_treads",
+        "category": "equipment",
+        "type": "boots",
+        "rarity": "rare"
+    },
+    "1194": {
+        "name": "Boots of Sunfire Vision",
+        "img": "item_equip_boots_of_sunfire_vision",
+        "category": "equipment",
+        "type": "boots",
+        "rarity": "epic"
+    },
+    "1195": {
+        "name": "Mammoth's Desolation",
+        "img": "item_equip_mammoths_desolation",
+        "category": "equipment",
+        "type": "boots",
+        "rarity": "epic"
+    },
+    "1196": {
+        "name": "Phantom Walkers",
+        "img": "item_equip_phantom_walkers",
+        "category": "equipment",
+        "type": "boots",
+        "rarity": "epic"
+    },
+    "1197": {
+        "name": "Soul Defiler Footpads",
+        "img": "item_equip_soul_defiler_footpads",
+        "category": "equipment",
+        "type": "boots",
+        "rarity": "epic"
+    },
+    "1198": {
+        "name": "Treads of Frozen Damnation",
+        "img": "item_equip_treads_of_frozen_damnation",
+        "category": "equipment"
+    },
 
-  "1199": {
-    "name": "Silver Key",
-    "img": "item_key_silver_key",
-    "category": "key",
-    "type": "key",
-    "rarity": "common"
-  },
-  "1200": {
-    "name": "Emerald Key",
-    "img": "item_key_emerald_key",
-    "category": "key",
-    "type": "key",
-    "rarity": "uncommon"
-  },
-  "1201": {
-    "name": "Sapphire Key",
-    "img": "item_key_sapphire_key",
-    "category": "key",
-    "type": "key",
-    "rarity": "rare"
-  },
-  "1202": {
-    "name": "Amethyst Key",
-    "img": "item_key_amethyst_key",
-    "category": "key",
-    "type": "key",
-    "rarity": "epic"
-  },
+    "1199": {
+        "name": "Silver Key",
+        "img": "item_key_silver_key",
+        "category": "key",
+        "type": "key",
+        "rarity": "common"
+    },
+    "1200": {
+        "name": "Emerald Key",
+        "img": "item_key_emerald_key",
+        "category": "key",
+        "type": "key",
+        "rarity": "uncommon"
+    },
+    "1201": {
+        "name": "Sapphire Key",
+        "img": "item_key_sapphire_key",
+        "category": "key",
+        "type": "key",
+        "rarity": "rare"
+    },
+    "1202": {
+        "name": "Amethyst Key",
+        "img": "item_key_amethyst_key",
+        "category": "key",
+        "type": "key",
+        "rarity": "epic"
+    },
 
-  "1203": {
-    "name": "Silver Ore",
-    "img": "item_res_silver_ore",
-    "category": "resource",
-    "type": "ore",
-    "rarity": "common"
-  },
-  "1204": {
-    "name": "Gold Ore",
-    "img": "item_res_gold_ore",
-    "category": "resource",
-    "type": "ore",
-    "rarity": "uncommon"
-  },
-  "1205": {
-    "name": "Asmenium Ore",
-    "img": "item_res_asmenium_ore",
-    "category": "resource",
-    "type": "ore",
-    "rarity": "rare"
-  },
-  "1206": {
-    "name": "Dragonite Ore",
-    "img": "item_res_dragonite_ore",
-    "category": "resource",
-    "type": "ore",
-    "rarity": "epic"
-  },
+    "1203": {
+        "name": "Silver Ore",
+        "img": "item_res_silver_ore",
+        "category": "resource",
+        "type": "ore",
+        "rarity": "common"
+    },
+    "1204": {
+        "name": "Gold Ore",
+        "img": "item_res_gold_ore",
+        "category": "resource",
+        "type": "ore",
+        "rarity": "uncommon"
+    },
+    "1205": {
+        "name": "Asmenium Ore",
+        "img": "item_res_asmenium_ore",
+        "category": "resource",
+        "type": "ore",
+        "rarity": "rare"
+    },
+    "1206": {
+        "name": "Dragonite Ore",
+        "img": "item_res_dragonite_ore",
+        "category": "resource",
+        "type": "ore",
+        "rarity": "epic"
+    },
 
+    "1207": {
+        "name": "Goldenglow",
+        "img": "item_res_goldenglow",
+        "category": "resource",
+        "type": "herb",
+        "rarity": "common"
+    },
+    "1208": {
+        "name": "Dreamtongue",
+        "img": "item_res_dreamtongue",
+        "category": "resource",
+        "type": "herb",
+        "rarity": "common"
+    },
+    "1209": {
+        "name": "Milfoil",
+        "img": "item_res_milfoil",
+        "category": "resource",
+        "type": "herb",
+        "rarity": "common"
+    },
+    "1210": {
+        "name": "Lion's Fern",
+        "img": "item_res_lions_fern",
+        "category": "resource",
+        "type": "herb",
+        "rarity": "common"
+    },
 
-  "1207": {
-    "name": "Goldenglow",
-    "img": "item_res_goldenglow",
-    "category": "resource",
-    "type": "herb",
-    "rarity": "common"
-  },
-  "1208": {
-    "name": "Dreamtongue",
-    "img": "item_res_dreamtongue",
-    "category": "resource",
-    "type": "herb",
-    "rarity": "common"
-  },
-  "1209": {
-    "name": "Milfoil",
-    "img": "item_res_milfoil",
-    "category": "resource",
-    "type": "herb",
-    "rarity": "common"
-  },
-  "1210": {
-    "name": "Lion's Fern",
-    "img": "item_res_lions_fern",
-    "category": "resource",
-    "type": "herb",
-    "rarity": "common"
-  },
+    "1211": {
+        "name": "Ohicries",
+        "img": "item_res_ohicries",
+        "category": "resource",
+        "type": "herb",
+        "rarity": "uncommon"
+    },
+    "1212": {
+        "name": "Night Ivy",
+        "img": "item_res_night_ivy",
+        "category": "resource",
+        "type": "herb",
+        "rarity": "uncommon"
+    },
+    "1213": {
+        "name": "Crimson Bane",
+        "img": "item_res_crimson_bane",
+        "category": "resource",
+        "type": "herb",
+        "rarity": "uncommon"
+    },
+    "1214": {
+        "name": "Sperlorn",
+        "img": "item_res_sperlorn",
+        "category": "resource",
+        "type": "herb",
+        "rarity": "uncommon"
+    },
 
-  "1211": {
-    "name": "Ohicries",
-    "img": "item_res_ohicries",
-    "category": "resource",
-    "type": "herb",
-    "rarity": "uncommon"
-  },
-  "1212": {
-    "name": "Night Ivy",
-    "img": "item_res_night_ivy",
-    "category": "resource",
-    "type": "herb",
-    "rarity": "uncommon"
-  },
-  "1213": {
-    "name": "Crimson Bane",
-    "img": "item_res_crimson_bane",
-    "category": "resource",
-    "type": "herb",
-    "rarity": "uncommon"
-  },
-  "1214": {
-    "name": "Sperlorn",
-    "img": "item_res_sperlorn",
-    "category": "resource",
-    "type": "herb",
-    "rarity": "uncommon"
-  },
+    "1215": {
+        "name": "Demonbloom",
+        "img": "item_res_demonbloom",
+        "category": "resource",
+        "type": "herb",
+        "rarity": "rare"
+    },
+    "1216": {
+        "name": "Ash Thorn",
+        "img": "item_res_ash_thorn",
+        "category": "resource",
+        "type": "herb",
+        "rarity": "rare"
+    },
+    "1217": {
+        "name": "Banshee's Ragweed",
+        "img": "item_res_banshees_ragweed",
+        "category": "resource",
+        "type": "herb",
+        "rarity": "rare"
+    },
+    "1218": {
+        "name": "Sage's Thistle",
+        "img": "item_res_sages_thistle",
+        "category": "resource",
+        "type": "herb",
+        "rarity": "rare"
+    },
 
-  "1215": {
-    "name": "Demonbloom",
-    "img": "item_res_demonbloom",
-    "category": "resource",
-    "type": "herb",
-    "rarity": "rare"
-  },
-  "1216": {
-    "name": "Ash Thorn",
-    "img": "item_res_ash_thorn",
-    "category": "resource",
-    "type": "herb",
-    "rarity": "rare"
-  },
-  "1217": {
-    "name": "Banshee's Ragweed",
-    "img": "item_res_banshees_ragweed",
-    "category": "resource",
-    "type": "herb",
-    "rarity": "rare"
-  },
-  "1218": {
-    "name": "Sage's Thistle",
-    "img": "item_res_sages_thistle",
-    "category": "resource",
-    "type": "herb",
-    "rarity": "rare"
-  },
+    "1219": {
+        "name": "Imperial Lotus",
+        "img": "item_res_imperial_lotus",
+        "category": "resource",
+        "type": "herb",
+        "rarity": "epic"
+    },
+    "1220": {
+        "name": "Sanguine Sorrel",
+        "img": "item_res_sanguine_sorrel",
+        "category": "resource",
+        "type": "herb",
+        "rarity": "epic"
+    },
+    "1221": {
+        "name": "Volcanic Snakeberry",
+        "img": "item_res_volcanic_snakeberry",
+        "category": "resource",
+        "type": "herb",
+        "rarity": "epic"
+    },
+    "1222": {
+        "name": "Solarium",
+        "img": "item_res_solarium",
+        "category": "resource",
+        "type": "herb",
+        "rarity": "epic"
+    },
 
-  "1219": {
-    "name": "Imperial Lotus",
-    "img": "item_res_imperial_lotus",
-    "category": "resource",
-    "type": "herb",
-    "rarity": "epic"
-  },
-  "1220": {
-    "name": "Sanguine Sorrel",
-    "img": "item_res_sanguine_sorrel",
-    "category": "resource",
-    "type": "herb",
-    "rarity": "epic"
-  },
-  "1221": {
-    "name": "Volcanic Snakeberry",
-    "img": "item_res_volcanic_snakeberry",
-    "category": "resource",
-    "type": "herb",
-    "rarity": "epic"
-  },
-  "1222": {
-    "name": "Solarium",
-    "img": "item_res_solarium",
-    "category": "resource",
-    "type": "herb",
-    "rarity": "epic"
-  },
+    "1223": {
+        "name": "Oak Wood",
+        "img": "item_res_oak_wood",
+        "category": "resource",
+        "type": "wood",
+        "rarity": "common"
+    },
+    "1224": {
+        "name": "Honeybeam Wood",
+        "img": "item_res_honeybeam_wood",
+        "category": "resource",
+        "type": "wood",
+        "rarity": "uncommon"
+    },
+    "1225": {
+        "name": "Dragonmark Wood",
+        "img": "item_res_dragonmark_wood",
+        "category": "resource",
+        "type": "wood",
+        "rarity": "rare"
+    },
+    "1226": {
+        "name": "Crimson Wood",
+        "img": "item_res_crimson_wood",
+        "category": "resource",
+        "type": "wood",
+        "rarity": "epic"
+    },
 
-  "1223": {
-    "name": "Oak Wood",
-    "img": "item_res_oak_wood",
-    "category": "resource",
-    "type": "wood",
-    "rarity": "common"
-  },
-  "1224": {
-    "name": "Honeybeam Wood",
-    "img": "item_res_honeybeam_wood",
-    "category": "resource",
-    "type": "wood",
-    "rarity": "uncommon"
-  },
-  "1225": {
-    "name": "Dragonmark Wood",
-    "img": "item_res_dragonmark_wood",
-    "category": "resource",
-    "type": "wood",
-    "rarity": "rare"
-  },
-  "1226": {
-    "name": "Crimson Wood",
-    "img": "item_res_crimson_wood",
-    "category": "resource",
-    "type": "wood",
-    "rarity": "epic"
-  },
+    "1227": {
+        "name": "Soft Fur",
+        "img": "item_res_soft_fur",
+        "category": "resource",
+        "type": "fur",
+        "rarity": "common"
+    },
+    "1228": {
+        "name": "Prowler Fur",
+        "img": "item_res_prowler_fur",
+        "category": "resource",
+        "type": "fur",
+        "rarity": "uncommon"
+    },
+    "1229": {
+        "name": "Lunar Fur",
+        "img": "item_res_lunar_fur",
+        "category": "resource",
+        "type": "fur",
+        "rarity": "rare"
+    },
+    "1230": {
+        "name": "Infernal Fur",
+        "img": "item_res_infernal_fur",
+        "category": "resource",
+        "type": "fur",
+        "rarity": "epic"
+    },
 
+    "1231": {
+        "name": "Veiled Cloth",
+        "img": "item_res_veiled_cloth",
+        "category": "resource",
+        "type": "cloth",
+        "rarity": "common"
+    },
+    "1232": {
+        "name": "Glaring Cloth",
+        "img": "item_res_glaring_cloth",
+        "category": "resource",
+        "type": "cloth",
+        "rarity": "uncommon"
+    },
+    "1233": {
+        "name": "Ethereal Cloth",
+        "img": "item_res_ethereal_cloth",
+        "category": "resource",
+        "type": "cloth",
+        "rarity": "rare"
+    },
+    "1234": {
+        "name": "Flawless Cloth",
+        "img": "item_res_flawless_cloth",
+        "category": "resource",
+        "type": "cloth",
+        "rarity": "epic"
+    },
 
-  "1227": {
-    "name": "Soft Fur",
-    "img": "item_res_soft_fur",
-    "category": "resource",
-    "type": "fur",
-    "rarity": "common"
-  },
-  "1228": {
-    "name": "Prowler Fur",
-    "img": "item_res_prowler_fur",
-    "category": "resource",
-    "type": "fur",
-    "rarity": "uncommon"
-  },
-  "1229": {
-    "name": "Lunar Fur",
-    "img": "item_res_lunar_fur",
-    "category": "resource",
-    "type": "fur",
-    "rarity": "rare"
-  },
-  "1230": {
-    "name": "Infernal Fur",
-    "img": "item_res_infernal_fur",
-    "category": "resource",
-    "type": "fur",
-    "rarity": "epic"
-  },
+    "1235": {
+        "name": "Silver Bar",
+        "img": "item_res_silver_bar",
+        "category": "resource",
+        "type": "ore",
+        "rarity": "common"
+    },
+    "1236": {
+        "name": "Gold Bar",
+        "img": "item_res_gold_bar",
+        "category": "resource",
+        "type": "ore",
+        "rarity": "uncommon"
+    },
+    "1237": {
+        "name": "Asmenium Bar",
+        "img": "item_res_asmenium_bar",
+        "category": "resource",
+        "type": "ore",
+        "rarity": "rare"
+    },
+    "1238": {
+        "name": "Dragonite Bar",
+        "img": "item_res_dragonite_bar",
+        "category": "resource",
+        "type": "ore",
+        "rarity": "epic"
+    },
 
-  "1231": {
-    "name": "Veiled Cloth",
-    "img": "item_res_veiled_cloth",
-    "category": "resource",
-    "type": "cloth",
-    "rarity": "common"
-  },
-  "1232": {
-    "name": "Glaring Cloth",
-    "img": "item_res_glaring_cloth",
-    "category": "resource",
-    "type": "cloth",
-    "rarity": "uncommon"
-  },
-  "1233": {
-    "name": "Ethereal Cloth",
-    "img": "item_res_ethereal_cloth",
-    "category": "resource",
-    "type": "cloth",
-    "rarity": "rare"
-  },
-  "1234": {
-    "name": "Flawless Cloth",
-    "img": "item_res_flawless_cloth",
-    "category": "resource",
-    "type": "cloth",
-    "rarity": "epic"
-  },
+    "1239": {
+        "name": "Common Equipment",
+        "rarity": "common",
+        "img": "item_crafting_common_equipment",
+        "category": "equipment",
+        "type": "chest"
+    },
+    "1240": {
+        "name": "Uncommon Equipment",
+        "rarity": "uncommon",
+        "img": "item_crafting_uncommon_equipment",
+        "category": "equipment",
+        "type": "chest"
+    },
+    "1241": {
+        "name": "Rare Equipment",
+        "rarity": "rare",
+        "img": "item_crafting_rare_equipment",
+        "category": "equipment",
+        "type": "chest"
+    },
+    "1242": {
+        "name": "Epic Equipment",
+        "rarity": "epic",
+        "img": "item_crafting_epic_equipment",
+        "category": "equipment",
+        "type": "chest"
+    },
 
-  "1235": {
-    "name": "Silver Bar",
-    "img": "item_res_silver_bar",
-    "category": "resource",
-    "type": "ore",
-    "rarity": "common"
-  },
-  "1236": {
-    "name": "Gold Bar",
-    "img": "item_res_gold_bar",
-    "category": "resource",
-    "type": "ore",
-    "rarity": "uncommon"
-  },
-  "1237": {
-    "name": "Asmenium Bar",
-    "img": "item_res_asmenium_bar",
-    "category": "resource",
-    "type": "ore",
-    "rarity": "rare"
-  },
-  "1238": {
-    "name": "Dragonite Bar",
-    "img": "item_res_dragonite_bar",
-    "category": "resource",
-    "type": "ore",
-    "rarity": "epic"
-  },
+    "1243": {
+        "name": "Common Pants",
+        "rarity": "common",
+        "img": "item_crafting_common_pants",
+        "category": "equipment",
+        "type": "pants"
+    },
+    "1244": {
+        "name": "Common Gloves",
+        "rarity": "common",
+        "img": "item_crafting_common_gloves",
+        "category": "equipment"
+    },
+    "1245": {
+        "name": "Common Boots",
+        "rarity": "common",
+        "img": "item_crafting_common_boots",
+        "category": "equipment"
+    },
+    "1246": {
+        "name": "Uncommon Weapon",
+        "rarity": "uncommon",
+        "img": "item_crafting_uncommon_weapon",
+        "category": "equipment",
+        "type": "weapon"
+    },
+    "1247": {
+        "name": "Uncommon Offhand",
+        "rarity": "uncommon",
+        "img": "item_crafting_uncommon_offhand",
+        "category": "equipment",
+        "type": "offhand"
+    },
+    "1248": {
+        "name": "Uncommon Helmet",
+        "rarity": "uncommon",
+        "img": "item_crafting_uncommon_helmet",
+        "category": "equipment",
+        "type": "helmet"
+    },
+    "1249": {
+        "name": "Uncommon Chest",
+        "rarity": "uncommon",
+        "img": "item_crafting_uncommon_chest",
+        "category": "equipment",
+        "type": "chest"
+    },
+    "1250": {
+        "name": "Uncommon Pants",
+        "rarity": "uncommon",
+        "img": "item_crafting_uncommon_pants",
+        "category": "equipment",
+        "type": "pants"
+    },
+    "1251": {
+        "name": "Uncommon Gloves",
+        "rarity": "uncommon",
+        "img": "item_crafting_uncommon_gloves",
+        "category": "equipment",
+        "type": "gloves"
+    },
+    "1252": {
+        "name": "Uncommon Boots",
+        "rarity": "uncommon",
+        "img": "item_crafting_uncommon_boots",
+        "category": "equipment",
+        "type": "boots"
+    },
+    "1253": {
+        "name": "Rare Weapon",
+        "rarity": "rare",
+        "img": "item_crafting_rare_weapon",
+        "category": "equipment",
+        "type": "weapon"
+    },
+    "1254": {
+        "name": "Rare Offhand",
+        "rarity": "rare",
+        "img": "item_crafting_rare_offhand",
+        "category": "equipment",
+        "type": "offhand"
+    },
+    "1255": {
+        "name": "Rare Helmet",
+        "rarity": "rare",
+        "img": "item_crafting_rare_helmet",
+        "category": "equipment",
+        "type": "helmet"
+    },
+    "1256": {
+        "name": "Rare Chest",
+        "rarity": "rare",
+        "img": "item_crafting_rare_chest",
+        "category": "equipment",
+        "type": "chest"
+    },
+    "1257": {
+        "name": "Rare Pants",
+        "rarity": "rare",
+        "img": "item_crafting_rare_pants",
+        "category": "equipment",
+        "type": "pants"
+    },
+    "1258": {
+        "name": "Rare Gloves",
+        "rarity": "rare",
+        "img": "item_crafting_rare_gloves",
+        "category": "equipment",
+        "type": "gloves"
+    },
+    "1259": {
+        "name": "Rare Boots",
+        "rarity": "rare",
+        "img": "item_crafting_rare_boots",
+        "category": "equipment",
+        "type": "boots"
+    },
+    "1260": {
+        "name": "Epic Weapon",
+        "rarity": "epic",
+        "img": "item_crafting_epic_weapon",
+        "category": "equipment",
+        "type": "weapon"
+    },
+    "1261": {
+        "name": "Epic Offhand",
+        "rarity": "epic",
+        "img": "item_crafting_epic_offhand",
+        "category": "equipment",
+        "type": "offhand"
+    },
+    "1262": {
+        "name": "Epic Helmet",
+        "rarity": "epic",
+        "img": "item_crafting_epic_helmet",
+        "category": "equipment",
+        "type": "helmet"
+    },
+    "1263": {
+        "name": "Epic Chest",
+        "rarity": "epic",
+        "img": "item_crafting_epic_chest",
+        "category": "equipment",
+        "type": "chest"
+    },
+    "1264": {
+        "name": "Epic Pants",
+        "rarity": "epic",
+        "img": "item_crafting_epic_pants",
+        "category": "equipment",
+        "type": "pants"
+    },
+    "1265": {
+        "name": "Epic Gloves",
+        "rarity": "epic",
+        "img": "item_crafting_epic_gloves",
+        "category": "equipment",
+        "type": "gloves"
+    },
+    "1266": {
+        "name": "Epic Boots",
+        "rarity": "epic",
+        "img": "item_crafting_epic_boots",
+        "category": "equipment",
+        "type": "boots"
+    },
 
-  "1239": {
-    "name": "Common Equipment",
-    "rarity": "common",
-    "img": "item_crafting_common_equipment",
-    "category": "equipment",
-    "type": "chest"
-  },
-  "1240": {
-    "name": "Uncommon Equipment",
-    "rarity": "uncommon",
-    "img": "item_crafting_uncommon_equipment",
-    "category": "equipment",
-    "type": "chest"
-  },
-  "1241": {
-    "name": "Rare Equipment",
-    "rarity": "rare",
-    "img": "item_crafting_rare_equipment",
-    "category": "equipment",
-    "type": "chest"
-  },
-  "1242": {
-    "name": "Epic Equipment",
-    "rarity": "epic",
-    "img": "item_crafting_epic_equipment",
-    "category": "equipment",
-    "type": "chest"
-  },
-
-
-
-
-
-  "1243": {
-    "name": "Common Pants",
-    "rarity": "common",
-    "img": "item_crafting_common_pants",
-    "category": "equipment",
-    "type": "pants"
-  },
-  "1244": {
-    "name": "Common Gloves",
-    "rarity": "common",
-    "img": "item_crafting_common_gloves",
-    "category": "equipment"
-  },
-  "1245": {
-    "name": "Common Boots",
-    "rarity": "common",
-    "img": "item_crafting_common_boots",
-    "category": "equipment"
-  },
-  "1246": {
-    "name": "Uncommon Weapon",
-    "rarity": "uncommon",
-    "img": "item_crafting_uncommon_weapon",
-    "category": "equipment",
-    "type": "weapon"
-  },
-  "1247": {
-    "name": "Uncommon Offhand",
-    "rarity": "uncommon",
-    "img": "item_crafting_uncommon_offhand",
-    "category": "equipment",
-    "type": "offhand"
-  },
-  "1248": {
-    "name": "Uncommon Helmet",
-    "rarity": "uncommon",
-    "img": "item_crafting_uncommon_helmet",
-    "category": "equipment",
-    "type": "helmet"
-  },
-  "1249": {
-    "name": "Uncommon Chest",
-    "rarity": "uncommon",
-    "img": "item_crafting_uncommon_chest",
-    "category": "equipment",
-    "type": "chest"
-  },
-  "1250": {
-    "name": "Uncommon Pants",
-    "rarity": "uncommon",
-    "img": "item_crafting_uncommon_pants",
-    "category": "equipment",
-    "type": "pants"
-  },
-  "1251": {
-    "name": "Uncommon Gloves",
-    "rarity": "uncommon",
-    "img": "item_crafting_uncommon_gloves",
-    "category": "equipment",
-    "type": "gloves"
-  },
-  "1252": {
-    "name": "Uncommon Boots",
-    "rarity": "uncommon",
-    "img": "item_crafting_uncommon_boots",
-    "category": "equipment",
-    "type": "boots"
-  },
-  "1253": {
-    "name": "Rare Weapon",
-    "rarity": "rare",
-    "img": "item_crafting_rare_weapon",
-    "category": "equipment",
-    "type": "weapon"
-  },
-  "1254": {
-    "name": "Rare Offhand",
-    "rarity": "rare",
-    "img": "item_crafting_rare_offhand",
-    "category": "equipment",
-    "type": "offhand"
-  },
-  "1255": {
-    "name": "Rare Helmet",
-    "rarity": "rare",
-    "img": "item_crafting_rare_helmet",
-    "category": "equipment",
-    "type": "helmet"
-  },
-  "1256": {
-    "name": "Rare Chest",
-    "rarity": "rare",
-    "img": "item_crafting_rare_chest",
-    "category": "equipment",
-    "type": "chest"
-  },
-  "1257": {
-    "name": "Rare Pants",
-    "rarity": "rare",
-    "img": "item_crafting_rare_pants",
-    "category": "equipment",
-    "type": "pants"
-  },
-  "1258": {
-    "name": "Rare Gloves",
-    "rarity": "rare",
-    "img": "item_crafting_rare_gloves",
-    "category": "equipment",
-    "type": "gloves"
-  },
-  "1259": {
-    "name": "Rare Boots",
-    "rarity": "rare",
-    "img": "item_crafting_rare_boots",
-    "category": "equipment",
-    "type": "boots"
-  },
-  "1260": {
-    "name": "Epic Weapon",
-    "rarity": "epic",
-    "img": "item_crafting_epic_weapon",
-    "category": "equipment",
-    "type": "weapon"
-  },
-  "1261": {
-    "name": "Epic Offhand",
-    "rarity": "epic",
-    "img": "item_crafting_epic_offhand",
-    "category": "equipment",
-    "type": "offhand"
-  },
-  "1262": {
-    "name": "Epic Helmet",
-    "rarity": "epic",
-    "img": "item_crafting_epic_helmet",
-    "category": "equipment",
-    "type": "helmet"
-  },
-  "1263": {
-    "name": "Epic Chest",
-    "rarity": "epic",
-    "img": "item_crafting_epic_chest",
-    "category": "equipment",
-    "type": "chest"
-  },
-  "1264": {
-    "name": "Epic Pants",
-    "rarity": "epic",
-    "img": "item_crafting_epic_pants",
-    "category": "equipment",
-    "type": "pants"
-  },
-  "1265": {
-    "name": "Epic Gloves",
-    "rarity": "epic",
-    "img": "item_crafting_epic_gloves",
-    "category": "equipment",
-    "type": "gloves"
-  },
-  "1266": {
-    "name": "Epic Boots",
-    "rarity": "epic",
-    "img": "item_crafting_epic_boots",
-    "category": "equipment",
-    "type": "boots"
-  }
+    "1300": {
+        "name": "Sigil Fragment",
+        "rarity": "quest",
+        "img": "item_quest_sigil_fragment",
+        "category": "quest",
+        "type": "item"
+    },
+    "1301": {
+        "name": "Windtorn Pelt",
+        "rarity": "quest",
+        "img": "item_quest_windtorn_pelt",
+        "category": "quest",
+        "type": "item"
+    },
+    "1302": {
+        "name": "Hollow Heartseed",
+        "rarity": "quest",
+        "img": "item_quest_hollow_heartseed",
+        "category": "quest",
+        "type": "item"
+    }
 }

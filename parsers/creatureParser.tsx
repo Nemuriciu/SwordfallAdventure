@@ -7,6 +7,7 @@ import {
     getChest,
     getCloth,
     getKey,
+    getQuestItem,
     getRandomEquip,
     rand,
 } from './itemParser.tsx';
@@ -17,20 +18,21 @@ export const CREATURE_COUNT_MIN = 5;
 export const CREATURE_COUNT_MAX = 7;
 
 export function getCreatureName(zoneId: number, id: string): string {
-    return creaturesJson[`zone_${zoneId}` as keyof typeof creaturesJson]?.[
-        id as keyof typeof creaturesJson.zone_0
-    ]?.name;
+    // @ts-ignore
+    return creaturesJson[`zone_${zoneId}`]?.[id]?.name;
 }
 export function getCreatureImg(zoneId: number, id: string): string {
-    const name =
-        creaturesJson[`zone_${zoneId}` as keyof typeof creaturesJson]?.[
-            id as keyof typeof creaturesJson.zone_0
-        ]?.name;
+    // @ts-ignore
+    const name = creaturesJson[`zone_${zoneId}`]?.[id]?.name;
     return `creature_icon_${name
         .toLowerCase()
         .trim()
         .replace(/[^a-z0-9\s]/g, '') // remove special characters
         .replace(/\s+/g, '_')}`;
+}
+export function getCreatureQuestItem(zoneId: number, id: string): string {
+    // @ts-ignore
+    return creaturesJson[`zone_${zoneId}`]?.[id]?.questItem;
 }
 
 export function getCreature(
@@ -146,7 +148,11 @@ export function getCreature(
     } as Creature;
 }
 
-export function getCombatRewards(rarity: string, level: number): Item[] {
+export function getCombatRewards(
+    rarity: string,
+    level: number,
+    questItemId: string | null,
+): Item[] {
     const rewards: Item[] = [];
     let r = Math.random();
     let equipDrop = false,
@@ -155,6 +161,7 @@ export function getCombatRewards(rarity: string, level: number): Item[] {
         clothDrop = false;
 
     let equipBase, keyBase, chestBase, clothBase;
+    let questBase = 0.65;
 
     switch (rarity) {
         case 'common':
@@ -254,7 +261,7 @@ export function getCombatRewards(rarity: string, level: number): Item[] {
             }
             break;
     }
-
+    /* Equipment Drop */
     let itemRarity = 'common';
     if (equipDrop) {
         let epicChance, rareChance, uncommonChance;
@@ -281,7 +288,7 @@ export function getCombatRewards(rarity: string, level: number): Item[] {
 
         rewards.push(getRandomEquip(itemRarity, level));
     }
-
+    /* Key Drop */
     itemRarity = 'common';
     if (keyDrop) {
         let epicChance, rareChance, uncommonChance;
@@ -308,7 +315,7 @@ export function getCombatRewards(rarity: string, level: number): Item[] {
 
         rewards.push(getKey(itemRarity, level, 1));
     }
-
+    /* Chest Drop */
     itemRarity = 'common';
     if (chestDrop) {
         let epicChance, rareChance, uncommonChance;
@@ -335,7 +342,7 @@ export function getCombatRewards(rarity: string, level: number): Item[] {
 
         rewards.push(getChest(itemRarity, level, 1));
     }
-
+    /* Cloth Drop */
     itemRarity = 'common';
     if (clothDrop) {
         let epicChance, rareChance, uncommonChance;
@@ -361,6 +368,13 @@ export function getCombatRewards(rarity: string, level: number): Item[] {
         }
 
         rewards.push(getCloth(itemRarity, level, getClothQuantity(rarity)));
+    }
+    /* Quest Drop */
+    if (questItemId !== null) {
+        r = Math.random();
+        if (r <= questBase) {
+            rewards.push(getQuestItem(questItemId, level));
+        }
     }
 
     return rewards;

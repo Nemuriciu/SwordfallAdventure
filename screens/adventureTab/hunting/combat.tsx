@@ -19,20 +19,24 @@ import {
     getCreature,
     getCreatureImg,
     getCreatureName,
+    getCreatureQuestItem,
 } from '../../../parsers/creatureParser.tsx';
 import {getResistancePercent} from '../../../parsers/attributeParser.tsx';
 import {colors} from '../../../utils/colors.ts';
 import ProgressBar from '../../../components/progressBar.tsx';
 import {strings} from '../../../utils/strings.ts';
 import {LogText} from './logText.tsx';
-import {rand} from '../../../parsers/itemParser.tsx';
+import {
+    getItemCategory,
+    getItemName,
+    rand,
+} from '../../../parsers/itemParser.tsx';
 import {Creature} from '../../../types/creature.ts';
 import cloneDeep from 'lodash.clonedeep';
 import {
     ButtonType,
     CustomButton,
 } from '../../../components/buttons/customButton.tsx';
-import {isQuestComplete, sortQuests} from '../../../parsers/questParser.tsx';
 import {
     getSkillCooldown,
     getSkillEffectTurns,
@@ -56,6 +60,11 @@ import {attributesStore} from '../../../store_zustand/attributesStore.tsx';
 import {skillsStore} from '../../../store_zustand/skillsStore.tsx';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {values} from '../../../utils/values.ts';
+import {
+    isQuestComplete,
+    isQuestCreature,
+    sortQuests,
+} from '../../../parsers/questParser.tsx';
 
 export function Combat() {
     const rewardsInit = rewardsStore(state => state.rewardsInit);
@@ -156,15 +165,19 @@ export function Combat() {
                         /* Show Victory Log */
                         combatSetLog(_combatLog);
                         /* Combat Complete & Display Rewards */
+                        const rewards = getCombatRewards(
+                            (creature as Creature).rarity,
+                            (creature as Creature).level,
+                            isQuestCreature(questsList, zoneId, creature.id)
+                                ? getCreatureQuestItem(zoneId, creature.id)
+                                : null,
+                        );
                         setTimeout(() => {
                             /* Combat Complete */
                             setCombatComplete(true);
                             /* Display Rewards */
                             rewardsInit(
-                                getCombatRewards(
-                                    (creature as Creature).rarity,
-                                    (creature as Creature).level,
-                                ),
+                                rewards,
                                 getCombatExperience(
                                     (creature as Creature).rarity,
                                     (creature as Creature).level,
@@ -176,37 +189,37 @@ export function Combat() {
                             );
                         }, 250);
 
-                        /* Update Quests */
-                        const _questsList = cloneDeep(questsList);
+                        const questItems = rewards.filter(
+                            item => getItemCategory(item.id) === 'quest',
+                        );
 
-                        for (let i = 0; i < _questsList.length; i++) {
-                            let quest = _questsList[i];
-                            if (
-                                quest.isActive &&
-                                !isQuestComplete(quest) &&
-                                quest.type === 'hunting'
-                            ) {
+                        /* Update Quests */
+                        if (questItems.length) {
+                            const questItem = questItems[0];
+                            const _questsList = cloneDeep(questsList);
+
+                            for (let i = 0; i < _questsList.length; i++) {
+                                let quest = _questsList[i];
                                 if (
-                                    quest.description.includes(
-                                        getCreatureName(
-                                            zoneId,
-                                            (creature as Creature).id,
-                                        ),
-                                    )
+                                    quest.isActive &&
+                                    !isQuestComplete(quest) &&
+                                    quest.type === 'hunting' &&
+                                    quest.questItem ===
+                                        getItemName(questItem.id)
                                 ) {
                                     quest.progress += 1;
                                 }
                             }
+                            sortQuests(_questsList);
+                            questsSetList(_questsList);
                         }
-                        sortQuests(_questsList);
-                        questsSetList(_questsList);
 
                         const _creatureList = cloneDeep(
                             zoneList[zoneId].creatureList,
                         );
                         /* Roll for chance to add new creature */
                         const r = Math.random();
-                        /* 10% chance to add 0 creatures (does not apply if list is empty) */
+                        /* 5% chance to add 0 creatures (does not apply if list is empty) */
                         if (r <= 0.2) {
                             /* 20% chance to add 2 creatures */
                             _creatureList.unshift(
@@ -222,10 +235,10 @@ export function Combat() {
                                 ),
                             );
                         } else if (
-                            (r > 0.2 && r <= 0.9) ||
+                            (r > 0.2 && r <= 0.95) ||
                             !_creatureList.length
                         ) {
-                            /* 70% chance to add 1 creature */
+                            /* 75% chance to add 1 creature */
                             _creatureList.unshift(
                                 getCreature(
                                     zoneId,
@@ -235,7 +248,6 @@ export function Combat() {
                             );
                         }
 
-                        huntingSetDepth(zoneId, zoneList[zoneId].depth);
                         huntingSetKillCount(
                             zoneId,
                             zoneList[zoneId].killCount + 1,
@@ -277,6 +289,8 @@ export function Combat() {
                             );
                         }
 
+                        huntingSetDepth(zoneId, 0);
+                        huntingSetKillCount(zoneId, 0);
                         huntingSetCreatureList(zoneId, _creatureList);
                     }
                 }
@@ -1094,757 +1108,801 @@ export function Combat() {
                 setDisabled(false);
                 setCombatComplete(false);
             }}>
-            <SafeAreaView style={styles.container}>
-                {/* Creature Info */}
-                {creature && (
-                    <View>
-                        <ImageBackground
-                            source={getImage('background_combat_info')}
-                            resizeMode={'stretch'}>
-                            <View style={styles.topContainer}>
-                                <View style={styles.avatarContainer}>
-                                    <Image
-                                        style={styles.avatar}
-                                        source={getImage(
-                                            getCreatureImg(zoneId, creature.id),
-                                        )}
-                                        resizeMode={'stretch'}
-                                    />
-                                    <Image
-                                        style={styles.avatarFrame}
-                                        source={getImage('avatar_frame_common')}
-                                    />
-                                </View>
-                                <View style={styles.attributesContainer}>
-                                    <View style={styles.attributesRow_1}>
+            {zoneId !== -1 && (
+                <SafeAreaView style={styles.container}>
+                    {/* Creature Info */}
+                    {creature && (
+                        <View>
+                            <ImageBackground
+                                source={getImage('background_combat_info')}
+                                resizeMode={'stretch'}>
+                                <View style={styles.topContainer}>
+                                    <View style={styles.avatarContainer}>
                                         <Image
-                                            style={styles.statsIcon}
+                                            style={styles.avatar}
                                             source={getImage(
-                                                'icon_physical_attack',
+                                                getCreatureImg(
+                                                    zoneId,
+                                                    creature.id,
+                                                ),
+                                            )}
+                                            resizeMode={'stretch'}
+                                        />
+                                        <Image
+                                            style={styles.avatarFrame}
+                                            source={getImage(
+                                                'avatar_frame_common',
                                             )}
                                         />
-                                        <Text
-                                            style={styles.phyAtkValue}
-                                            numberOfLines={1}>
-                                            {statsEnemy.physicalAtk +
-                                                statsEnemy.bonusPhysicalAtk}
-                                        </Text>
-                                        <Image
-                                            style={styles.statsIcon}
-                                            source={getImage(
-                                                'icon_physical_resist',
-                                            )}
-                                        />
-                                        <Text
-                                            style={styles.phyResValue}
-                                            numberOfLines={1}>
-                                            {getResistancePercent(
-                                                statsEnemy.physicalRes +
-                                                    statsEnemy.bonusPhysicalRes,
-                                                creature.level,
-                                            ).toFixed(1) + '%'}
-                                        </Text>
-                                        <Image
-                                            style={styles.statsIcon}
-                                            source={getImage('icon_critical')}
-                                        />
-                                        <Text
-                                            style={styles.criticalValue}
-                                            numberOfLines={1}>
-                                            {(
-                                                (statsEnemy.critical +
-                                                    statsEnemy.bonusCritical) *
-                                                100
-                                            ).toFixed(1) + '%'}
-                                        </Text>
                                     </View>
-                                    <View style={styles.attributesRow_2}>
-                                        <Image
-                                            style={styles.statsIcon}
-                                            source={getImage(
-                                                'icon_magical_attack',
-                                            )}
-                                        />
-                                        <Text
-                                            style={styles.magAtkValue}
-                                            numberOfLines={1}>
-                                            {statsEnemy.magicalAtk +
-                                                statsEnemy.bonusMagicalAtk}
-                                        </Text>
-                                        <Image
-                                            style={styles.statsIcon}
-                                            source={getImage(
-                                                'icon_magical_resist',
-                                            )}
-                                        />
-                                        <Text
-                                            style={styles.magResValue}
-                                            numberOfLines={1}>
-                                            {getResistancePercent(
-                                                statsEnemy.magicalRes +
-                                                    statsEnemy.bonusMagicalRes,
-                                                creature.level,
-                                            ).toFixed(1) + '%'}
-                                        </Text>
-                                        <Image
-                                            style={styles.statsIcon}
-                                            source={getImage('icon_dodge')}
-                                        />
-                                        <Text
-                                            style={styles.dodgeValue}
-                                            numberOfLines={1}>
-                                            {(
-                                                (statsEnemy.dodge +
-                                                    statsEnemy.bonusDodge) *
-                                                100
-                                            ).toFixed(1) + '%'}
-                                        </Text>
-                                    </View>
-                                    <View style={styles.healthContainer}>
-                                        <Image
-                                            style={styles.healthIcon}
-                                            source={getImage('icon_health')}
-                                        />
-                                        <View
-                                            style={
-                                                styles.healthProgressContainer
-                                            }>
-                                            <ProgressBar
-                                                progress={
-                                                    statsEnemy.health /
-                                                    (creature.stats.health +
-                                                        creature.stats
-                                                            .bonusHealth)
-                                                }
-                                                image={'progress_bar_health'}
+                                    <View style={styles.attributesContainer}>
+                                        <View style={styles.attributesRow_1}>
+                                            <Image
+                                                style={styles.statsIcon}
+                                                source={getImage(
+                                                    'icon_physical_attack',
+                                                )}
                                             />
-                                            <Text style={styles.healthText}>
-                                                {statsEnemy.health +
-                                                    ' / ' +
-                                                    (creature.stats.health +
-                                                        creature.stats
-                                                            .bonusHealth)}
+                                            <Text
+                                                style={styles.phyAtkValue}
+                                                numberOfLines={1}>
+                                                {statsEnemy.physicalAtk +
+                                                    statsEnemy.bonusPhysicalAtk}
+                                            </Text>
+                                            <Image
+                                                style={styles.statsIcon}
+                                                source={getImage(
+                                                    'icon_physical_resist',
+                                                )}
+                                            />
+                                            <Text
+                                                style={styles.phyResValue}
+                                                numberOfLines={1}>
+                                                {getResistancePercent(
+                                                    statsEnemy.physicalRes +
+                                                        statsEnemy.bonusPhysicalRes,
+                                                    creature.level,
+                                                ).toFixed(1) + '%'}
+                                            </Text>
+                                            <Image
+                                                style={styles.statsIcon}
+                                                source={getImage(
+                                                    'icon_critical',
+                                                )}
+                                            />
+                                            <Text
+                                                style={styles.criticalValue}
+                                                numberOfLines={1}>
+                                                {(
+                                                    (statsEnemy.critical +
+                                                        statsEnemy.bonusCritical) *
+                                                    100
+                                                ).toFixed(1) + '%'}
                                             </Text>
                                         </View>
-                                    </View>
-                                    <View style={styles.effectsContainer}>
-                                        {/* eslint-disable-next-line react-native/no-inline-styles */}
-                                        <View style={{width: '10%'}} />
-                                        <FlatList
-                                            horizontal
-                                            scrollEnabled={false}
-                                            data={effectsEnemy}
-                                            keyExtractor={(_item, _index) =>
-                                                _index.toString()
-                                            }
-                                            renderItem={({item}) => (
-                                                <Tooltip
-                                                    isVisible={
-                                                        showTooltip === item.id
+                                        <View style={styles.attributesRow_2}>
+                                            <Image
+                                                style={styles.statsIcon}
+                                                source={getImage(
+                                                    'icon_magical_attack',
+                                                )}
+                                            />
+                                            <Text
+                                                style={styles.magAtkValue}
+                                                numberOfLines={1}>
+                                                {statsEnemy.magicalAtk +
+                                                    statsEnemy.bonusMagicalAtk}
+                                            </Text>
+                                            <Image
+                                                style={styles.statsIcon}
+                                                source={getImage(
+                                                    'icon_magical_resist',
+                                                )}
+                                            />
+                                            <Text
+                                                style={styles.magResValue}
+                                                numberOfLines={1}>
+                                                {getResistancePercent(
+                                                    statsEnemy.magicalRes +
+                                                        statsEnemy.bonusMagicalRes,
+                                                    creature.level,
+                                                ).toFixed(1) + '%'}
+                                            </Text>
+                                            <Image
+                                                style={styles.statsIcon}
+                                                source={getImage('icon_dodge')}
+                                            />
+                                            <Text
+                                                style={styles.dodgeValue}
+                                                numberOfLines={1}>
+                                                {(
+                                                    (statsEnemy.dodge +
+                                                        statsEnemy.bonusDodge) *
+                                                    100
+                                                ).toFixed(1) + '%'}
+                                            </Text>
+                                        </View>
+                                        <View style={styles.healthContainer}>
+                                            <Image
+                                                style={styles.healthIcon}
+                                                source={getImage('icon_health')}
+                                            />
+                                            <View
+                                                style={
+                                                    styles.healthProgressContainer
+                                                }>
+                                                <ProgressBar
+                                                    progress={
+                                                        statsEnemy.health /
+                                                        (creature.stats.health +
+                                                            creature.stats
+                                                                .bonusHealth)
                                                     }
-                                                    contentStyle={
-                                                        styles.tooltipContainer
+                                                    image={
+                                                        'progress_bar_health'
                                                     }
-                                                    childContentSpacing={1}
-                                                    content={
-                                                        //@ts-ignore
-                                                        <EffectTooltip
-                                                            type={item.type}
-                                                            percent={
-                                                                item.percent
-                                                            }
-                                                        />
-                                                    }
-                                                    onClose={() =>
-                                                        setShowTooltip('')
-                                                    }
-                                                    backgroundColor={
-                                                        'rgba(0,0,0,0)'
-                                                    }>
-                                                    <TouchableOpacity
-                                                        onPress={() =>
-                                                            setShowTooltip(
-                                                                item.id,
-                                                            )
+                                                />
+                                                <Text style={styles.healthText}>
+                                                    {statsEnemy.health +
+                                                        ' / ' +
+                                                        (creature.stats.health +
+                                                            creature.stats
+                                                                .bonusHealth)}
+                                                </Text>
+                                            </View>
+                                        </View>
+                                        <View style={styles.effectsContainer}>
+                                            {/* eslint-disable-next-line react-native/no-inline-styles */}
+                                            <View style={{width: '10%'}} />
+                                            <FlatList
+                                                horizontal
+                                                scrollEnabled={false}
+                                                data={effectsEnemy}
+                                                keyExtractor={(_item, _index) =>
+                                                    _index.toString()
+                                                }
+                                                renderItem={({item}) => (
+                                                    <Tooltip
+                                                        isVisible={
+                                                            showTooltip ===
+                                                            item.id
                                                         }
-                                                        activeOpacity={1}>
-                                                        <ImageBackground
-                                                            style={
-                                                                styles.effectIcon
+                                                        contentStyle={
+                                                            styles.tooltipContainer
+                                                        }
+                                                        childContentSpacing={1}
+                                                        content={
+                                                            //@ts-ignore
+                                                            <EffectTooltip
+                                                                type={item.type}
+                                                                percent={
+                                                                    item.percent
+                                                                }
+                                                            />
+                                                        }
+                                                        onClose={() =>
+                                                            setShowTooltip('')
+                                                        }
+                                                        backgroundColor={
+                                                            'rgba(0,0,0,0)'
+                                                        }>
+                                                        <TouchableOpacity
+                                                            onPress={() =>
+                                                                setShowTooltip(
+                                                                    item.id,
+                                                                )
                                                             }
-                                                            source={getImage(
-                                                                'effect_icon_' +
-                                                                    item.type.toLowerCase(),
-                                                            )}
-                                                            resizeMode={
-                                                                'stretch'
-                                                            }
-                                                            fadeDuration={0}>
-                                                            <Text
+                                                            activeOpacity={1}>
+                                                            <ImageBackground
                                                                 style={
-                                                                    styles.effectTurns
+                                                                    styles.effectIcon
+                                                                }
+                                                                source={getImage(
+                                                                    'effect_icon_' +
+                                                                        item.type.toLowerCase(),
+                                                                )}
+                                                                resizeMode={
+                                                                    'stretch'
+                                                                }
+                                                                fadeDuration={
+                                                                    0
                                                                 }>
-                                                                {item.turns}
-                                                            </Text>
-                                                        </ImageBackground>
-                                                    </TouchableOpacity>
-                                                </Tooltip>
-                                            )}
-                                            overScrollMode={'never'}
-                                        />
+                                                                <Text
+                                                                    style={
+                                                                        styles.effectTurns
+                                                                    }>
+                                                                    {item.turns}
+                                                                </Text>
+                                                            </ImageBackground>
+                                                        </TouchableOpacity>
+                                                    </Tooltip>
+                                                )}
+                                                overScrollMode={'never'}
+                                            />
+                                        </View>
                                     </View>
                                 </View>
-                            </View>
-                        </ImageBackground>
-                    </View>
-                )}
-                {/* Combat Log */}
-                {creature && (
-                    <ImageBackground
-                        style={styles.logBackground}
-                        source={getImage('background_log')}
-                        resizeMode={'stretch'}>
-                        <View style={styles.logContainer}>
-                            <FlatList
-                                style={styles.logList}
-                                data={combatLog}
-                                keyExtractor={(_item, _index) =>
-                                    _index.toString()
-                                }
-                                renderItem={({item}) => (
-                                    //@ts-ignore
-                                    <LogText log={item} />
-                                )}
-                                overScrollMode={'never'}
-                                inverted={true}
-                                /* eslint-disable-next-line react-native/no-inline-styles */
-                                contentContainerStyle={{
-                                    flexDirection: 'column-reverse',
-                                }}
-                            />
+                            </ImageBackground>
                         </View>
-                    </ImageBackground>
-                )}
-                {/* Actionbar */}
-                {creature && (
-                    <View>
+                    )}
+                    {/* Combat Log */}
+                    {creature && (
                         <ImageBackground
-                            style={styles.actionbarBackground}
-                            source={getImage('background_actionbar')}
+                            style={styles.logBackground}
+                            source={getImage('background_log')}
                             resizeMode={'stretch'}>
-                            <View style={styles.actionbarContainer}>
-                                {/* Leave Combat */}
-                                {combatComplete && (
-                                    <CustomButton
-                                        type={ButtonType.Red}
-                                        style={styles.leaveButton}
-                                        title={'Leave Combat'}
-                                        onPress={() => leaveCombat()}
-                                    />
-                                )}
-                                {/* Basic Attack */}
-                                {!combatComplete && (
-                                    <View style={styles.actionContainer}>
-                                        <Text style={styles.labelText}>
-                                            {strings.basic_attack}
-                                        </Text>
-                                        <View
-                                            style={styles.actionIconContainer}>
-                                            <TouchableOpacity
-                                                style={styles.actionButton}
-                                                disabled={disabled}
-                                                activeOpacity={1}
-                                                onPress={() =>
-                                                    simulateAttack(
-                                                        true,
-                                                        null,
-                                                        'Physical',
-                                                    )
-                                                }>
-                                                <ImageBackground
-                                                    style={
-                                                        styles.actionIconFrame
-                                                    }
-                                                    source={getImage(
-                                                        'skills_frame_background',
-                                                    )}
-                                                    resizeMode={'stretch'}>
-                                                    <ImageBackground
-                                                        style={
-                                                            styles.actionIcon
-                                                        }
-                                                        source={getImage(
-                                                            'skills_icon_basic_physical',
-                                                        )}
-                                                        resizeMode={'stretch'}
-                                                        fadeDuration={0}>
-                                                        {disabled ? (
-                                                            <View
-                                                                style={
-                                                                    styles.actionIconDisabled
-                                                                }
-                                                            />
-                                                        ) : null}
-                                                    </ImageBackground>
-                                                </ImageBackground>
-                                            </TouchableOpacity>
-                                            <TouchableOpacity
-                                                style={styles.actionButton}
-                                                disabled={disabled}
-                                                activeOpacity={1}
-                                                onPress={() =>
-                                                    simulateAttack(
-                                                        true,
-                                                        null,
-                                                        'Magical',
-                                                    )
-                                                }>
-                                                <ImageBackground
-                                                    style={
-                                                        styles.actionIconFrame
-                                                    }
-                                                    source={getImage(
-                                                        'skills_frame_background',
-                                                    )}
-                                                    resizeMode={'stretch'}>
-                                                    <ImageBackground
-                                                        style={
-                                                            styles.actionIcon
-                                                        }
-                                                        source={getImage(
-                                                            'skills_icon_basic_magical',
-                                                        )}
-                                                        resizeMode={'stretch'}
-                                                        fadeDuration={0}>
-                                                        {disabled ? (
-                                                            <View
-                                                                style={
-                                                                    styles.actionIconDisabled
-                                                                }
-                                                            />
-                                                        ) : null}
-                                                    </ImageBackground>
-                                                </ImageBackground>
-                                            </TouchableOpacity>
-                                        </View>
-                                    </View>
-                                )}
-                                {/* Spells */}
-                                {!combatComplete && (
-                                    <View style={styles.actionContainer}>
-                                        <Text style={styles.labelText}>
-                                            {strings.spells}
-                                        </Text>
-                                        <View
-                                            style={styles.actionIconContainer}>
-                                            {/* Spell Button 1 */}
-                                            <TouchableOpacity
-                                                style={styles.actionButton}
-                                                activeOpacity={1}
-                                                disabled={
-                                                    disabled ||
-                                                    spell_1 === null ||
-                                                    cooldown_1 > 0
-                                                }
-                                                onPress={() => {
-                                                    setCooldown_1(
-                                                        getSkillCooldown(
-                                                            (spell_1 as Skill)
-                                                                .id,
-                                                        ) as number,
-                                                    );
-                                                    simulateAttack(
-                                                        true,
-                                                        spell_1,
-                                                        getSkillElement(
-                                                            (spell_1 as Skill)
-                                                                .id,
-                                                        ),
-                                                    );
-                                                }}>
-                                                <ImageBackground
-                                                    style={
-                                                        styles.actionIconFrame
-                                                    }
-                                                    source={getImage(
-                                                        'skills_frame_background',
-                                                    )}
-                                                    resizeMode={'stretch'}
-                                                    fadeDuration={0}>
-                                                    <ImageBackground
-                                                        style={
-                                                            styles.actionIcon
-                                                        }
-                                                        source={
-                                                            spell_1
-                                                                ? getImage(
-                                                                      getSkillImg(
-                                                                          spell_1.id,
-                                                                      ),
-                                                                  )
-                                                                : getImage(
-                                                                      'skills_frame_background',
-                                                                  )
-                                                        }
-                                                        resizeMode={'stretch'}
-                                                        fadeDuration={0}>
-                                                        {cooldown_1 ? (
-                                                            <Text
-                                                                style={
-                                                                    styles.cooldownText
-                                                                }>
-                                                                {cooldown_1}
-                                                            </Text>
-                                                        ) : disabled ? (
-                                                            <View
-                                                                style={
-                                                                    styles.actionIconDisabled
-                                                                }
-                                                            />
-                                                        ) : null}
-                                                    </ImageBackground>
-                                                </ImageBackground>
-                                            </TouchableOpacity>
-                                            {/* Spell Button 2 */}
-                                            <TouchableOpacity
-                                                style={styles.actionButton}
-                                                activeOpacity={1}
-                                                disabled={
-                                                    disabled ||
-                                                    spell_2 === null ||
-                                                    cooldown_2 > 0
-                                                }
-                                                onPress={() => {
-                                                    setCooldown_2(
-                                                        getSkillCooldown(
-                                                            (spell_2 as Skill)
-                                                                .id,
-                                                        ) as number,
-                                                    );
-                                                    simulateAttack(
-                                                        true,
-                                                        spell_2,
-                                                        getSkillElement(
-                                                            (spell_2 as Skill)
-                                                                .id,
-                                                        ),
-                                                    );
-                                                }}>
-                                                <ImageBackground
-                                                    style={
-                                                        styles.actionIconFrame
-                                                    }
-                                                    source={getImage(
-                                                        'skills_frame_background',
-                                                    )}
-                                                    resizeMode={'stretch'}
-                                                    fadeDuration={0}>
-                                                    <ImageBackground
-                                                        style={
-                                                            styles.actionIcon
-                                                        }
-                                                        source={
-                                                            spell_2
-                                                                ? getImage(
-                                                                      getSkillImg(
-                                                                          spell_2.id,
-                                                                      ),
-                                                                  )
-                                                                : getImage(
-                                                                      'skills_frame_background',
-                                                                  )
-                                                        }
-                                                        resizeMode={'stretch'}
-                                                        fadeDuration={0}>
-                                                        {cooldown_2 ? (
-                                                            <Text
-                                                                style={
-                                                                    styles.cooldownText
-                                                                }>
-                                                                {cooldown_2}
-                                                            </Text>
-                                                        ) : disabled ? (
-                                                            <View
-                                                                style={
-                                                                    styles.actionIconDisabled
-                                                                }
-                                                            />
-                                                        ) : null}
-                                                    </ImageBackground>
-                                                </ImageBackground>
-                                            </TouchableOpacity>
-                                            {/* Spell Button 3 */}
-                                            <TouchableOpacity
-                                                style={styles.actionButton}
-                                                activeOpacity={1}
-                                                disabled={
-                                                    disabled ||
-                                                    spell_3 === null ||
-                                                    cooldown_3 > 0
-                                                }
-                                                onPress={() => {
-                                                    setCooldown_3(
-                                                        getSkillCooldown(
-                                                            (spell_3 as Skill)
-                                                                .id,
-                                                        ) as number,
-                                                    );
-                                                    simulateAttack(
-                                                        true,
-                                                        spell_3,
-                                                        getSkillElement(
-                                                            (spell_3 as Skill)
-                                                                .id,
-                                                        ),
-                                                    );
-                                                }}>
-                                                <ImageBackground
-                                                    style={
-                                                        styles.actionIconFrame
-                                                    }
-                                                    source={getImage(
-                                                        'skills_frame_background',
-                                                    )}
-                                                    resizeMode={'stretch'}
-                                                    fadeDuration={0}>
-                                                    <ImageBackground
-                                                        style={
-                                                            styles.actionIcon
-                                                        }
-                                                        source={
-                                                            spell_3
-                                                                ? getImage(
-                                                                      getSkillImg(
-                                                                          spell_3.id,
-                                                                      ),
-                                                                  )
-                                                                : getImage(
-                                                                      'skills_frame_background',
-                                                                  )
-                                                        }
-                                                        resizeMode={'stretch'}
-                                                        fadeDuration={0}>
-                                                        {cooldown_3 ? (
-                                                            <Text
-                                                                style={
-                                                                    styles.cooldownText
-                                                                }>
-                                                                {cooldown_3}
-                                                            </Text>
-                                                        ) : disabled ? (
-                                                            <View
-                                                                style={
-                                                                    styles.actionIconDisabled
-                                                                }
-                                                            />
-                                                        ) : null}
-                                                    </ImageBackground>
-                                                </ImageBackground>
-                                            </TouchableOpacity>
-                                        </View>
-                                    </View>
-                                )}
+                            <View style={styles.logContainer}>
+                                <FlatList
+                                    style={styles.logList}
+                                    data={combatLog}
+                                    keyExtractor={(_item, _index) =>
+                                        _index.toString()
+                                    }
+                                    renderItem={({item}) => (
+                                        //@ts-ignore
+                                        <LogText log={item} />
+                                    )}
+                                    overScrollMode={'never'}
+                                    inverted={true}
+                                    /* eslint-disable-next-line react-native/no-inline-styles */
+                                    contentContainerStyle={{
+                                        flexDirection: 'column-reverse',
+                                    }}
+                                />
                             </View>
                         </ImageBackground>
-                    </View>
-                )}
-                {/* Player Info */}
-                {creature && (
-                    <View>
-                        <ImageBackground
-                            source={getImage('background_combat_info')}
-                            resizeMode={'stretch'}>
-                            <View style={styles.bottomContainer}>
-                                <View style={styles.avatarContainer}>
-                                    <Image
-                                        style={styles.avatar}
-                                        source={getImage('user_avatar')}
-                                        resizeMode={'stretch'}
-                                    />
-                                    <Image
-                                        style={styles.avatarFrame}
-                                        source={getImage('avatar_frame_common')}
-                                    />
-                                </View>
-                                <View style={styles.attributesContainer}>
-                                    <View style={styles.attributesRow_1}>
-                                        <Image
-                                            style={styles.statsIcon}
-                                            source={getImage(
-                                                'icon_physical_attack',
-                                            )}
+                    )}
+                    {/* Actionbar */}
+                    {creature && (
+                        <View>
+                            <ImageBackground
+                                style={styles.actionbarBackground}
+                                source={getImage('background_actionbar')}
+                                resizeMode={'stretch'}>
+                                <View style={styles.actionbarContainer}>
+                                    {/* Leave Combat */}
+                                    {combatComplete && (
+                                        <CustomButton
+                                            type={ButtonType.Red}
+                                            style={styles.leaveButton}
+                                            title={'Leave Combat'}
+                                            onPress={() => leaveCombat()}
                                         />
-                                        <Text
-                                            style={styles.phyAtkValue}
-                                            numberOfLines={1}>
-                                            {statsPlayer.physicalAtk +
-                                                statsPlayer.bonusPhysicalAtk}
-                                        </Text>
-                                        <Image
-                                            style={styles.statsIcon}
-                                            source={getImage(
-                                                'icon_physical_resist',
-                                            )}
-                                        />
-                                        <Text
-                                            style={styles.phyResValue}
-                                            numberOfLines={1}>
-                                            {getResistancePercent(
-                                                statsPlayer.physicalRes +
-                                                    statsPlayer.bonusPhysicalRes,
-                                                level,
-                                            ).toFixed(1) + '%'}
-                                        </Text>
-                                        <Image
-                                            style={styles.statsIcon}
-                                            source={getImage('icon_critical')}
-                                        />
-                                        <Text
-                                            style={styles.criticalValue}
-                                            numberOfLines={1}>
-                                            {(
-                                                (statsPlayer.critical +
-                                                    statsPlayer.bonusCritical) *
-                                                100
-                                            ).toFixed(1) + '%'}
-                                        </Text>
-                                    </View>
-                                    <View style={styles.attributesRow_2}>
-                                        <Image
-                                            style={styles.statsIcon}
-                                            source={getImage(
-                                                'icon_magical_attack',
-                                            )}
-                                        />
-                                        <Text
-                                            style={styles.magAtkValue}
-                                            numberOfLines={1}>
-                                            {statsPlayer.magicalAtk +
-                                                statsPlayer.bonusMagicalAtk}
-                                        </Text>
-                                        <Image
-                                            style={styles.statsIcon}
-                                            source={getImage(
-                                                'icon_magical_resist',
-                                            )}
-                                        />
-                                        <Text
-                                            style={styles.magResValue}
-                                            numberOfLines={1}>
-                                            {getResistancePercent(
-                                                statsPlayer.magicalRes +
-                                                    statsPlayer.bonusMagicalRes,
-                                                level,
-                                            ).toFixed(1) + '%'}
-                                        </Text>
-                                        <Image
-                                            style={styles.statsIcon}
-                                            source={getImage('icon_dodge')}
-                                        />
-                                        <Text
-                                            style={styles.dodgeValue}
-                                            numberOfLines={1}>
-                                            {(
-                                                (statsPlayer.dodge +
-                                                    statsPlayer.bonusDodge) *
-                                                100
-                                            ).toFixed(1) + '%'}
-                                        </Text>
-                                    </View>
-                                    <View style={styles.healthContainer}>
-                                        <Image
-                                            style={styles.healthIcon}
-                                            source={getImage('icon_health')}
-                                        />
-                                        <View
-                                            style={
-                                                styles.healthProgressContainer
-                                            }>
-                                            <ProgressBar
-                                                progress={
-                                                    statsPlayer.health / health
-                                                }
-                                                image={'progress_bar_health'}
-                                            />
-                                            <Text style={styles.healthText}>
-                                                {statsPlayer.health +
-                                                    ' / ' +
-                                                    health}
+                                    )}
+                                    {/* Basic Attack */}
+                                    {!combatComplete && (
+                                        <View style={styles.actionContainer}>
+                                            <Text style={styles.labelText}>
+                                                {strings.basic_attack}
                                             </Text>
-                                        </View>
-                                    </View>
-                                    <View style={styles.effectsContainer}>
-                                        {/* eslint-disable-next-line react-native/no-inline-styles */}
-                                        <View style={{width: '10%'}} />
-                                        <FlatList
-                                            horizontal
-                                            scrollEnabled={false}
-                                            data={effectsPlayer}
-                                            keyExtractor={(_item, _index) =>
-                                                _index.toString()
-                                            }
-                                            renderItem={({item}) => (
-                                                <Tooltip
-                                                    isVisible={
-                                                        showTooltip === item.id
-                                                    }
-                                                    contentStyle={
-                                                        styles.tooltipContainer
-                                                    }
-                                                    childContentSpacing={1}
-                                                    content={
-                                                        //@ts-ignore
-                                                        <EffectTooltip
-                                                            type={item.type}
-                                                            percent={
-                                                                item.percent
-                                                            }
-                                                        />
-                                                    }
-                                                    onClose={() =>
-                                                        setShowTooltip('')
-                                                    }
-                                                    backgroundColor={
-                                                        'rgba(0,0,0,0)'
+                                            <View
+                                                style={
+                                                    styles.actionIconContainer
+                                                }>
+                                                <TouchableOpacity
+                                                    style={styles.actionButton}
+                                                    disabled={disabled}
+                                                    activeOpacity={1}
+                                                    onPress={() =>
+                                                        simulateAttack(
+                                                            true,
+                                                            null,
+                                                            'Physical',
+                                                        )
                                                     }>
-                                                    <TouchableOpacity
-                                                        onPress={() =>
-                                                            setShowTooltip(
-                                                                item.id,
-                                                            )
+                                                    <ImageBackground
+                                                        style={
+                                                            styles.actionIconFrame
                                                         }
-                                                        activeOpacity={1}>
+                                                        source={getImage(
+                                                            'skills_frame_background',
+                                                        )}
+                                                        resizeMode={'stretch'}>
                                                         <ImageBackground
                                                             style={
-                                                                styles.effectIcon
+                                                                styles.actionIcon
                                                             }
                                                             source={getImage(
-                                                                'effect_icon_' +
-                                                                    item.type.toLowerCase(),
+                                                                'skills_icon_basic_physical',
                                                             )}
                                                             resizeMode={
                                                                 'stretch'
                                                             }
                                                             fadeDuration={0}>
-                                                            <Text
-                                                                style={
-                                                                    styles.effectTurns
-                                                                }>
-                                                                {item.turns}
-                                                            </Text>
+                                                            {disabled ? (
+                                                                <View
+                                                                    style={
+                                                                        styles.actionIconDisabled
+                                                                    }
+                                                                />
+                                                            ) : null}
                                                         </ImageBackground>
-                                                    </TouchableOpacity>
-                                                </Tooltip>
+                                                    </ImageBackground>
+                                                </TouchableOpacity>
+                                                <TouchableOpacity
+                                                    style={styles.actionButton}
+                                                    disabled={disabled}
+                                                    activeOpacity={1}
+                                                    onPress={() =>
+                                                        simulateAttack(
+                                                            true,
+                                                            null,
+                                                            'Magical',
+                                                        )
+                                                    }>
+                                                    <ImageBackground
+                                                        style={
+                                                            styles.actionIconFrame
+                                                        }
+                                                        source={getImage(
+                                                            'skills_frame_background',
+                                                        )}
+                                                        resizeMode={'stretch'}>
+                                                        <ImageBackground
+                                                            style={
+                                                                styles.actionIcon
+                                                            }
+                                                            source={getImage(
+                                                                'skills_icon_basic_magical',
+                                                            )}
+                                                            resizeMode={
+                                                                'stretch'
+                                                            }
+                                                            fadeDuration={0}>
+                                                            {disabled ? (
+                                                                <View
+                                                                    style={
+                                                                        styles.actionIconDisabled
+                                                                    }
+                                                                />
+                                                            ) : null}
+                                                        </ImageBackground>
+                                                    </ImageBackground>
+                                                </TouchableOpacity>
+                                            </View>
+                                        </View>
+                                    )}
+                                    {/* Spells */}
+                                    {!combatComplete && (
+                                        <View style={styles.actionContainer}>
+                                            <Text style={styles.labelText}>
+                                                {strings.spells}
+                                            </Text>
+                                            <View
+                                                style={
+                                                    styles.actionIconContainer
+                                                }>
+                                                {/* Spell Button 1 */}
+                                                <TouchableOpacity
+                                                    style={styles.actionButton}
+                                                    activeOpacity={1}
+                                                    disabled={
+                                                        disabled ||
+                                                        spell_1 === null ||
+                                                        cooldown_1 > 0
+                                                    }
+                                                    onPress={() => {
+                                                        setCooldown_1(
+                                                            getSkillCooldown(
+                                                                (
+                                                                    spell_1 as Skill
+                                                                ).id,
+                                                            ) as number,
+                                                        );
+                                                        simulateAttack(
+                                                            true,
+                                                            spell_1,
+                                                            getSkillElement(
+                                                                (
+                                                                    spell_1 as Skill
+                                                                ).id,
+                                                            ),
+                                                        );
+                                                    }}>
+                                                    <ImageBackground
+                                                        style={
+                                                            styles.actionIconFrame
+                                                        }
+                                                        source={getImage(
+                                                            'skills_frame_background',
+                                                        )}
+                                                        resizeMode={'stretch'}
+                                                        fadeDuration={0}>
+                                                        <ImageBackground
+                                                            style={
+                                                                styles.actionIcon
+                                                            }
+                                                            source={
+                                                                spell_1
+                                                                    ? getImage(
+                                                                          getSkillImg(
+                                                                              spell_1.id,
+                                                                          ),
+                                                                      )
+                                                                    : getImage(
+                                                                          'skills_frame_background',
+                                                                      )
+                                                            }
+                                                            resizeMode={
+                                                                'stretch'
+                                                            }
+                                                            fadeDuration={0}>
+                                                            {cooldown_1 ? (
+                                                                <Text
+                                                                    style={
+                                                                        styles.cooldownText
+                                                                    }>
+                                                                    {cooldown_1}
+                                                                </Text>
+                                                            ) : disabled ? (
+                                                                <View
+                                                                    style={
+                                                                        styles.actionIconDisabled
+                                                                    }
+                                                                />
+                                                            ) : null}
+                                                        </ImageBackground>
+                                                    </ImageBackground>
+                                                </TouchableOpacity>
+                                                {/* Spell Button 2 */}
+                                                <TouchableOpacity
+                                                    style={styles.actionButton}
+                                                    activeOpacity={1}
+                                                    disabled={
+                                                        disabled ||
+                                                        spell_2 === null ||
+                                                        cooldown_2 > 0
+                                                    }
+                                                    onPress={() => {
+                                                        setCooldown_2(
+                                                            getSkillCooldown(
+                                                                (
+                                                                    spell_2 as Skill
+                                                                ).id,
+                                                            ) as number,
+                                                        );
+                                                        simulateAttack(
+                                                            true,
+                                                            spell_2,
+                                                            getSkillElement(
+                                                                (
+                                                                    spell_2 as Skill
+                                                                ).id,
+                                                            ),
+                                                        );
+                                                    }}>
+                                                    <ImageBackground
+                                                        style={
+                                                            styles.actionIconFrame
+                                                        }
+                                                        source={getImage(
+                                                            'skills_frame_background',
+                                                        )}
+                                                        resizeMode={'stretch'}
+                                                        fadeDuration={0}>
+                                                        <ImageBackground
+                                                            style={
+                                                                styles.actionIcon
+                                                            }
+                                                            source={
+                                                                spell_2
+                                                                    ? getImage(
+                                                                          getSkillImg(
+                                                                              spell_2.id,
+                                                                          ),
+                                                                      )
+                                                                    : getImage(
+                                                                          'skills_frame_background',
+                                                                      )
+                                                            }
+                                                            resizeMode={
+                                                                'stretch'
+                                                            }
+                                                            fadeDuration={0}>
+                                                            {cooldown_2 ? (
+                                                                <Text
+                                                                    style={
+                                                                        styles.cooldownText
+                                                                    }>
+                                                                    {cooldown_2}
+                                                                </Text>
+                                                            ) : disabled ? (
+                                                                <View
+                                                                    style={
+                                                                        styles.actionIconDisabled
+                                                                    }
+                                                                />
+                                                            ) : null}
+                                                        </ImageBackground>
+                                                    </ImageBackground>
+                                                </TouchableOpacity>
+                                                {/* Spell Button 3 */}
+                                                <TouchableOpacity
+                                                    style={styles.actionButton}
+                                                    activeOpacity={1}
+                                                    disabled={
+                                                        disabled ||
+                                                        spell_3 === null ||
+                                                        cooldown_3 > 0
+                                                    }
+                                                    onPress={() => {
+                                                        setCooldown_3(
+                                                            getSkillCooldown(
+                                                                (
+                                                                    spell_3 as Skill
+                                                                ).id,
+                                                            ) as number,
+                                                        );
+                                                        simulateAttack(
+                                                            true,
+                                                            spell_3,
+                                                            getSkillElement(
+                                                                (
+                                                                    spell_3 as Skill
+                                                                ).id,
+                                                            ),
+                                                        );
+                                                    }}>
+                                                    <ImageBackground
+                                                        style={
+                                                            styles.actionIconFrame
+                                                        }
+                                                        source={getImage(
+                                                            'skills_frame_background',
+                                                        )}
+                                                        resizeMode={'stretch'}
+                                                        fadeDuration={0}>
+                                                        <ImageBackground
+                                                            style={
+                                                                styles.actionIcon
+                                                            }
+                                                            source={
+                                                                spell_3
+                                                                    ? getImage(
+                                                                          getSkillImg(
+                                                                              spell_3.id,
+                                                                          ),
+                                                                      )
+                                                                    : getImage(
+                                                                          'skills_frame_background',
+                                                                      )
+                                                            }
+                                                            resizeMode={
+                                                                'stretch'
+                                                            }
+                                                            fadeDuration={0}>
+                                                            {cooldown_3 ? (
+                                                                <Text
+                                                                    style={
+                                                                        styles.cooldownText
+                                                                    }>
+                                                                    {cooldown_3}
+                                                                </Text>
+                                                            ) : disabled ? (
+                                                                <View
+                                                                    style={
+                                                                        styles.actionIconDisabled
+                                                                    }
+                                                                />
+                                                            ) : null}
+                                                        </ImageBackground>
+                                                    </ImageBackground>
+                                                </TouchableOpacity>
+                                            </View>
+                                        </View>
+                                    )}
+                                </View>
+                            </ImageBackground>
+                        </View>
+                    )}
+                    {/* Player Info */}
+                    {creature && (
+                        <View>
+                            <ImageBackground
+                                source={getImage('background_combat_info')}
+                                resizeMode={'stretch'}>
+                                <View style={styles.bottomContainer}>
+                                    <View style={styles.avatarContainer}>
+                                        <Image
+                                            style={styles.avatar}
+                                            source={getImage('user_avatar')}
+                                            resizeMode={'stretch'}
+                                        />
+                                        <Image
+                                            style={styles.avatarFrame}
+                                            source={getImage(
+                                                'avatar_frame_common',
                                             )}
-                                            overScrollMode={'never'}
                                         />
                                     </View>
+                                    <View style={styles.attributesContainer}>
+                                        <View style={styles.attributesRow_1}>
+                                            <Image
+                                                style={styles.statsIcon}
+                                                source={getImage(
+                                                    'icon_physical_attack',
+                                                )}
+                                            />
+                                            <Text
+                                                style={styles.phyAtkValue}
+                                                numberOfLines={1}>
+                                                {statsPlayer.physicalAtk +
+                                                    statsPlayer.bonusPhysicalAtk}
+                                            </Text>
+                                            <Image
+                                                style={styles.statsIcon}
+                                                source={getImage(
+                                                    'icon_physical_resist',
+                                                )}
+                                            />
+                                            <Text
+                                                style={styles.phyResValue}
+                                                numberOfLines={1}>
+                                                {getResistancePercent(
+                                                    statsPlayer.physicalRes +
+                                                        statsPlayer.bonusPhysicalRes,
+                                                    level,
+                                                ).toFixed(1) + '%'}
+                                            </Text>
+                                            <Image
+                                                style={styles.statsIcon}
+                                                source={getImage(
+                                                    'icon_critical',
+                                                )}
+                                            />
+                                            <Text
+                                                style={styles.criticalValue}
+                                                numberOfLines={1}>
+                                                {(
+                                                    (statsPlayer.critical +
+                                                        statsPlayer.bonusCritical) *
+                                                    100
+                                                ).toFixed(1) + '%'}
+                                            </Text>
+                                        </View>
+                                        <View style={styles.attributesRow_2}>
+                                            <Image
+                                                style={styles.statsIcon}
+                                                source={getImage(
+                                                    'icon_magical_attack',
+                                                )}
+                                            />
+                                            <Text
+                                                style={styles.magAtkValue}
+                                                numberOfLines={1}>
+                                                {statsPlayer.magicalAtk +
+                                                    statsPlayer.bonusMagicalAtk}
+                                            </Text>
+                                            <Image
+                                                style={styles.statsIcon}
+                                                source={getImage(
+                                                    'icon_magical_resist',
+                                                )}
+                                            />
+                                            <Text
+                                                style={styles.magResValue}
+                                                numberOfLines={1}>
+                                                {getResistancePercent(
+                                                    statsPlayer.magicalRes +
+                                                        statsPlayer.bonusMagicalRes,
+                                                    level,
+                                                ).toFixed(1) + '%'}
+                                            </Text>
+                                            <Image
+                                                style={styles.statsIcon}
+                                                source={getImage('icon_dodge')}
+                                            />
+                                            <Text
+                                                style={styles.dodgeValue}
+                                                numberOfLines={1}>
+                                                {(
+                                                    (statsPlayer.dodge +
+                                                        statsPlayer.bonusDodge) *
+                                                    100
+                                                ).toFixed(1) + '%'}
+                                            </Text>
+                                        </View>
+                                        <View style={styles.healthContainer}>
+                                            <Image
+                                                style={styles.healthIcon}
+                                                source={getImage('icon_health')}
+                                            />
+                                            <View
+                                                style={
+                                                    styles.healthProgressContainer
+                                                }>
+                                                <ProgressBar
+                                                    progress={
+                                                        statsPlayer.health /
+                                                        health
+                                                    }
+                                                    image={
+                                                        'progress_bar_health'
+                                                    }
+                                                />
+                                                <Text style={styles.healthText}>
+                                                    {statsPlayer.health +
+                                                        ' / ' +
+                                                        health}
+                                                </Text>
+                                            </View>
+                                        </View>
+                                        <View style={styles.effectsContainer}>
+                                            {/* eslint-disable-next-line react-native/no-inline-styles */}
+                                            <View style={{width: '10%'}} />
+                                            <FlatList
+                                                horizontal
+                                                scrollEnabled={false}
+                                                data={effectsPlayer}
+                                                keyExtractor={(_item, _index) =>
+                                                    _index.toString()
+                                                }
+                                                renderItem={({item}) => (
+                                                    <Tooltip
+                                                        isVisible={
+                                                            showTooltip ===
+                                                            item.id
+                                                        }
+                                                        contentStyle={
+                                                            styles.tooltipContainer
+                                                        }
+                                                        childContentSpacing={1}
+                                                        content={
+                                                            //@ts-ignore
+                                                            <EffectTooltip
+                                                                type={item.type}
+                                                                percent={
+                                                                    item.percent
+                                                                }
+                                                            />
+                                                        }
+                                                        onClose={() =>
+                                                            setShowTooltip('')
+                                                        }
+                                                        backgroundColor={
+                                                            'rgba(0,0,0,0)'
+                                                        }>
+                                                        <TouchableOpacity
+                                                            onPress={() =>
+                                                                setShowTooltip(
+                                                                    item.id,
+                                                                )
+                                                            }
+                                                            activeOpacity={1}>
+                                                            <ImageBackground
+                                                                style={
+                                                                    styles.effectIcon
+                                                                }
+                                                                source={getImage(
+                                                                    'effect_icon_' +
+                                                                        item.type.toLowerCase(),
+                                                                )}
+                                                                resizeMode={
+                                                                    'stretch'
+                                                                }
+                                                                fadeDuration={
+                                                                    0
+                                                                }>
+                                                                <Text
+                                                                    style={
+                                                                        styles.effectTurns
+                                                                    }>
+                                                                    {item.turns}
+                                                                </Text>
+                                                            </ImageBackground>
+                                                        </TouchableOpacity>
+                                                    </Tooltip>
+                                                )}
+                                                overScrollMode={'never'}
+                                            />
+                                        </View>
+                                    </View>
                                 </View>
-                            </View>
-                        </ImageBackground>
-                    </View>
-                )}
-            </SafeAreaView>
+                            </ImageBackground>
+                        </View>
+                    )}
+                </SafeAreaView>
+            )}
         </Modal>
     );
 }

@@ -517,6 +517,16 @@ export const getCloth = (
     };
 };
 
+export const getQuestItem = (id: string, level: number): Item => {
+    return {
+        id: id,
+        level: level,
+        quantity: 1,
+        variant: 0,
+        upgrade: 0,
+    };
+};
+
 export const rand = (min: number, max: number): number => {
     return Math.floor(Math.random() * (max - min + 1) + min);
 };
